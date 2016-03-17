@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">OSport Hello</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Navigation Drawer Items -->
+    <string name="home_item">Home</string>
+    <string name="activities_item">Activities</string>
+    <string name="friends_item">Friends</string>
+    <string name="log_out_item">Log out</string>
+    <string name="settings_item">Settings</string>
+    <string name="configuracion_item">Configuration</string>
+
+    <!-- Login Activity strings -->
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="enter_valid_email">Enter a valid email address</string>
+    <string name="enter_valid_password">More than 8 alphanumeric characters are required</string>
+    <string name="login_failed">Login failed</string>
+    <string name="title_activity_login">Log in</string>
+    <string name="log_in">Login</string>
+    <string name="create_account">Create account</string>
+
+    <!-- Create Account Activity strings -->
+    <string name="title_activity_create_account">Create account</string>
+    <string name="login_or_create">or</string>
+    <string name="hint_username">Name (public username)</string>
+    <string name="enter_username">Enter your username</string>
+</resources>
