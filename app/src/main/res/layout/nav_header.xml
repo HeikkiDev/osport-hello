@@ -16,26 +16,28 @@
         android:layout_height="@dimen/user_image_size"
         android:layout_marginBottom="16dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/perfil"
+        android:src="@drawable/ic_account_circle_black_48dp"
         app:border_color="@android:color/white"
-        app:border_width="1dp" />
+        app:border_width="1dp"/>
 
     <!-- User name -->
     <TextView
         android:id="@+id/header_username"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Enrique Ramos"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:onClick="onClick"/>
 
     <!-- User email -->
     <TextView
         android:id="@+id/header_email"
-        style="@style/Widget.AppCompat.Spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="enriqueramos@gmail.com"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        style="@style/Widget.AppCompat.Spinner"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:onClick="onClick"/>
 
 </LinearLayout>

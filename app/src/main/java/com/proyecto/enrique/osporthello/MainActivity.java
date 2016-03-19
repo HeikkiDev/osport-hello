@@ -14,14 +14,19 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private boolean isFirstTime;
     private int currentSelected;
@@ -30,12 +35,13 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    private static User USER_ME;
-    private final int LOGIN_CODE = 1;
-    public static final String HOST = "http://10.0.2.2/osporthello/";
+    public static User USER_ME;
+    private static final int LOGIN_CODE = 1;
+    private static final int EDIT_CODE = 2;
+    public static final String HOST = "https://enriqueramos.info/osporthello/";
     private static final String USER_FIRST_TIME = "first_time";
     private static final String PREFERENCES_FILE = "osporthello_settings";
-    private static final String SESSION_FILE = "my_session";
+    public static final String SESSION_FILE = "my_session";
     private static final String STATE_SELECTED_POSITION = "state_selected_position";
 
     @Override
@@ -64,14 +70,8 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, LOGIN_CODE);
         }
         else {
-            // Retrieve user session and information
-            View headerLayout = navigationView.getHeaderView(0); // 0-index heade
-            TextView txtUsername = (TextView)headerLayout.findViewById(R.id.header_username);
-            TextView txtEmail = (TextView)headerLayout.findViewById(R.id.header_email);
-            //CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
-            txtUsername.setText(sharedPreferences.getString("firstname", null));
-            txtEmail.setText(sharedPreferences.getString("email", null));
-            //circleImage.setImageBitmap( BitmapFactory.decodeByteArray(user.getImage(), 0, user.getImage().length));
+            // Retrieve user session and information and show it
+            retrieveUserData();
         }
 
         // Restore selected option of drawer menu
@@ -87,7 +87,14 @@ public class MainActivity extends AppCompatActivity {
         setNavigationDrawerItemsClick(navigationView);
 
         // Default selection HOME, or currentSelected
-        showFragment(currentSelected);
+        showFragment(currentSelected, R.id.nav_home);
+    }
+
+    @Override
+    public void onClick(View v) {
+        // LANZAR ACTIVITY PARA VER/EDITAR PERFIL DE USUARIO E IMAGEN
+        Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+        startActivityForResult(intent, EDIT_CODE);
     }
 
     /**
@@ -99,28 +106,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Bundle bundle = data.getExtras();
-        User user = (User)bundle.getSerializable("user");
-        this.USER_ME = user;
+        if(requestCode == LOGIN_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                Bundle bundle = data.getExtras();
+                User user = (User) bundle.getSerializable("user");
+                this.USER_ME = user;
 
-        // Set user information
-        View headerLayout = navigationView.getHeaderView(0); // 0-index heade
-        TextView txtUsername = (TextView)headerLayout.findViewById(R.id.header_username);
-        TextView txtEmail = (TextView)headerLayout.findViewById(R.id.header_email);
-        //CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
-        txtUsername.setText(user.getFirstname().toString());
-        txtEmail.setText(user.getEmail().toString());
-        //circleImage.setImageBitmap( BitmapFactory.decodeByteArray(user.getImage(), 0, user.getImage().length));
+                // Set user information
+                View headerLayout = navigationView.getHeaderView(0); // 0-index heade
+                TextView txtUsername = (TextView) headerLayout.findViewById(R.id.header_username);
+                TextView txtEmail = (TextView) headerLayout.findViewById(R.id.header_email);
+                CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
+                txtUsername.setText(user.getFirstname().toString());
+                txtEmail.setText(user.getEmail().toString());
+                if (user.getImage() != null) {
+                    StorageData storage = new StorageData(getApplicationContext());
+                    storage.loadImageFromStorage(user.getImage(), circleImage);
+                }
 
-        // Save the user session
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("email", user.getEmail());
-        editor.putString("image", user.getImage().toString());
-        editor.putString("firstname", user.getFirstname());
-        editor.putString("lastname", user.getLastname());
-        editor.putString("apikey", user.getApiKey());
-        editor.commit(); // commit changes
+                saveUserSession();
+            } else
+                Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
+        }
+        else if(requestCode == EDIT_CODE){
+            if(resultCode == RESULT_OK){
+                saveUserSession();
+                Snackbar.make(getCurrentFocus(), "Datos actualizados", Snackbar.LENGTH_SHORT).show();
+                View headerLayout = navigationView.getHeaderView(0);
+                CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
+                StorageData storage = new StorageData(getApplicationContext());
+                storage.loadImageFromStorage(this.USER_ME.getImage(), circleImage);
+            }
+        }
     }
 
     /**
@@ -143,6 +160,64 @@ public class MainActivity extends AppCompatActivity {
         currentSelected = savedInstanceState.getInt(STATE_SELECTED_POSITION, 0);
         Menu menu = navigationView.getMenu();
         menu.getItem(currentSelected).setChecked(true);
+    }
+
+    /**
+     * Save user session data
+     */
+    private void saveUserSession(){
+        User user = this.USER_ME;
+        // Save the user session
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("email", user.getEmail());
+        if (user.getImage() != null)
+            editor.putString("imagepath", user.getImage());
+        editor.putString("firstname", user.getFirstname());
+        if (user.getLastname() != null)
+            editor.putString("lastname", user.getLastname());
+        editor.putString("apikey", user.getApiKey());
+        if(user.getSex() != null)
+            editor.putString("sex", user.getSex());
+        if(user.getAge() != null)
+            editor.putString("age", user.getAge());
+        if(user.getCity() != null)
+            editor.putString("city", user.getCity());
+        if(user.getWeight() != null)
+            editor.putString("weight", user.getWeight());
+        if(user.getHeight() != null)
+            editor.putString("height", user.getHeight());
+        editor.commit(); // commit changes
+    }
+
+    /**
+     * Retrieve user data from sharedpreferences and show it in GUI
+     */
+    private void retrieveUserData() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        User user = new User(sharedPreferences.getString("email", null),
+                sharedPreferences.getString("firstname", null),
+                sharedPreferences.getString("lastname", null),
+                sharedPreferences.getString("imagepath", null),
+                sharedPreferences.getString("apikey", null));
+        user.setSex(sharedPreferences.getString("sex", null));
+        user.setAge(sharedPreferences.getString("age", null));
+        user.setCity(sharedPreferences.getString("city", null));
+        user.setWeight(sharedPreferences.getString("weight", null));
+        user.setHeight(sharedPreferences.getString("height", null));
+        this.USER_ME = user;
+
+        View headerLayout = navigationView.getHeaderView(0); // 0-index heade
+        TextView txtUsername = (TextView)headerLayout.findViewById(R.id.header_username);
+        TextView txtEmail = (TextView)headerLayout.findViewById(R.id.header_email);
+        CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
+        txtUsername.setText(sharedPreferences.getString("firstname", null) + sharedPreferences.getString("lastname", ""));
+        txtEmail.setText(sharedPreferences.getString("email", null));
+        String image = sharedPreferences.getString("imagepath", null);
+        if(image != null){
+            StorageData storage = new StorageData(getApplicationContext());
+            storage.loadImageFromStorage(user.getImage(), circleImage);
+        }
     }
 
     /**
@@ -180,27 +255,40 @@ public class MainActivity extends AppCompatActivity {
                                 if (currentSelected == 0) {
                                     drawerLayout.closeDrawers();
                                 } else {
-                                    menuItem.setChecked(true);
                                     currentSelected = 0;
-                                    showFragment(currentSelected);
+                                    showFragment(currentSelected, R.id.nav_home);
                                 }
                                 break;
                             case R.id.nav_activities:
                                 if (currentSelected == 1) {
                                     drawerLayout.closeDrawers();
                                 } else {
-                                    menuItem.setChecked(true);
                                     currentSelected = 1;
-                                    showFragment(currentSelected);
+                                    showFragment(currentSelected, R.id.nav_activities);
                                 }
                                 break;
                             case R.id.nav_friends:
                                 if (currentSelected == 2) {
                                     drawerLayout.closeDrawers();
                                 } else {
-                                    menuItem.setChecked(true);
                                     currentSelected = 2;
-                                    showFragment(currentSelected);
+                                    showFragment(currentSelected, R.id.nav_friends);
+                                }
+                                break;
+                            case R.id.nav_chat:
+                                if (currentSelected == 3) {
+                                    drawerLayout.closeDrawers();
+                                } else {
+                                    currentSelected = 3;
+                                    showFragment(currentSelected, R.id.nav_chat);
+                                }
+                                break;
+                            case R.id.nav_geosearch:
+                                if (currentSelected == 4) {
+                                    drawerLayout.closeDrawers();
+                                } else {
+                                    currentSelected = 4;
+                                    showFragment(currentSelected, R.id.nav_geosearch);
                                 }
                                 break;
                             case R.id.nav_settings:
@@ -227,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
      * Show fragment as application main content
      * @param position sliding menu item position
      */
-    private void showFragment(int position) {
+    private void showFragment(int position, int item) {
         Fragment fragment = null;
 
         switch (position){
@@ -240,6 +328,12 @@ public class MainActivity extends AppCompatActivity {
             case 2:
                 fragment = new FriendsFragment();
                 break;
+            case 3:
+                fragment = new ChatFragment();
+                break;
+            case 4:
+                fragment = new GeoSearchFragment();
+                break;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -249,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         // Set fragment title
-        setTitle(navigationView.getMenu().getItem(position).getTitle().toString());
+        setTitle(navigationView.getMenu().findItem(item).getTitle().toString());
         // Close drawer
         drawerLayout.closeDrawers();
     }

@@ -7,5 +7,5 @@
     <!--Slide menu header dimens-->
     <dimen name="header_left_padding">16dp</dimen>
     <dimen name="header_height">192dp</dimen>
-    <dimen name="user_image_size">64dp</dimen>
+    <dimen name="user_image_size">84dp</dimen>
 </resources>

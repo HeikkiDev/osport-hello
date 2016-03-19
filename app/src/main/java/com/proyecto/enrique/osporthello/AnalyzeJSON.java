@@ -15,10 +15,10 @@ public class AnalyzeJSON {
         String email = jsonObject.getJSONObject(nombreObjeto).getString("User_email");
         String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
         String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
-        byte[] image = jsonObject.getJSONObject(nombreObjeto).getString("User_image").getBytes();
+        //String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
         String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
 
-        User user = new User(email,firstname,lastname,image,apiKey);
+        User user = new User(email,firstname,lastname,null,apiKey);
         return user;
     }
 
@@ -29,10 +29,10 @@ public class AnalyzeJSON {
             String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_email");
             String firstname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_firstname");
             String lastname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_lastname");
-            byte[] image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image").getBytes();
+            //String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
             String apiKey = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_apiKey");
 
-            User user = new User(email,firstname,lastname,image,apiKey);
+            User user = new User(email,firstname,lastname,null,apiKey);
             usersList.add(user);
         }
 

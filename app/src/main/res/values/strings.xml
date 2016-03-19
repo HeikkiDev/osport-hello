@@ -11,6 +11,7 @@
     <string name="configuracion_item">Configuration</string>
 
     <!-- Login Activity strings -->
+    <string name="login_or_create">or</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="enter_valid_email">Enter a valid email address</string>
@@ -19,10 +20,33 @@
     <string name="title_activity_login">Log in</string>
     <string name="log_in">Login</string>
     <string name="create_account">Create account</string>
+    <string name="confirm_registration">Confirm registration in email</string>
+    <string name="go_to_email">Go to email</string>
+    <string name="choose_email_app">Choose your email app</string>
 
     <!-- Create Account Activity strings -->
     <string name="title_activity_create_account">Create account</string>
-    <string name="login_or_create">or</string>
     <string name="hint_username">Name (public username)</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="emergency_email">Recovery email address</string>
     <string name="enter_username">Enter your username</string>
+    <string name="error_creating_account">Error creating account</string>
+    <string name="passwords_dont_match">Passwords don\'t match</string>
+    <string name="recovery_email_empty">Indicate email for recovery password</string>
+    <string name="recovery_email_equal_email_id">Recovery email can\'t be the same as ID email</string>
+    <string name="user_already_exists">This email is already registered</string>
+    <string name="social_item">Social</string>
+    <string name="geo_search_item">GeoSearch</string>
+
+    <!-- User Profile Activity -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_user_profile">Profile</string>
+    <string name="hint_lastname">Lastname (to improve search)</string>
+    <string name="save_changes">Save changes</string>
+    <string name="input_city">City</string>
+    <string name="hint_sex">Sex</string>
+    <string name="input_weight">Weigth (kg)</string>
+    <string name="input_height">Height (cm)</string>
+    <string name="input_age">Age</string>
+    <string name="title_activity_borrar">BorrarActivity</string>
 </resources>

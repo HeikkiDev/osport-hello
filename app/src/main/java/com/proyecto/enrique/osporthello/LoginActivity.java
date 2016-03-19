@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 /**
  * Created by enrique on 14/03/16.
@@ -81,7 +82,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == CREATE_ACCOUNT){
-                Snackbar.make(coordinatorLayout, "You can Log in now", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, R.string.confirm_registration, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.go_to_email, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                                startActivity(Intent.createChooser(intent, getString(R.string.choose_email_app)));
+                            }
+                        })
+                        .show();
             }
         }
     }
@@ -99,10 +109,8 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-        progressDialog.setMessage("Log in...");
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
+        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, "Log in...");
+        progressDialog.execute();
 
         final String email = etxUser.getText().toString();
         String password = etxPassword.getText().toString();
@@ -115,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
         client.get(MainActivity.HOST + "api/users/login", params, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                progressDialog.dismiss();
+                progressDialog.cancel(true);
                 onLoginFailed();
             }
 
@@ -128,10 +136,10 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     else
                         onLoginFailed();
-                    progressDialog.dismiss();
+                    progressDialog.cancel(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    progressDialog.cancel(true);
                 }
             }
         });

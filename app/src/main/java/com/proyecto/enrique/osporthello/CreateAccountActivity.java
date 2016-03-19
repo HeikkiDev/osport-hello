@@ -30,6 +30,10 @@ public class CreateAccountActivity extends AppCompatActivity {
     private TextInputLayout txtLayoutEmail;
     private EditText etxPassword;
     private TextInputLayout txtLayoutPassword;
+    private EditText etxRepeatPassword;
+    private TextInputLayout txtLayoutRepeatPassword;
+    private EditText etxAlternativeEmail;
+    private TextInputLayout txtLayoutAlternativeEmail;
     Button btnCreateAccount;
 
     @Override
@@ -45,6 +49,10 @@ public class CreateAccountActivity extends AppCompatActivity {
         txtLayoutEmail = (TextInputLayout)findViewById(R.id.input_layout_email);
         etxPassword = (EditText)findViewById(R.id.input_password);
         txtLayoutPassword = (TextInputLayout)findViewById(R.id.input_layout_password);
+        etxRepeatPassword = (EditText)findViewById(R.id.input_repeatPassword);
+        txtLayoutRepeatPassword = (TextInputLayout)findViewById(R.id.input_layout_repeatPassword);
+        etxAlternativeEmail = (EditText)findViewById(R.id.input_emergencyEmail);
+        txtLayoutAlternativeEmail = (TextInputLayout)findViewById(R.id.input_layout_emergencyEmail);
         btnCreateAccount = (Button)findViewById(R.id.btnCreateAccount);
 
         // To show back arrow
@@ -65,29 +73,29 @@ public class CreateAccountActivity extends AppCompatActivity {
         if(validate()){
             btnCreateAccount.setEnabled(false);
 
-            final ProgressDialog progressDialog = new ProgressDialog(CreateAccountActivity.this);
-            progressDialog.setMessage("Creating account...");
-            progressDialog.setIndeterminate(true);
-            progressDialog.show();
+            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(CreateAccountActivity.this, "Creating account...");
+            progressDialog.execute();
 
             String username = etxUser.getText().toString();
             String email = etxEmail.getText().toString();
             String password = etxPassword.getText().toString();
+            String alternativeEmail = etxAlternativeEmail.getText().toString();
 
             JSONObject jsonParams = new JSONObject();
             jsonParams.put("email", email);
             jsonParams.put("password", password);
             jsonParams.put("firstname", username);
+            jsonParams.put("alternative_email", alternativeEmail);
             RequestParams params = new RequestParams("user", jsonParams.toString());
 
             AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
             client.setTimeout(6000);
-            client.post(MainActivity.HOST + "api/users/register", params, new JsonHttpResponseHandler() {
+            client.post(MainActivity.HOST + "api/registration", params, new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    progressDialog.dismiss();
+                    progressDialog.cancel(true);
                     btnCreateAccount.setEnabled(true);
-                    Snackbar.make(getCurrentFocus(), "Error creating account", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(getCurrentFocus(), R.string.error_creating_account, Snackbar.LENGTH_LONG).show();
                 }
 
                 @Override
@@ -100,12 +108,18 @@ public class CreateAccountActivity extends AppCompatActivity {
                         }
                         else{
                             btnCreateAccount.setEnabled(true);
-                            Snackbar.make(getCurrentFocus(), "Error creating account", Snackbar.LENGTH_LONG).show();
+                            if(response.getString("message").equals("User already exists")) {
+                                Snackbar.make(getCurrentFocus(), R.string.user_already_exists, Snackbar.LENGTH_LONG).show();
+                                txtLayoutEmail.setError("Use another email");
+                                etxEmail.requestFocus();
+                            }
+                            else
+                                Snackbar.make(getCurrentFocus(), R.string.error_creating_account, Snackbar.LENGTH_LONG).show();
                         }
-                        progressDialog.dismiss();
+                        progressDialog.cancel(true);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        progressDialog.dismiss();
+                        progressDialog.cancel(true);
                     }
                 }
             });
@@ -118,6 +132,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         String username = etxUser.getText().toString();
         String email = etxEmail.getText().toString();
         String password = etxPassword.getText().toString();
+        String repeatPassword = etxRepeatPassword.getText().toString();
+        String alternativeEmail = etxAlternativeEmail.getText().toString();
 
         if(username.isEmpty()){
             txtLayoutUser.setError(getString(R.string.enter_username));
@@ -138,6 +154,26 @@ public class CreateAccountActivity extends AppCompatActivity {
         }
         else
             txtLayoutPassword.setError(null);
+
+        if(!repeatPassword.equals(password)){
+            txtLayoutRepeatPassword.setError(getString(R.string.passwords_dont_match));
+            valid = false;
+        }
+        else
+        txtLayoutRepeatPassword.setError(null);
+
+        if(alternativeEmail.isEmpty()){
+            txtLayoutAlternativeEmail.setError(getString(R.string.recovery_email_empty));
+            valid = false;
+        }
+        else{
+            if(alternativeEmail.equals(email)){
+                txtLayoutAlternativeEmail.setError(getString(R.string.recovery_email_equal_email_id));
+                valid = false;
+            }
+            else
+                txtLayoutAlternativeEmail.setError(null);
+        }
 
         return valid;
     }
