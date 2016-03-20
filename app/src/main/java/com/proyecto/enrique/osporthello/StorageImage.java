@@ -13,11 +13,13 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,7 +42,9 @@ public class StorageImage {
         FileOutputStream fos = null;
         try {
             fos = context.openFileOutput(nameFile, Context.MODE_PRIVATE);
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+
+            uploadStringImageToRemote(bitmapImage);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -73,7 +77,7 @@ public class StorageImage {
 
     private String getStringImage(Bitmap bmp){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
@@ -84,30 +88,32 @@ public class StorageImage {
         @Override
         protected Void doInBackground(Bitmap... params) {
             Bitmap bitmap = params[0];
-
             User user = MainActivity.USER_ME;
-            RequestParams param = null;
+
             try {
                 JSONObject json = new JSONObject();
                 json.put("email", user.getEmail());
                 json.put("image", getStringImage(bitmap));
-                param = new RequestParams();
+                RequestParams param = new RequestParams();
                 param.put("user", json.toString());
-            } catch (JSONException e) {e.printStackTrace();}
 
-            SyncHttpClient client = new SyncHttpClient(true, 80, 443);
-            client.setTimeout(10000);
-            client.put(MainActivity.HOST+"api/users/image/"+user.getApiKey(), param, new JsonHttpResponseHandler() {
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    Log.e("IMAGE","Error");
-                }
+                SyncHttpClient client = new SyncHttpClient(true, 80, 443);
+                client.setTimeout(10000);
+                client.put(MainActivity.HOST + "api/users/image/" + user.getApiKey(), param, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                        Log.e("IMAGE", "Error");
+                    }
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.e("IMAGE","Success");
-                }
-            });
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.e("IMAGE", "Success");
+                    }
+                });
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
 
             return null;
         }

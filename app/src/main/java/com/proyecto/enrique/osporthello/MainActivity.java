@@ -112,10 +112,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
                 txtUsername.setText(user.getFirstname().toString());
                 txtEmail.setText(user.getEmail().toString());
-                if (user.getImagepath() != null) {
+                try {
                     StorageImage storage = new StorageImage(getApplicationContext());
-                    storage.loadImageFromStorage(user.getImagepath(), circleImage);
-                }
+                    storage.loadImageFromStorage(this.USER_ME.getEmail() + ".jpg", circleImage);
+                } catch (Exception e){}
 
                 saveUserSession();
                 retrieveUserData();
@@ -123,16 +123,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
         }
         else if(requestCode == EDIT_CODE){
-            if(resultCode == RESULT_OK){
+            if(resultCode == RESULT_OK) {
                 saveUserSession();
                 retrieveUserData();
                 Snackbar.make(getCurrentFocus(), "Datos actualizados", Snackbar.LENGTH_SHORT).show();
                 View headerLayout = navigationView.getHeaderView(0);
-                CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
-                if(this.USER_ME.getImagepath() != null) {
+                CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
+                try {
                     StorageImage storage = new StorageImage(getApplicationContext());
-                    storage.loadImageFromStorage(this.USER_ME.getImagepath(), circleImage);
-                }
+                    storage.loadImageFromStorage(this.USER_ME.getEmail() + ".jpg", circleImage);
+                } catch (Exception e) {e.printStackTrace();}
             }
         }
     }
@@ -186,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("email", user.getEmail());
-        if (user.getImagepath() != null)
-            editor.putString("imagepath", user.getImagepath());
         editor.putString("firstname", user.getFirstname());
         if (user.getLastname() != null)
             editor.putString("lastname", user.getLastname());
@@ -226,12 +224,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
         txtUsername.setText(sharedPreferences.getString("firstname", null) +" "+ sharedPreferences.getString("lastname", ""));
         txtEmail.setText(sharedPreferences.getString("email", null));
-        String image = sharedPreferences.getString("imagepath", null);
-        if(image != null){
-            user.setImagepath(image);
+        try {
             StorageImage storage = new StorageImage(getApplicationContext());
-            storage.loadImageFromStorage(user.getImagepath(), circleImage);
-        }
+            storage.loadImageFromStorage(user.getEmail() + ".jpg", circleImage);
+        } catch (Exception e){}
     }
 
     /**

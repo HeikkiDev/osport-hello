@@ -25,10 +25,10 @@ class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         switch(position) {
             case 0:
-                f = new HomeFragment();
+                f = new ActivitiesFriendsFragment();
                 break;
             case 1:
-                f = new ChatFragment();
+                f = new ShowFriendsFragment();
                 break;
         }
 

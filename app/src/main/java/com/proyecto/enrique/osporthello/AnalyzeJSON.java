@@ -49,6 +49,8 @@ public class AnalyzeJSON {
             String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
             String city = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_city");
 
+            if(email.equals(MainActivity.USER_ME.getEmail()))
+                break;
             if(lastname.equals("null"))
                 lastname = null;
             if(image.equals("null"))

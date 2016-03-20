@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,7 +136,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         User user = MainActivity.USER_ME;
         String username = user.getFirstname();
         String lastname = user.getLastname();
-        String image = user.getImagepath();
         String sex = user.getSex();
         String age = user.getAge();
         String city = user.getCity();
@@ -146,10 +146,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             etxUser.setText(username);
         if(lastname != null)
             etxLastname.setText(lastname);
-        if(image != null){
-            StorageImage storage = new StorageImage(this);
-            storage.loadImageFromStorage(image, imageView);
-        }
         if(sex != null)
             etxSex.setText(sex);
         if(age != null)
@@ -160,6 +156,10 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             etxWeight.setText(weight);
         if(height != null)
             etxHeight.setText(height);
+        try {
+            StorageImage storage = new StorageImage(getApplicationContext());
+            storage.loadImageFromStorage(user.getEmail() + ".jpg", imageView);
+        } catch (Exception e){}
     }
 
     private void saveChanges() {
@@ -168,6 +168,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             Snackbar.make(getCurrentFocus(), R.string.specify_username, Snackbar.LENGTH_LONG).show();
             return;
         }
+
+        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(UserProfileActivity.this, "Saving changes...");
+        progressDialog.execute();
 
         User user = MainActivity.USER_ME;
         String username = etxUser.getText().toString();
@@ -178,20 +181,16 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         String weight = etxWeight.getText().toString();
         String height = etxHeight.getText().toString();
 
+        if(bitmapImage != null) { // Save the new user image
+            StorageImage storage = new StorageImage(this);
+            storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".jpg");
+        }
         if(!username.isEmpty())
             user.setFirstname(username);
         if(lastname.isEmpty())
             user.setLastname(null);
         else
-        user.setLastname(lastname);
-        if(bitmapImage != null) { // Save the new user image
-            StorageImage storage = new StorageImage(this);
-            storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".jpg");
-            user.setImagepath(user.getEmail() + ".jpg");
-            // Upload user image to database
-            StorageImage storageImage = new StorageImage(this);
-            storage.uploadStringImageToRemote(bitmapImage);
-        }
+            user.setLastname(lastname);
         if(sex.isEmpty())
             user.setSex(null);
         else
@@ -215,51 +214,65 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
         uploadUserProfile();
 
+        progressDialog.cancel(true);
         setResult(RESULT_OK);
         finish();
     }
 
     private void uploadUserProfile() {
         User user = MainActivity.USER_ME;
-        String lastname = (user.getLastname() != null)?user.getLastname():"";
-        String sex = (user.getSex() != null)?user.getSex():"";
-        String age = (user.getAge() != null)?user.getAge():"";
-        String city = (user.getCity() != null)?user.getCity():"";
-        String weight = (user.getWeight() != null)? user.getWeight():"";
-        String height = (user.getHeight() != null)?user.getHeight():"";
-        RequestParams param = null;
-        try {
-            JSONObject json = new JSONObject();
-            json.put("email", user.getEmail());
-            json.put("firstname", user.getFirstname());
-            json.put("lastname", lastname);
-            json.put("sex", sex);
-            json.put("age", age);
-            json.put("city", city);
-            json.put("weight", weight);
-            json.put("height", height);
-            param = new RequestParams();
-            param.put("user", json.toString());
-        } catch (JSONException e) {e.printStackTrace();}
-
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
-        client.put(MainActivity.HOST+"api/users/"+user.getApiKey(), param, new JsonHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                Log.e("PROFILE", "Error");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("PROFILE","Success");
-            }
-        });
+        UploadProfileTask uploadProfileTask = new UploadProfileTask();
+        uploadProfileTask.execute(user);
     }
 
     private boolean validate() {
         String username = etxUser.getText().toString();
         return !username.isEmpty();
+    }
+
+    private class UploadProfileTask extends AsyncTask <User, Void, Void>{
+
+        @Override
+        protected Void doInBackground(User... params) {
+            User user = params[0];
+
+            String lastname = (user.getLastname() != null)?user.getLastname():"";
+            String sex = (user.getSex() != null)?user.getSex():"";
+            String age = (user.getAge() != null)?user.getAge():"";
+            String city = (user.getCity() != null)?user.getCity():"";
+            String weight = (user.getWeight() != null)? user.getWeight():"";
+            String height = (user.getHeight() != null)?user.getHeight():"";
+
+            try {
+                JSONObject json = new JSONObject();
+                json.put("email", user.getEmail());
+                json.put("firstname", user.getFirstname());
+                json.put("lastname", lastname);
+                json.put("sex", sex);
+                json.put("age", age);
+                json.put("city", city);
+                json.put("weight", weight);
+                json.put("height", height);
+                RequestParams param = new RequestParams();
+                param.put("user", json.toString());
+
+                SyncHttpClient client = new SyncHttpClient(true, 80, 443);
+                client.setTimeout(10000);
+                client.put(MainActivity.HOST+"api/users/"+user.getApiKey(), param, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                        Log.e("PROFILE", "Error");
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.e("PROFILE","Success");
+                    }
+                });
+            } catch (JSONException e) {e.printStackTrace();}
+
+            return null;
+        }
     }
 
 }

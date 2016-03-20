@@ -19,7 +19,6 @@ public class User implements Serializable {
     private String image;
     @SerializedName("User_apiKey")
     private String apiKey;
-    private String imagepath;
     private String sex;
     private String age;
     private String city;
@@ -45,10 +44,6 @@ public class User implements Serializable {
     public String getApiKey() {return apiKey;}
 
     public void setApiKey(String apiKey) {this.apiKey = apiKey;}
-
-    public String getImagepath() {return imagepath;}
-
-    public void setImagepath(String imagepath) {this.imagepath = imagepath;}
 
     public String getSex() {return sex;}
 
