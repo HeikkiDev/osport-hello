@@ -15,10 +15,27 @@ public class AnalyzeJSON {
         String email = jsonObject.getJSONObject(nombreObjeto).getString("User_email");
         String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
         String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
-        //String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
         String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
+        String sex = jsonObject.getJSONObject(nombreObjeto).getString("User_sex");
+        String age = jsonObject.getJSONObject(nombreObjeto).getString("User_age");
+        String city = jsonObject.getJSONObject(nombreObjeto).getString("User_city");
+        String weight = jsonObject.getJSONObject(nombreObjeto).getString("User_weight");
+        String height = jsonObject.getJSONObject(nombreObjeto).getString("User_height");
 
-        User user = new User(email,firstname,lastname,null,apiKey);
+        if(lastname.equals("null"))
+            lastname = null;
+        if(sex.equals("null"))
+            sex = null;
+        if(city.equals("null"))
+            city = null;
+        if(age.equals("null") || age.equals("0"))
+            age = null;
+        if(weight.equals("null") || weight.equals("0"))
+            weight = null;
+        if(height.equals("null") || height.equals("0"))
+            height = null;
+
+        User user = new User(email,firstname,lastname,apiKey,sex,age,city,weight,height);
         return user;
     }
 
@@ -29,10 +46,17 @@ public class AnalyzeJSON {
             String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_email");
             String firstname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_firstname");
             String lastname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_lastname");
-            //String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
-            String apiKey = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_apiKey");
+            String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
+            String city = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_city");
 
-            User user = new User(email,firstname,lastname,null,apiKey);
+            if(lastname.equals("null"))
+                lastname = null;
+            if(image.equals("null"))
+                image = null;
+            if(city.equals("null"))
+                city = null;
+
+            User user = new User(email,firstname,lastname,image,city);
             usersList.add(user);
         }
 

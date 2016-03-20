@@ -9,7 +9,7 @@
     android:padding="@dimen/header_left_padding"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <!-- User image -->
+    <!-- User imagepath -->
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/header_circle_image"
         android:layout_width="@dimen/user_image_size"

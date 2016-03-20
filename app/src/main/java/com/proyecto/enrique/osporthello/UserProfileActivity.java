@@ -1,10 +1,9 @@
 package com.proyecto.enrique.osporthello;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -13,9 +12,9 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,8 +23,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import cz.msebera.android.httpclient.Header;
 
 public class UserProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -117,7 +125,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,7 +135,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         User user = MainActivity.USER_ME;
         String username = user.getFirstname();
         String lastname = user.getLastname();
-        String image = user.getImage();
+        String image = user.getImagepath();
         String sex = user.getSex();
         String age = user.getAge();
         String city = user.getCity();
@@ -139,7 +147,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         if(lastname != null)
             etxLastname.setText(lastname);
         if(image != null){
-            StorageData storage = new StorageData(this);
+            StorageImage storage = new StorageImage(this);
             storage.loadImageFromStorage(image, imageView);
         }
         if(sex != null)
@@ -157,12 +165,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private void saveChanges() {
         if(!validate()){
             txtLayoutUser.setError(getString(R.string.enter_username));
-            Snackbar.make(getCurrentFocus(), "Debes rellenar el nombre de usuario", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getCurrentFocus(), R.string.specify_username, Snackbar.LENGTH_LONG).show();
             return;
         }
-
-        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(UserProfileActivity.this, "Saving data...");
-        progressDialog.execute();
 
         User user = MainActivity.USER_ME;
         String username = etxUser.getText().toString();
@@ -175,31 +180,86 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
         if(!username.isEmpty())
             user.setFirstname(username);
-        if(!lastname.isEmpty())
-            user.setLastname(lastname);
+        if(lastname.isEmpty())
+            user.setLastname(null);
+        else
+        user.setLastname(lastname);
         if(bitmapImage != null) { // Save the new user image
-            StorageData storage = new StorageData(this);
-            storage.saveToInternalStorage(bitmapImage, user.getEmail()+".jpg");
-            user.setImage(user.getEmail()+".jpg");
+            StorageImage storage = new StorageImage(this);
+            storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".jpg");
+            user.setImagepath(user.getEmail() + ".jpg");
+            // Upload user image to database
+            StorageImage storageImage = new StorageImage(this);
+            storage.uploadStringImageToRemote(bitmapImage);
         }
-        if(!sex.isEmpty())
+        if(sex.isEmpty())
+            user.setSex(null);
+        else
             user.setSex(sex);
-        if(!age.isEmpty())
+        if(age.isEmpty())
+            user.setAge(null);
+        else
             user.setAge(age);
-        if(!city.isEmpty())
+        if(city.isEmpty())
+            user.setCity(null);
+        else
             user.setCity(city);
-        if(!weight.isEmpty())
+        if(weight.isEmpty())
+            user.setWeight(null);
+        else
             user.setWeight(weight);
-        if(!height.isEmpty())
+        if(height.isEmpty())
+            user.setHeight(null);
+        else
             user.setHeight(height);
 
-        progressDialog.cancel(true);
+        uploadUserProfile();
+
         setResult(RESULT_OK);
         finish();
+    }
+
+    private void uploadUserProfile() {
+        User user = MainActivity.USER_ME;
+        String lastname = (user.getLastname() != null)?user.getLastname():"";
+        String sex = (user.getSex() != null)?user.getSex():"";
+        String age = (user.getAge() != null)?user.getAge():"";
+        String city = (user.getCity() != null)?user.getCity():"";
+        String weight = (user.getWeight() != null)? user.getWeight():"";
+        String height = (user.getHeight() != null)?user.getHeight():"";
+        RequestParams param = null;
+        try {
+            JSONObject json = new JSONObject();
+            json.put("email", user.getEmail());
+            json.put("firstname", user.getFirstname());
+            json.put("lastname", lastname);
+            json.put("sex", sex);
+            json.put("age", age);
+            json.put("city", city);
+            json.put("weight", weight);
+            json.put("height", height);
+            param = new RequestParams();
+            param.put("user", json.toString());
+        } catch (JSONException e) {e.printStackTrace();}
+
+        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
+        client.setTimeout(10000);
+        client.put(MainActivity.HOST+"api/users/"+user.getApiKey(), param, new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("PROFILE", "Error");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("PROFILE","Success");
+            }
+        });
     }
 
     private boolean validate() {
         String username = etxUser.getText().toString();
         return !username.isEmpty();
     }
+
 }

@@ -3,8 +3,6 @@ package com.proyecto.enrique.osporthello;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -14,15 +12,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -87,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setNavigationDrawerItemsClick(navigationView);
 
         // Default selection HOME, or currentSelected
-        showFragment(currentSelected, R.id.nav_home);
+        showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
     }
 
     @Override
@@ -119,23 +112,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
                 txtUsername.setText(user.getFirstname().toString());
                 txtEmail.setText(user.getEmail().toString());
-                if (user.getImage() != null) {
-                    StorageData storage = new StorageData(getApplicationContext());
-                    storage.loadImageFromStorage(user.getImage(), circleImage);
+                if (user.getImagepath() != null) {
+                    StorageImage storage = new StorageImage(getApplicationContext());
+                    storage.loadImageFromStorage(user.getImagepath(), circleImage);
                 }
 
                 saveUserSession();
+                retrieveUserData();
             } else
                 Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
         }
         else if(requestCode == EDIT_CODE){
             if(resultCode == RESULT_OK){
                 saveUserSession();
+                retrieveUserData();
                 Snackbar.make(getCurrentFocus(), "Datos actualizados", Snackbar.LENGTH_SHORT).show();
                 View headerLayout = navigationView.getHeaderView(0);
                 CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
-                StorageData storage = new StorageData(getApplicationContext());
-                storage.loadImageFromStorage(this.USER_ME.getImage(), circleImage);
+                if(this.USER_ME.getImagepath() != null) {
+                    StorageImage storage = new StorageImage(getApplicationContext());
+                    storage.loadImageFromStorage(this.USER_ME.getImagepath(), circleImage);
+                }
             }
         }
     }
@@ -159,7 +156,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onRestoreInstanceState(savedInstanceState);
         currentSelected = savedInstanceState.getInt(STATE_SELECTED_POSITION, 0);
         Menu menu = navigationView.getMenu();
-        menu.getItem(currentSelected).setChecked(true);
+        switch (currentSelected){
+            case 0:
+                showFragment(currentSelected, menu.findItem(R.id.nav_home));
+                break;
+            case 1:
+                showFragment(currentSelected, menu.findItem(R.id.nav_activities));
+                break;
+            case 2:
+                showFragment(currentSelected, menu.findItem(R.id.nav_friends));
+                break;
+            case 3:
+                showFragment(currentSelected, menu.findItem(R.id.nav_chat));
+                break;
+            case 4:
+                showFragment(currentSelected, menu.findItem(R.id.nav_geosearch));
+                break;
+            default:
+                showFragment(currentSelected, menu.findItem(R.id.nav_home));
+        }
     }
 
     /**
@@ -171,8 +186,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("email", user.getEmail());
-        if (user.getImage() != null)
-            editor.putString("imagepath", user.getImage());
+        if (user.getImagepath() != null)
+            editor.putString("imagepath", user.getImagepath());
         editor.putString("firstname", user.getFirstname());
         if (user.getLastname() != null)
             editor.putString("lastname", user.getLastname());
@@ -198,25 +213,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         User user = new User(sharedPreferences.getString("email", null),
                 sharedPreferences.getString("firstname", null),
                 sharedPreferences.getString("lastname", null),
-                sharedPreferences.getString("imagepath", null),
-                sharedPreferences.getString("apikey", null));
-        user.setSex(sharedPreferences.getString("sex", null));
-        user.setAge(sharedPreferences.getString("age", null));
-        user.setCity(sharedPreferences.getString("city", null));
-        user.setWeight(sharedPreferences.getString("weight", null));
-        user.setHeight(sharedPreferences.getString("height", null));
+                sharedPreferences.getString("apikey", null),
+                sharedPreferences.getString("sex", null),
+                sharedPreferences.getString("age", null),
+                sharedPreferences.getString("city", null),
+                sharedPreferences.getString("weight", null),
+                sharedPreferences.getString("height", null));
         this.USER_ME = user;
-
         View headerLayout = navigationView.getHeaderView(0); // 0-index heade
         TextView txtUsername = (TextView)headerLayout.findViewById(R.id.header_username);
         TextView txtEmail = (TextView)headerLayout.findViewById(R.id.header_email);
         CircleImageView circleImage = (CircleImageView)headerLayout.findViewById(R.id.header_circle_image);
-        txtUsername.setText(sharedPreferences.getString("firstname", null) + sharedPreferences.getString("lastname", ""));
+        txtUsername.setText(sharedPreferences.getString("firstname", null) +" "+ sharedPreferences.getString("lastname", ""));
         txtEmail.setText(sharedPreferences.getString("email", null));
         String image = sharedPreferences.getString("imagepath", null);
         if(image != null){
-            StorageData storage = new StorageData(getApplicationContext());
-            storage.loadImageFromStorage(user.getImage(), circleImage);
+            user.setImagepath(image);
+            StorageImage storage = new StorageImage(getApplicationContext());
+            storage.loadImageFromStorage(user.getImagepath(), circleImage);
         }
     }
 
@@ -256,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     drawerLayout.closeDrawers();
                                 } else {
                                     currentSelected = 0;
-                                    showFragment(currentSelected, R.id.nav_home);
+                                    showFragment(currentSelected, menuItem);
                                 }
                                 break;
                             case R.id.nav_activities:
@@ -264,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     drawerLayout.closeDrawers();
                                 } else {
                                     currentSelected = 1;
-                                    showFragment(currentSelected, R.id.nav_activities);
+                                    showFragment(currentSelected, menuItem);
                                 }
                                 break;
                             case R.id.nav_friends:
@@ -272,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     drawerLayout.closeDrawers();
                                 } else {
                                     currentSelected = 2;
-                                    showFragment(currentSelected, R.id.nav_friends);
+                                    showFragment(currentSelected, menuItem);
                                 }
                                 break;
                             case R.id.nav_chat:
@@ -280,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     drawerLayout.closeDrawers();
                                 } else {
                                     currentSelected = 3;
-                                    showFragment(currentSelected, R.id.nav_chat);
+                                    showFragment(currentSelected, menuItem);
                                 }
                                 break;
                             case R.id.nav_geosearch:
@@ -288,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     drawerLayout.closeDrawers();
                                 } else {
                                     currentSelected = 4;
-                                    showFragment(currentSelected, R.id.nav_geosearch);
+                                    showFragment(currentSelected, menuItem);
                                 }
                                 break;
                             case R.id.nav_settings:
@@ -315,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Show fragment as application main content
      * @param position sliding menu item position
      */
-    private void showFragment(int position, int item) {
+    private void showFragment(int position, MenuItem item) {
         Fragment fragment = null;
 
         switch (position){
@@ -342,8 +356,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .replace(R.id.main_content, fragment)
                 .commit();
 
+        item.setChecked(true);
         // Set fragment title
-        setTitle(navigationView.getMenu().findItem(item).getTitle().toString());
+        setTitle(item.getTitle().toString());
         // Close drawer
         drawerLayout.closeDrawers();
     }

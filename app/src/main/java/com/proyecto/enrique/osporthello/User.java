@@ -1,7 +1,5 @@
 package com.proyecto.enrique.osporthello;
 
-import android.graphics.Bitmap;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -21,6 +19,7 @@ public class User implements Serializable {
     private String image;
     @SerializedName("User_apiKey")
     private String apiKey;
+    private String imagepath;
     private String sex;
     private String age;
     private String city;
@@ -47,6 +46,10 @@ public class User implements Serializable {
 
     public void setApiKey(String apiKey) {this.apiKey = apiKey;}
 
+    public String getImagepath() {return imagepath;}
+
+    public void setImagepath(String imagepath) {this.imagepath = imagepath;}
+
     public String getSex() {return sex;}
 
     public void setSex(String sex) {this.sex = sex;}
@@ -71,11 +74,23 @@ public class User implements Serializable {
         //
     }
 
-    public User(String email, String first, String last, String image, String apiKey){
+    public User(String email, String first, String last, String img, String city){
         this.email = email;
         this.firstname = first;
         this.lastname = last;
-        this.image = image;
+        this.image = img;
+        this.city = city;
+    }
+
+    public User(String email, String first, String last, String apiKey, String sex, String age, String city, String weight, String height){
+        this.email = email;
+        this.firstname = first;
+        this.lastname = last;
         this.apiKey = apiKey;
+        this.sex = sex;
+        this.age = age;
+        this.city = city;
+        this.weight = weight;
+        this.height = height;
     }
 }

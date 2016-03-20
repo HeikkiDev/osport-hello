@@ -49,4 +49,8 @@
     <string name="input_height">Height (cm)</string>
     <string name="input_age">Age</string>
     <string name="title_activity_borrar">BorrarActivity</string>
+    <string name="specify_username">You must specify a username</string>
+
+    <!-- User Profile Activity -->
+    <string name="title_activity_search_users">Search users</string>
 </resources>
