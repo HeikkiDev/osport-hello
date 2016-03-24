@@ -15,6 +15,7 @@ public class AnalyzeJSON {
         String email = jsonObject.getJSONObject(nombreObjeto).getString("User_email");
         String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
         String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
+        String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
         String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
         String sex = jsonObject.getJSONObject(nombreObjeto).getString("User_sex");
         String age = jsonObject.getJSONObject(nombreObjeto).getString("User_age");
@@ -24,6 +25,8 @@ public class AnalyzeJSON {
 
         if(lastname.equals("null"))
             lastname = null;
+        if(image.equals("null"))
+            image = null;
         if(sex.equals("null"))
             sex = null;
         if(city.equals("null"))
@@ -35,7 +38,7 @@ public class AnalyzeJSON {
         if(height.equals("null") || height.equals("0"))
             height = null;
 
-        User user = new User(email,firstname,lastname,apiKey,sex,age,city,weight,height);
+        User user = new User(email,firstname,lastname, image ,apiKey,sex,age,city,weight,height);
         return user;
     }
 

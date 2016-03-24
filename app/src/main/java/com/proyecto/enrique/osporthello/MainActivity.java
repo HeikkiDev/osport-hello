@@ -3,6 +3,8 @@ package com.proyecto.enrique.osporthello;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -12,10 +14,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -23,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean isFirstTime;
     private int currentSelected;
+    private Fragment fragment;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -36,10 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String PREFERENCES_FILE = "osporthello_settings";
     public static final String SESSION_FILE = "my_session";
     private static final String STATE_SELECTED_POSITION = "state_selected_position";
+    private static final String STATE_FRAGMENT = "mFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         //
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -79,8 +89,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Set items click on Drawer menu
         setNavigationDrawerItemsClick(navigationView);
 
-        // Default selection HOME, or currentSelected
-        showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
+        if (savedInstanceState == null) {
+            // Default selection HOME, or currentSelected
+            showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
+        }
     }
 
     @Override
@@ -114,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 txtEmail.setText(user.getEmail().toString());
                 try {
                     StorageImage storage = new StorageImage(getApplicationContext());
-                    storage.loadImageFromStorage(this.USER_ME.getEmail() + ".jpg", circleImage);
+                    storage.saveToInternalStorage(stringToBitMap(user.getImage()), user.getEmail() + ".jpg");
                 } catch (Exception e){}
 
                 saveUserSession();
@@ -145,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, currentSelected);
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, STATE_FRAGMENT, fragment);
     }
 
     /**
@@ -155,26 +169,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         currentSelected = savedInstanceState.getInt(STATE_SELECTED_POSITION, 0);
-        Menu menu = navigationView.getMenu();
+        //Restore the fragment's instance
+        fragment = getSupportFragmentManager().getFragment(savedInstanceState, STATE_FRAGMENT);
+
+        MenuItem itemMenu = null;
         switch (currentSelected){
             case 0:
-                showFragment(currentSelected, menu.findItem(R.id.nav_home));
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_home);
                 break;
             case 1:
-                showFragment(currentSelected, menu.findItem(R.id.nav_activities));
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_activities);
                 break;
             case 2:
-                showFragment(currentSelected, menu.findItem(R.id.nav_friends));
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_friends);
                 break;
             case 3:
-                showFragment(currentSelected, menu.findItem(R.id.nav_chat));
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_chat);
                 break;
             case 4:
-                showFragment(currentSelected, menu.findItem(R.id.nav_geosearch));
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_geosearch);
                 break;
-            default:
-                showFragment(currentSelected, menu.findItem(R.id.nav_home));
         }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.main_content, fragment)
+                .commit();
+
+        itemMenu.setChecked(true);
+        // Set fragment title
+        setTitle(itemMenu.getTitle().toString());
     }
 
     /**
@@ -210,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
         User user = new User(sharedPreferences.getString("email", null),
                 sharedPreferences.getString("firstname", null),
-                sharedPreferences.getString("lastname", null),
+                sharedPreferences.getString("lastname", null), null,
                 sharedPreferences.getString("apikey", null),
                 sharedPreferences.getString("sex", null),
                 sharedPreferences.getString("age", null),
@@ -326,7 +351,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param position sliding menu item position
      */
     private void showFragment(int position, MenuItem item) {
-        Fragment fragment = null;
 
         switch (position){
             case 0:
@@ -360,6 +384,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * String 64 base enconded to Bitmap
+     * @param encodedString
+     * @return bitmap (from given string)
+     */
+    public Bitmap stringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }catch(Exception e){
+            e.getMessage();
+            return null;
+        }
+    }
+
+    /**
      * Save a persistent setting using SharedPreferences
      * @param context application context
      * @param settingName key name
@@ -388,6 +428,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Close user session deleting preferences in session file
      */
     private void closeSession(){
+        // Check if facebook session is open
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if(accessToken != null){
+            // Facebook log out programmatically
+            LoginManager.getInstance().logOut();
+        }
+
         // Delete saved user session
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();

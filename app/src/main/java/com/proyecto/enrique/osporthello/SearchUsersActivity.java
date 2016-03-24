@@ -48,7 +48,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         //
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
         usersList = new ArrayList<>();
-        friendsList = new ArrayList<>();
+        friendsList = FriendsFragment.FRIENDS_LIST;
         context = this;
 
         // Obtain Recycler
@@ -114,47 +114,17 @@ public class SearchUsersActivity extends AppCompatActivity {
                 try {
                     if (response.getString("code").equals("true")) {
                         usersList = AnalyzeJSON.analyzeAllUsers(response);
-                        getMyFriends(usersList, progressDialog);
+                        // Instance adapter
+                        adapter = new UsersAdapter(context, usersList, friendsList);
+                        recycler.setAdapter(adapter);
                     }
+                    progressDialog.cancel(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     progressDialog.cancel(true);
                 }
             }
         });
-    }
-
-    /**
-     * Obtains list of my friends
-     * @return
-     */
-    private ArrayList<User> getMyFriends(final ArrayList<User> users, final IndeterminateDialogTask dialog){
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
-        User user = MainActivity.USER_ME;
-        client.get(MainActivity.HOST + "api/friends/"+user.getEmail()+"/"+user.getApiKey(), new JsonHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                Log.e("FRIENDS", "ERROR!!");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if(!response.getString("data").equals("null"))
-                        friendsList = AnalyzeJSON.analyzeAllUsers(response);
-                    // Instance adapter
-                    adapter = new UsersAdapter(context, users, friendsList);
-                    recycler.setAdapter(adapter);
-                    dialog.cancel(true);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    dialog.cancel(true);
-                }
-            }
-        });
-
-        return null;
     }
 
     @Override

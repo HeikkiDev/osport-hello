@@ -3,8 +3,11 @@ package com.proyecto.enrique.osporthello;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+import java.io.Serializable;
+
+class MyFragmentPagerAdapter extends FragmentStatePagerAdapter implements Serializable{
     final int PAGE_COUNT = 2;
     private String tabTitles[] = null;
 

@@ -77,10 +77,20 @@ public class User implements Serializable {
         this.city = city;
     }
 
-    public User(String email, String first, String last, String apiKey, String sex, String age, String city, String weight, String height){
+    public User(String email, String first, String last, String img, String city, String sex){
         this.email = email;
         this.firstname = first;
         this.lastname = last;
+        this.image = img;
+        this.city = city;
+        this.sex = sex;
+    }
+
+    public User(String email, String first, String last, String image, String apiKey, String sex, String age, String city, String weight, String height){
+        this.email = email;
+        this.firstname = first;
+        this.lastname = last;
+        this.image = image;
         this.apiKey = apiKey;
         this.sex = sex;
         this.age = age;

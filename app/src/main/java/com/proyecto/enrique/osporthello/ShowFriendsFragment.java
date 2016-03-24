@@ -28,7 +28,7 @@ public class ShowFriendsFragment extends Fragment {
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
-    private ArrayList<User> friendsList = new ArrayList<>();
+    //private ArrayList<User> friendsList = new ArrayList<>();
 
     public ShowFriendsFragment(){
         // Required empty constructor
@@ -55,35 +55,9 @@ public class ShowFriendsFragment extends Fragment {
      * Obtains list of my friends
      * @return
      */
-    private ArrayList<User> getMyFriends(){
-        final IndeterminateDialogTask dialog = new IndeterminateDialogTask(getActivity(), "Searching...");
-        dialog.execute();
-
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
-        User user = MainActivity.USER_ME;
-        client.get(MainActivity.HOST + "api/friends/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                Log.e("FRIENDS", "ERROR!!");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (!response.getString("data").equals("null"))
-                        friendsList = AnalyzeJSON.analyzeAllUsers(response);
-                    // Instance adapter
-                    adapter = new FriendsAdapter(context, friendsList);
-                    recycler.setAdapter(adapter);
-                    dialog.cancel(true);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    dialog.cancel(true);
-                }
-            }
-        });
-
-        return null;
+    private void getMyFriends(){
+        // Instance adapter
+        adapter = new FriendsAdapter(context, FriendsFragment.FRIENDS_LIST);
+        recycler.setAdapter(adapter);
     }
 }

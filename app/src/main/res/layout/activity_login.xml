@@ -26,12 +26,11 @@
         android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:id="@+id/imageView"
         android:src="@drawable/ic_profile"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.3" />
+        android:layout_gravity="center_horizontal" />
 
         <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_email"
@@ -70,11 +69,18 @@
         android:textSize="18dp"
         android:background="@color/primaryDarkColor" />
 
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp" />
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
             android:weightSum="1">
             <View
@@ -110,7 +116,7 @@
             android:textAllCaps="false"
             android:textSize="18dp"
             android:background="@color/primaryColor"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 </LinearLayout>
