@@ -24,7 +24,6 @@ import cz.msebera.android.httpclient.Header;
 
 public class ShowFriendsFragment extends Fragment {
 
-    private Context context;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
@@ -57,7 +56,7 @@ public class ShowFriendsFragment extends Fragment {
      */
     private void getMyFriends(){
         // Instance adapter
-        adapter = new FriendsAdapter(context, FriendsFragment.FRIENDS_LIST);
+        adapter = new FriendsAdapter(FriendsFragment.FRIENDS_LIST);
         recycler.setAdapter(adapter);
     }
 }

@@ -54,4 +54,5 @@
 
     <!-- User Profile Activity -->
     <string name="title_activity_search_users">Search users</string>
+    <string name="title_activity_chat">ChatActivity</string>
 </resources>

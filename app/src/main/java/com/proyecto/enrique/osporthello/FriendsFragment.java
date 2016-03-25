@@ -1,5 +1,6 @@
 package com.proyecto.enrique.osporthello;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -35,6 +36,7 @@ public class FriendsFragment extends Fragment {
     MyFragmentPagerAdapter pagerAdapter;
 
     private static int CURRENT_TAB = 0;
+    private static int SEARCH_CODE = 1;
     public static ArrayList<User> FRIENDS_LIST = new ArrayList<>();
 
     public FriendsFragment(){
@@ -102,11 +104,21 @@ public class FriendsFragment extends Fragment {
 
         if (id == R.id.toolbar_search) {
             Intent intent = new Intent(getContext(), SearchUsersActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, SEARCH_CODE);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SEARCH_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                getMyFriends(); // Update friends list
+            }
+        }
     }
 
     private void getMyFriends(){

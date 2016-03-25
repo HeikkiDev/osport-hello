@@ -19,12 +19,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by enrique on 20/03/16.
  */
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
-    private Context context;
     private ArrayList<User> items;
 
     // Constructor
-    public FriendsAdapter(Context context, ArrayList<User> friends) {
-        this.context = context;
+    public FriendsAdapter(ArrayList<User> friends) {
         this.items = friends;
     }
 

@@ -30,12 +30,13 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchUsersActivity extends AppCompatActivity {
 
-    private Context context;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
     private ArrayList<User> usersList = null;
     private ArrayList<User> friendsList = null;
+
+    public static boolean FRIENDS_CHANGE = false;
 
     EditText etxSearchUsers;
 
@@ -49,7 +50,6 @@ public class SearchUsersActivity extends AppCompatActivity {
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
         usersList = new ArrayList<>();
         friendsList = FriendsFragment.FRIENDS_LIST;
-        context = this;
 
         // Obtain Recycler
         recycler = (RecyclerView) findViewById(R.id.recyclerViewSearch);
@@ -84,7 +84,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
         friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
         // Instance adapter
-        adapter = new UsersAdapter(context, usersList, friendsList);
+        adapter = new UsersAdapter(usersList, friendsList);
         recycler.setAdapter(adapter);
     }
 
@@ -115,7 +115,7 @@ public class SearchUsersActivity extends AppCompatActivity {
                     if (response.getString("code").equals("true")) {
                         usersList = AnalyzeJSON.analyzeAllUsers(response);
                         // Instance adapter
-                        adapter = new UsersAdapter(context, usersList, friendsList);
+                        adapter = new UsersAdapter(usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
                     progressDialog.cancel(true);
@@ -132,9 +132,18 @@ public class SearchUsersActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                if(FRIENDS_CHANGE == true)
+                    setResult(RESULT_OK);
                 finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(FRIENDS_CHANGE == true)
+            setResult(RESULT_OK);
     }
 }

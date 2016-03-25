@@ -67,4 +67,10 @@ public class AnalyzeJSON {
 
         return usersList;
     }
+
+    public static ArrayList<Chat> analyzeChats(JSONObject jsonObject) throws JSONException{
+        ArrayList<Chat> chatsList = new ArrayList<>();
+
+        return chatsList;
+    }
 }

@@ -28,13 +28,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by enrique on 20/03/16.
  */
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
-    private Context context;
     private ArrayList<User> items;
     private ArrayList<User> myFriends;
 
     // Constructor
-    public UsersAdapter(Context context, ArrayList<User> items, ArrayList<User> friends) {
-        this.context = context;
+    public UsersAdapter(ArrayList<User> items, ArrayList<User> friends) {
         this.items = items;
         this.myFriends = friends;
     }
@@ -86,6 +84,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 else{
                     deleteFriend(position, btn);
                 }
+                SearchUsersActivity.FRIENDS_CHANGE = true;
             }
         });
 

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.firebase.client.Firebase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NavigationView navigationView;
 
     public static User USER_ME;
+    public static Firebase FIREBASE;
     private static final int LOGIN_CODE = 1;
     private static final int EDIT_CODE = 2;
     public static final String HOST = "https://enriqueramos.info/osporthello/";
@@ -51,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
+        //
+        Firebase.setAndroidContext(this);
+        FIREBASE = new Firebase("https://osporthello.firebaseio.com/");
         //
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
