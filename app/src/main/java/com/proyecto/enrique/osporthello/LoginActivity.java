@@ -146,11 +146,17 @@ public class LoginActivity extends AppCompatActivity {
                             final String firstname = me.optString("first_name");
                             final String lastname = me.optString("last_name");
                             final String email = me.optString("email");
+                            if(email.equals("")){
+                                onLoginFailed();
+                                return;
+                            }
                             final String genre = me.optString("genre");
                             String location = null;
                             try {
                                 String urlImage = me.getJSONObject("picture").getJSONObject("data").getString("url");
-                                location = me.getJSONObject("location").getString("name").split(",")[0];
+                                try {
+                                    location = me.getJSONObject("location").getString("name").split(",")[0];
+                                }  catch (Exception e){}
                                 final String finalLocation = location;
                                 Picasso.with(getApplicationContext())
                                         .load(urlImage)
@@ -202,6 +208,8 @@ public class LoginActivity extends AppCompatActivity {
         String stringImage = "";
         if(bitmap != null)
             stringImage = getStringImage(bitmap);
+        if(location == null)
+            location = "null";
 
         JSONObject jsonParams = new JSONObject();
         try {
