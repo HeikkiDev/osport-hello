@@ -7,8 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 public class ActivitiesFriendsFragment extends Fragment {
+
+    private ProgressBar progressBar;
 
     public ActivitiesFriendsFragment(){
         // Required empty constructor
@@ -18,6 +21,11 @@ public class ActivitiesFriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activities_friends, container, false);
+        progressBar = (ProgressBar)view.findViewById(R.id.progressActivitiesFriends);
+        progressBar.setVisibility(View.GONE);
+
+        if(savedInstanceState == null)
+            progressBar.setVisibility(View.VISIBLE);
 
         return view;
     }

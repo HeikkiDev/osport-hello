@@ -38,17 +38,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         String datetime = "";
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        if(items.get(i).getDate().equals(formatter.format(new Date())))
+        if (items.get(i).getDate().equals(formatter.format(new Date())))
             datetime = items.get(i).getHour();
         else
-            datetime = items.get(i).getDate()+" "+items.get(i).getHour();
+            datetime = items.get(i).getDate() + " " + items.get(i).getHour();
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        if(author.equals(MainActivity.USER_ME.getEmail()))
+        if (author.equals(MainActivity.USER_ME.getEmail())) {
             params.gravity = Gravity.RIGHT;
+            viewHolder.cardView.setCardBackgroundColor(viewHolder.cardView.getContext().getResources().getColor(android.R.color.white));
+        }
         else{
             params.gravity = Gravity.LEFT;
-            viewHolder.cardView.setBackgroundResource(R.color.primaryDarkColor);
+            viewHolder.cardView.setCardBackgroundColor(viewHolder.cardView.getContext().getResources().getColor(R.color.primaryColor));
         }
         viewHolder.cardView.setLayoutParams(params);
         viewHolder.message.setText(message);

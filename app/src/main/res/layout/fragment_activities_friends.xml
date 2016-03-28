@@ -4,7 +4,13 @@
     android:layout_height="match_parent"
     tools:context="com.proyecto.enrique.osporthello.ActivitiesFriendsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ProgressBar
+        android:id="@+id/progressActivitiesFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_gravity="center_horizontal" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

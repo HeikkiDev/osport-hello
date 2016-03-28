@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     tools:context="com.proyecto.enrique.osporthello.ChatFragment">
 
+    <ProgressBar
+        android:id="@+id/progressChats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_gravity="center_horizontal" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewChats"
         android:layout_width="match_parent"

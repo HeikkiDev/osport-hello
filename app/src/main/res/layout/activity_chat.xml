@@ -23,7 +23,6 @@
                 android:id="@+id/user_image"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_margin="10dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_account_circle_black_48dp"
                 app:border_color="@android:color/white"
@@ -37,7 +36,8 @@
                 android:text="Large Text"
                 android:id="@+id/name"
                 android:textColor="@android:color/black"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="10dp"/>
 
 
         </android.support.v7.widget.Toolbar>
@@ -52,6 +52,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_search_category_default"/>
+        android:src="@drawable/send"/>
 
 </android.support.design.widget.CoordinatorLayout>

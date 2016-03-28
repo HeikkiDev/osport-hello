@@ -71,6 +71,19 @@ public class AnalyzeJSON {
     public static ArrayList<Chat> analyzeChats(JSONObject jsonObject) throws JSONException{
         ArrayList<Chat> chatsList = new ArrayList<>();
 
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            int id = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Chat_id");
+            String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("Chat_receiver");
+            String username = jsonObject.getJSONArray("data").getJSONObject(i).getString("Username");
+            String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
+
+            if(image.equals("null"))
+                image = null;
+
+            Chat chat = new Chat(id, email, username, image);
+            chatsList.add(chat);
+        }
+
         return chatsList;
     }
 }

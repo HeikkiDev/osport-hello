@@ -30,6 +30,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchUsersActivity extends AppCompatActivity {
 
+    private Context context;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
@@ -47,6 +48,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //
+        this.context = this;
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
         usersList = new ArrayList<>();
         friendsList = FriendsFragment.FRIENDS_LIST;
@@ -84,7 +86,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
         friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
         // Instance adapter
-        adapter = new UsersAdapter(usersList, friendsList);
+        adapter = new UsersAdapter(context, usersList, friendsList);
         recycler.setAdapter(adapter);
     }
 
@@ -115,7 +117,7 @@ public class SearchUsersActivity extends AppCompatActivity {
                     if (response.getString("code").equals("true")) {
                         usersList = AnalyzeJSON.analyzeAllUsers(response);
                         // Instance adapter
-                        adapter = new UsersAdapter(usersList, friendsList);
+                        adapter = new UsersAdapter(context, usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
                     progressDialog.cancel(true);

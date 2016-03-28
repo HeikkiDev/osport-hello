@@ -1,6 +1,7 @@
 package com.proyecto.enrique.osporthello;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -28,11 +29,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by enrique on 20/03/16.
  */
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
+    private Context context;
     private ArrayList<User> items;
     private ArrayList<User> myFriends;
 
     // Constructor
-    public UsersAdapter(ArrayList<User> items, ArrayList<User> friends) {
+    public UsersAdapter(Context context, ArrayList<User> items, ArrayList<User> friends) {
+        this.context = context;
         this.items = items;
         this.myFriends = friends;
     }
@@ -49,7 +52,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     @Override
-    public void onBindViewHolder(UserViewHolder viewHolder, int i) {
+    public void onBindViewHolder(UserViewHolder viewHolder, final int i) {
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
@@ -91,7 +94,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         viewHolder.btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: OPEN ACTIVITY CHAT WITH SELECTED USER
+                User user = items.get(i);
+                // Create and/or open a Chat with a User
+                newChat(user);
             }
         });
     }
@@ -100,7 +105,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
         client.setTimeout(10000);
         User user = MainActivity.USER_ME;
-        client.post(MainActivity.HOST + "api/friends/" + user.getEmail() + "/"+items.get(i).getEmail()+"/" + user.getApiKey(), new JsonHttpResponseHandler() {
+        client.post(MainActivity.HOST + "api/friends/" + user.getEmail() + "/" + items.get(i).getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("FRIENDS", "ERROR!!");
@@ -112,7 +117,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                     if (response.getString("code").equals("true")) {
                         btn.setText("Unfollow");
                         btn.setBackgroundResource(R.color.cancelColor);
-                        btn.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
+                        btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -138,6 +143,39 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setText("Follow");
                         btn.setBackgroundResource(R.color.primaryColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add_white_24dp, 0, 0, 0);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void newChat(final User user) {
+        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
+        client.setTimeout(6000);
+        client.post(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                //
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getString("code").equals("true")) {
+                        int chat_id = Integer.valueOf(response.getString("data"));
+
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() +" "+ user.getLastname(), user.getImage()));
+                        context.startActivity(intent);
+
+                        //if(!response.getString("message").equals("ALREADY EXISTS")){
+                            // Insert in local database
+                            LocalDataBase dataBase = new LocalDataBase(context);
+                            long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname()+" "+user.getLastname(), user.getImage());
+                            dataBase.Close();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -1,9 +1,11 @@
 package com.proyecto.enrique.osporthello;
 
+import java.io.Serializable;
+
 /**
  * Created by enrique on 10/03/16.
  */
-public class Message {
+public class Message implements Serializable{
 
     public String getAuthor() {
         return author;
@@ -44,5 +46,12 @@ public class Message {
 
     public Message(){
 
+    }
+
+    public Message(String author, String date, String hour, String text){
+        this.author = author;
+        this.date = date;
+        this.hour = hour;
+        this.text = text;
     }
 }

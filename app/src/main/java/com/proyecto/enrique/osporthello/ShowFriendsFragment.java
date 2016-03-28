@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -24,6 +25,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class ShowFriendsFragment extends Fragment {
 
+    private ProgressBar progressBar;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
@@ -37,6 +39,11 @@ public class ShowFriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show_friends, container, false);
+        progressBar = (ProgressBar)view.findViewById(R.id.progressShowFriends);
+        progressBar.setVisibility(View.GONE);
+
+        if(savedInstanceState == null)
+            progressBar.setVisibility(View.VISIBLE);
 
         // Obtain Recycler
         recycler = (RecyclerView) view.findViewById(R.id.recyclerViewFriends);
@@ -56,7 +63,8 @@ public class ShowFriendsFragment extends Fragment {
      */
     private void getMyFriends(){
         // Instance adapter
-        adapter = new FriendsAdapter(FriendsFragment.FRIENDS_LIST);
+        adapter = new FriendsAdapter(getActivity().getApplicationContext(), FriendsFragment.FRIENDS_LIST);
         recycler.setAdapter(adapter);
+        progressBar.setVisibility(View.GONE);
     }
 }

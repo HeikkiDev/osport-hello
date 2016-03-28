@@ -1,8 +1,10 @@
 package com.proyecto.enrique.osporthello;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -11,18 +13,27 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by enrique on 20/03/16.
  */
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
+    private Context context;
     private ArrayList<User> items;
 
     // Constructor
-    public FriendsAdapter(ArrayList<User> friends) {
+    public FriendsAdapter(Context context, ArrayList<User> friends) {
+        this.context = context;
         this.items = friends;
     }
 
@@ -38,10 +49,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     }
 
     @Override
-    public void onBindViewHolder(FriendViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final FriendViewHolder viewHolder, final int i) {
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
-        String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
+        final String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
         viewHolder.image.setImageBitmap(stringToBitMap(items.get(i).getImage()));
         viewHolder.name.setText(items.get(i).getFirstname() + " " + lastname);
         viewHolder.city.setText(city);
@@ -49,7 +60,36 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         viewHolder.btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: OPEN ACTIVITY CHAT WITH SELECTED USER
+                User user = items.get(i);
+                // Create and/or open a Chat with a User
+                newChat(user);
+            }
+        });
+    }
+
+    private void newChat(final User user) {
+        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
+        client.setTimeout(6000);
+        client.post(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                //
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getString("code").equals("true")) {
+                        int chat_id = response.getInt("data");
+
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + user.getLastname(), user.getImage()));
+                        context.startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -78,10 +118,12 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
         public FriendViewHolder(View v) {
             super(v);
+
             image = (CircleImageView) v.findViewById(R.id.user_image);
             name = (TextView) v.findViewById(R.id.name);
             city = (TextView) v.findViewById(R.id.city);
             btnChat = (Button)v.findViewById(R.id.btnChat);
         }
+
     }
 }
