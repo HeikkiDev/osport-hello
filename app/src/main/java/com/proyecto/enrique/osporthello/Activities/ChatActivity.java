@@ -1,15 +1,15 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
+import android.app.NotificationManager;
+import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -20,11 +20,25 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Adapters.MessagesAdapter;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.LocalDataBase;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.Message;
+import com.proyecto.enrique.osporthello.NotificationsService;
+import com.proyecto.enrique.osporthello.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
@@ -60,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // Set user chat info
         toolbarUsername.setText(this.CHAT.getReceiver_name());
-        toolbarImage.setImageBitmap(stringToBitMap(this.CHAT.getReceiver_image()));
+        toolbarImage.setImageBitmap(ImageManager.stringToBitMap(this.CHAT.getReceiver_image()));
 
         // Obtain Recycler
         recycler = (RecyclerView) findViewById(R.id.recyclerViewMessages);
@@ -93,8 +107,20 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        stopService(new Intent(ChatActivity.this, NotificationsService.class));
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(this.CHAT.getId());
+
         // Get messages
         getChatMessages();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        startService(new Intent(ChatActivity.this, NotificationsService.class));
+        this.refChild.removeEventListener(childEventListener);
     }
 
     private void updateMessages(){
@@ -128,7 +154,9 @@ public class ChatActivity extends AppCompatActivity {
         String[] arrEmail = MainActivity.USER_ME.getEmail().split("\\.");
         String myEmail = arrEmail[0] + arrEmail[1];
         // Escribo mis mensajes en mi buffer de escritura, que se identifica con mi email
-        Firebase refChat = MainActivity.FIREBASE.child("messages").child(id).child(myEmail);
+        Firebase.setAndroidContext(this);
+        Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
+        Firebase refChat = firebaseRoot.child("messages").child(id).child(myEmail);
         Message message = new Message();
         message.setAuthor(MainActivity.USER_ME.getEmail());
         message.setDate(date);
@@ -138,6 +166,9 @@ public class ChatActivity extends AppCompatActivity {
 
         dataBase.insertNewMessage(message, Integer.valueOf(id));
         updateMessages();
+
+        ApiClient.postNewMessage("api/chats/newmessage/" + this.CHAT.getId() + "/" + MainActivity.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email(),
+                new JsonHttpResponseHandler());
     }
 
     private Firebase getChatMessages() {
@@ -146,7 +177,9 @@ public class ChatActivity extends AppCompatActivity {
         String[] arrEmail = this.CHAT.getReceiver_email().split("\\.");
         String receiverEmail = arrEmail[0] + arrEmail[1];
         // Leo de mi zona del chat, que es mi buffer de lectura y el de escritura de mi interlocutor
-        final Firebase refChat = MainActivity.FIREBASE.child("messages").child(id).child(receiverEmail);
+        Firebase.setAndroidContext(this);
+        Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
+        final Firebase refChat = firebaseRoot.child("messages").child(id).child(receiverEmail);
 
         // Descarga UNA VEZ la lista completa de mensajes del chat
         refChat.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -211,26 +244,24 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * String 64 base enconded to Bitmap
-     * @param encodedString
-     * @return bitmap (from given string)
-     */
-    public Bitmap stringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }catch(Exception e){
-            e.getMessage();
-            return null;
-        }
-    }
+    private void deletePairChat() {
+        ApiClient.deletePairChat("api/chats/pair/" + MainActivity.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email(), new JsonHttpResponseHandler() {
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        this.refChild.removeEventListener(childEventListener);
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("ERROR", "Error!");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getString("code").equals("true")) {
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -251,9 +282,18 @@ public class ChatActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                if(messagesList.isEmpty())
+                    deletePairChat();
                 finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(messagesList.isEmpty())
+            deletePairChat();
     }
 }

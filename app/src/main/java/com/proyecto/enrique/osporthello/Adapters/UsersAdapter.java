@@ -1,11 +1,8 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +10,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.SyncHttpClient;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.Activities.ChatActivity;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.LocalDataBase;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
+import com.proyecto.enrique.osporthello.Activities.SearchUsersActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +60,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
-        viewHolder.image.setImageBitmap(stringToBitMap(items.get(i).getImage()));
+        viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
         viewHolder.name.setText(items.get(i).getFirstname()+" "+lastname);
         viewHolder.city.setText(city);
 
@@ -102,10 +106,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     private void makeNewFriend(int i, final Button btn) {
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
         User user = MainActivity.USER_ME;
-        client.post(MainActivity.HOST + "api/friends/" + user.getEmail() + "/" + items.get(i).getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.postNewFriend("api/friends/" + user.getEmail() + "/" + items.get(i).getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("FRIENDS", "ERROR!!");
@@ -127,10 +129,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     private void deleteFriend(int i, final Button btn) {
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
         User user = MainActivity.USER_ME;
-        client.delete(MainActivity.HOST + "api/friends/" + user.getEmail() + "/" + items.get(i).getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.deleteFriend("api/friends/" + user.getEmail() + "/" + items.get(i).getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("FRIENDS", "ERROR!!");
@@ -152,9 +152,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     private void newChat(final User user) {
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(6000);
-        client.post(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.postNewChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 //
@@ -168,36 +166,20 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() +" "+ user.getLastname(), user.getImage()));
+                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage()));
                         context.startActivity(intent);
 
                         //if(!response.getString("message").equals("ALREADY EXISTS")){
-                            // Insert in local database
-                            LocalDataBase dataBase = new LocalDataBase(context);
-                            long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname()+" "+user.getLastname(), user.getImage());
-                            dataBase.Close();
+                        // Insert in local database
+                        LocalDataBase dataBase = new LocalDataBase(context);
+                        long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage());
+                        dataBase.Close();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-    }
-
-    /**
-     * String 64 base enconded to Bitmap
-     * @param encodedString
-     * @return bitmap (from given string)
-     */
-    public Bitmap stringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }catch(Exception e){
-            e.getMessage();
-            return null;
-        }
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {

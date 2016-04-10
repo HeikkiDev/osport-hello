@@ -1,25 +1,24 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.SyncHttpClient;
+import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
+import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,10 +101,8 @@ public class SearchUsersActivity extends AppCompatActivity {
         final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(SearchUsersActivity.this, "Searching...");
         progressDialog.execute();
 
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
         User user = MainActivity.USER_ME;
-        client.get(MainActivity.HOST + "api/users/search/" + user.getCity() + "/" + name + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 progressDialog.cancel(true);

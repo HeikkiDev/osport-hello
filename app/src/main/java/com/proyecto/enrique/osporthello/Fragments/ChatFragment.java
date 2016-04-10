@@ -1,7 +1,7 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,8 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.proyecto.enrique.osporthello.Adapters.ChatsAdapter;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.LocalDataBase;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.NotificationsService;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +67,8 @@ public class ChatFragment extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
             getMyChats();
         }
+        else
+            updateFromLocalDB();
 
         return view;
     }
@@ -67,8 +77,8 @@ public class ChatFragment extends Fragment {
         LocalDataBase dataBase = new LocalDataBase(context);
         Cursor cursor = dataBase.getMyChats(MainActivity.USER_ME.getEmail());
 
+        listChats.clear();
         if (cursor.moveToFirst()) {
-            listChats.clear();
             do {
                 Chat chat = new Chat();
                 chat.setId(cursor.getInt(cursor.getColumnIndex(LocalDataBase.CHAT_ID)));
@@ -77,11 +87,12 @@ public class ChatFragment extends Fragment {
                 chat.setReceiver_image(cursor.getString(cursor.getColumnIndex(LocalDataBase.CHAT_IMAGE)));
                 listChats.add(chat);
             } while (cursor.moveToNext());
-
-            progressBar.setVisibility(View.GONE);
-            adapter = new ChatsAdapter(context, listChats);
-            recycler.setAdapter(adapter);
         }
+        dataBase.Close();
+
+        progressBar.setVisibility(View.GONE);
+        adapter = new ChatsAdapter(context, listChats);
+        recycler.setAdapter(adapter);
     }
 
     @Override
@@ -105,10 +116,8 @@ public class ChatFragment extends Fragment {
 
     private void getMyChats() {
         try {
-            AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-            client.setTimeout(10000);
             User user = MainActivity.USER_ME;
-            client.get(MainActivity.HOST + "api/chats/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+            ApiClient.getUserChats("api/chats/" + user.getEmail(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("CHATS", "ERROR!!");
@@ -117,12 +126,17 @@ public class ChatFragment extends Fragment {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
+                        LocalDataBase dataBase = new LocalDataBase(context);
                         if (!response.getString("data").equals("null")) {
                             listChats = AnalyzeJSON.analyzeChats(response);
-                            LocalDataBase dataBase = new LocalDataBase(context);
                             dataBase.insertChatList(listChats);
-                            updateFromLocalDB();
+                        } else {
+                            listChats.clear();
+                            dataBase.insertChatList(listChats);
                         }
+                        dataBase.Close();
+
+                        updateFromLocalDB();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

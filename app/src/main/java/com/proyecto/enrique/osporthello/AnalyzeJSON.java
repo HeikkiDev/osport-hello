@@ -1,5 +1,9 @@
 package com.proyecto.enrique.osporthello;
 
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.User;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

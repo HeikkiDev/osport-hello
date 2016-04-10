@@ -1,16 +1,14 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,13 +26,17 @@ import com.facebook.login.widget.LoginButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -52,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private CoordinatorLayout coordinatorLayout;
 
-    static AsyncHttpClient client;
     CallbackManager callbackManager;
 
     private static final int CREATE_ACCOUNT = 2;
@@ -77,7 +78,10 @@ public class LoginActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        FacebookLogin();
+        try {
+            FacebookLogin();
+        }
+        catch (Exception e){onLoginFailed();}
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                btnFacebookLogin.setVisibility(View.INVISIBLE);
                 // Info about Facebook user profile
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
@@ -141,12 +146,11 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.getError() != null) {
                             // handle error
                         } else {
-                            btnFacebookLogin.setVisibility(View.INVISIBLE);
                             String id = me.optString("id");
                             final String firstname = me.optString("first_name");
                             final String lastname = me.optString("last_name");
                             final String email = me.optString("email");
-                            if(email.equals("")){
+                            if (email.equals("")) {
                                 onLoginFailed();
                                 return;
                             }
@@ -156,25 +160,23 @@ public class LoginActivity extends AppCompatActivity {
                                 String urlImage = me.getJSONObject("picture").getJSONObject("data").getString("url");
                                 try {
                                     location = me.getJSONObject("location").getString("name").split(",")[0];
-                                }  catch (Exception e){}
+                                } catch (Exception e) {
+                                }
                                 final String finalLocation = location;
-                                Picasso.with(getApplicationContext())
-                                        .load(urlImage)
-                                        .into(new Target() {
-                                            @Override
-                                            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                                                checkFacebookUser(email, firstname, lastname, genre, finalLocation, bitmap);
-                                            }
+                                // Download profile image
+                                AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
+                                client.get(urlImage, new TextHttpResponseHandler() {
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                        checkFacebookUser(email, firstname, lastname, genre, finalLocation, null);
+                                    }
 
-                                            @Override
-                                            public void onBitmapFailed(Drawable errorDrawable) {
-                                                checkFacebookUser(email, firstname, lastname, genre, finalLocation, null);
-                                            }
-
-                                            @Override
-                                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                                            }
-                                        });
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                                        Bitmap bitmap = ImageManager.stringToBitMap(responseString);
+                                        checkFacebookUser(email, firstname, lastname, genre, finalLocation, bitmap);
+                                    }
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 checkFacebookUser(email, firstname, lastname, genre, location, null);
@@ -207,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String stringImage = "";
         if(bitmap != null)
-            stringImage = getStringImage(bitmap);
+            stringImage = ImageManager.getStringImage(bitmap);
         if(location == null)
             location = "null";
 
@@ -224,9 +226,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         RequestParams params = new RequestParams("user", jsonParams.toString());
 
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(6000);
-        client.post(MainActivity.HOST + "api/users/facebook", params, new JsonHttpResponseHandler() {
+        ApiClient.postFacebookLogin("api/users/facebook", params, new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -252,6 +252,7 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     progressDialog.cancel(true);
+                    onLoginFailed();
                 }
             }
         });
@@ -274,9 +275,8 @@ public class LoginActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         params.put("email", email);
         params.put("password", password);
-        client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(10000);
-        client.get(MainActivity.HOST + "api/users/login", params, new JsonHttpResponseHandler() {
+
+        ApiClient.getUserLogin("api/users/login", params, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 progressDialog.cancel(true);
@@ -286,11 +286,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-                    if(response.getString("code").equals("true") && response.getString("message").equals("Login completed")){
+                    if (response.getString("code").equals("true") && response.getString("message").equals("Login completed")) {
                         User user = AnalyzeJSON.analyzeUser(response);
                         onLoginSuccess(user);
-                    }
-                    else
+                    } else
                         onLoginFailed();
                     progressDialog.cancel(true);
                 } catch (JSONException e) {
@@ -322,14 +321,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
-    }
-
-    private String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        return encodedImage;
     }
 
     public void onLoginSuccess(User user) {

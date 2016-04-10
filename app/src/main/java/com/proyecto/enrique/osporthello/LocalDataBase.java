@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.Message;
+
 import java.util.ArrayList;
 
 /**
@@ -82,7 +86,7 @@ public class LocalDataBase {
     // Insert chat list
     public void insertChatList(ArrayList<Chat> chatList){
         // Delete all table
-        miDB.rawQuery("delete from "+TABLE_CHAT,new String[]{});
+        long deleted = miDB.delete(TABLE_CHAT, null, new String[]{});
         // Populate table
         for (Chat chat:chatList) {
             ContentValues values = new ContentValues();
@@ -98,8 +102,14 @@ public class LocalDataBase {
     // Delete chat
     public int deleteChat(String receiverEmail){
         return miDB.delete(TABLE_CHAT,
-                CHAT_RECEIVER + "=?",
-                new String[]{receiverEmail});
+                CHAT_MYEMAIL +"=? and "+ CHAT_RECEIVER + "=?",
+                new String[]{MainActivity.USER_ME.getEmail(), receiverEmail});
+    }
+
+    // Check if exists chat
+    public boolean existsChatWith(String receiverEmail){
+        Cursor cursor = miDB.rawQuery("select * from "+TABLE_CHAT+" where "+CHAT_MYEMAIL+"=? and "+CHAT_RECEIVER+"=?", new String[]{MainActivity.USER_ME.getEmail(), receiverEmail});
+        return cursor.moveToFirst();
     }
 
     // Get specific chat messages

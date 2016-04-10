@@ -1,24 +1,26 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.Activities.ChatActivity;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.LocalDataBase;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,6 +70,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
                             public void onClick(DialogInterface dialog, int which) {
                                 Chat chat = items.get(viewHolder.getAdapterPosition());
                                 deleteChat(v, chat); // Delete chat in remote database
+                                LocalDataBase dataBase = new LocalDataBase(context);
+                                dataBase.deleteChat(chat.getReceiver_email());
+                                dataBase.Close();
                                 items.remove(viewHolder.getAdapterPosition());
                                 chatsAdapter.notifyDataSetChanged(); // refresh data
                             }
@@ -85,7 +90,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
         String image = items.get(i).getReceiver_image();
 
         viewHolder.name.setText(name);
-        viewHolder.image.setImageBitmap(stringToBitMap(image));
+        viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(image));
         //viewHolder.notification.setVisibility(View.VISIBLE);
     }
 
@@ -95,9 +100,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
     }
 
     private void deleteChat(final View v, final Chat chat) {
-        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-        client.setTimeout(6000);
-        client.delete(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/"+ chat.getReceiver_email() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.deleteChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + chat.getReceiver_email(), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
@@ -108,9 +111,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true")) {
-                        LocalDataBase dataBase = new LocalDataBase(context);
-                        dataBase.deleteChat(chat.getReceiver_email());
-                        dataBase.Close();
                         Snackbar.make(v, "Chat deleted", Snackbar.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
@@ -118,22 +118,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
                 }
             }
         });
-    }
-
-    /**
-     * String 64 base enconded to Bitmap
-     * @param encodedString
-     * @return bitmap (from given string)
-     */
-    public Bitmap stringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }catch(Exception e){
-            e.getMessage();
-            return null;
-        }
     }
 
     static class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

@@ -1,9 +1,8 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -18,6 +17,12 @@ import android.view.ViewGroup;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.proyecto.enrique.osporthello.Adapters.MyFragmentPagerAdapter;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
+import com.proyecto.enrique.osporthello.Activities.SearchUsersActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;

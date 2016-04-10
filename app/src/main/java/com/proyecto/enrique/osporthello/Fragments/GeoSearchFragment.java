@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,19 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by enrique on 16/03/16.
- */
-public class ActivitiesFragment extends Fragment {
+import com.proyecto.enrique.osporthello.R;
 
-    public ActivitiesFragment(){
+public class GeoSearchFragment extends Fragment {
+    public GeoSearchFragment(){
         // Required empty constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_activities, container, false);
+        View view = inflater.inflate(R.layout.fragment_geo_search, container, false);
 
         return view;
     }

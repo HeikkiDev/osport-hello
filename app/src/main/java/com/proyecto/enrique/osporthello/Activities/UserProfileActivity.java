@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,10 +10,8 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,15 +21,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
@@ -51,6 +51,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
     private static Bitmap bitmapImage = null;
     private static final int PICK_IMAGE = 1;
+    private static final int WIDTH = 350;
+    private static final int HEIGHT = 300;
     private static final String[] CITY = new String[] {"Málaga", "Madrid", "Marbella", "Barcelona", "Sevilla"};
 
     @Override
@@ -95,6 +97,14 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 // Show only images, no videos or anything else
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra("crop", "true");
+                intent.putExtra("aspectX", WIDTH);
+                intent.putExtra("aspectY", HEIGHT);
+                intent.putExtra("outputX", WIDTH);
+                intent.putExtra("outputY", HEIGHT);
+                intent.putExtra("scale", true);
+                intent.putExtra("scaleUpIfNeeded", true);
+                intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
                 // Always show the chooser (if there are multiple options available)
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
             }
@@ -157,7 +167,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         if(height != null)
             etxHeight.setText(height);
         try {
-            StorageImage storage = new StorageImage(getApplicationContext());
+            ImageManager storage = new ImageManager(getApplicationContext());
             storage.loadImageFromStorage(user.getEmail() + ".jpg", imageView);
         } catch (Exception e){}
     }
@@ -182,7 +192,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         String height = etxHeight.getText().toString();
 
         if(bitmapImage != null) { // Save the new user image
-            StorageImage storage = new StorageImage(this);
+            ImageManager storage = new ImageManager(this);
             storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".jpg");
         }
         if(!username.isEmpty())

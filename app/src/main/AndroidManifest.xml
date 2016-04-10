@@ -15,7 +15,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,34 +29,40 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".CreateAccountActivity"
+            android:name=".Activities.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
-            android:parentActivityName=".LoginActivity"
+            android:parentActivityName=".Activities.LoginActivity"
             android:theme="@style/AppTheme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.proyecto.enrique.osporthello.MainActivity" />
+                android:value=".Activities.MainActivity" />
         </activity>
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".Activities.UserProfileActivity"
             android:label="@string/title_activity_user_profile"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".SearchUsersActivity"
+            android:name=".Activities.SearchUsersActivity"
             android:label="@string/title_activity_search_users"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".Activities.ChatActivity"
             android:label=""
-            android:theme="@style/AppTheme"></activity>
+            android:parentActivityName=".Activities.MainActivity"
+            android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".NotificationsService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

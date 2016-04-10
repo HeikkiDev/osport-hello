@@ -4,22 +4,20 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
-import com.squareup.picasso.Picasso;
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,11 +28,11 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by enrique on 18/03/16.
  */
-public class StorageImage {
+public class ImageManager {
 
     Context context;
 
-    public StorageImage(Context context){
+    public ImageManager(Context context){
         this.context = context;
     }
 
@@ -75,12 +73,33 @@ public class StorageImage {
         imageTask.execute(bitmap);
     }
 
-    private String getStringImage(Bitmap bmp){
+    /**
+     * Bitmap to String 64 base enconded
+     * @param bmp Bitmap
+     * @return
+     */
+    public static String getStringImage(Bitmap bmp){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
+    }
+
+    /**
+     * String 64 base enconded to Bitmap
+     * @param encodedString
+     * @return bitmap (from given string)
+     */
+    public static Bitmap stringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }catch(Exception e){
+            e.getMessage();
+            return null;
+        }
     }
 
     private class UploadImageTask extends AsyncTask <Bitmap, Void, Void>{

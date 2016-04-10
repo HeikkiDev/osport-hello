@@ -1,26 +1,16 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import cz.msebera.android.httpclient.Header;
+import com.proyecto.enrique.osporthello.Adapters.FriendsAdapter;
+import com.proyecto.enrique.osporthello.R;
 
 
 public class ShowFriendsFragment extends Fragment {

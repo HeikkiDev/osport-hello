@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Models.Message;
+import com.proyecto.enrique.osporthello.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

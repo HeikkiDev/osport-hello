@@ -1,8 +1,6 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
@@ -16,6 +14,8 @@ import android.widget.EditText;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

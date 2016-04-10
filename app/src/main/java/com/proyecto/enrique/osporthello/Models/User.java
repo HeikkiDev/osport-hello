@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Models;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -24,6 +23,15 @@ import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
+import com.proyecto.enrique.osporthello.Fragments.ActivitiesFragment;
+import com.proyecto.enrique.osporthello.Fragments.ChatFragment;
+import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
+import com.proyecto.enrique.osporthello.Fragments.GeoSearchFragment;
+import com.proyecto.enrique.osporthello.Fragments.HomeFragment;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.NotificationsService;
+import com.proyecto.enrique.osporthello.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -98,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Default selection HOME, or currentSelected
             showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
         }
+
+        // Service for listen new chats and messages
+        startService(new Intent(MainActivity.this, NotificationsService.class));
     }
 
     @Override
@@ -130,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 txtUsername.setText(user.getFirstname().toString());
                 txtEmail.setText(user.getEmail().toString());
                 try {
-                    StorageImage storage = new StorageImage(getApplicationContext());
+                    ImageManager storage = new ImageManager(getApplicationContext());
                     storage.saveToInternalStorage(stringToBitMap(user.getImage()), user.getEmail() + ".jpg");
                 } catch (Exception e){}
 
@@ -147,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 View headerLayout = navigationView.getHeaderView(0);
                 CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
                 try {
-                    StorageImage storage = new StorageImage(getApplicationContext());
+                    ImageManager storage = new ImageManager(getApplicationContext());
                     storage.loadImageFromStorage(this.USER_ME.getEmail() + ".jpg", circleImage);
                 } catch (Exception e) {e.printStackTrace();}
             }
@@ -255,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtUsername.setText(sharedPreferences.getString("firstname", null) +" "+ sharedPreferences.getString("lastname", ""));
         txtEmail.setText(sharedPreferences.getString("email", null));
         try {
-            StorageImage storage = new StorageImage(getApplicationContext());
+            ImageManager storage = new ImageManager(getApplicationContext());
             storage.loadImageFromStorage(user.getEmail() + ".jpg", circleImage);
         } catch (Exception e){}
     }
