@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
@@ -105,8 +107,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         });
     }
 
-    private void makeNewFriend(int i, final Button btn) {
-        User user = MainActivity.USER_ME;
+    private void makeNewFriend(final int i, final Button btn) {
+        final User user = MainActivity.USER_ME;
         ApiClient.postNewFriend("api/friends/" + user.getEmail() + "/" + items.get(i).getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
@@ -120,6 +122,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setText("Unfollow");
                         btn.setBackgroundResource(R.color.cancelColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
+
+                        // Notify new friend
+                        String[] arrEmail = items.get(i).getEmail().split("\\.");
+                        String email = arrEmail[0] + arrEmail[1];
+                        Firebase.setAndroidContext(context);
+                        Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
+                        Firebase refChat = firebaseRoot.child("friends").child(email);
+                        refChat.push().setValue(user.getEmail());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

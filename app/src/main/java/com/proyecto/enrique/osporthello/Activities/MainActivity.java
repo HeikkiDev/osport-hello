@@ -30,8 +30,9 @@ import com.proyecto.enrique.osporthello.Fragments.GeoSearchFragment;
 import com.proyecto.enrique.osporthello.Fragments.HomeFragment;
 import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Models.User;
-import com.proyecto.enrique.osporthello.NotificationsService;
+import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.R;
+import com.proyecto.enrique.osporthello.Services.NotificationsService;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -106,9 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Default selection HOME, or currentSelected
             showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
         }
-
-        // Service for listen new chats and messages
-        startService(new Intent(MainActivity.this, NotificationsService.class));
     }
 
     @Override
@@ -147,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 saveUserSession();
                 retrieveUserData();
+
+                // Service for listen new chats and messages
+                startService(new Intent(MainActivity.this, ChatNotificationsService.class));
+                // Service for listen new friends
+                startService(new Intent(MainActivity.this, NotificationsService.class));
             } else
                 Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
         }
@@ -450,6 +453,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Facebook log out programmatically
             LoginManager.getInstance().logOut();
         }
+
+        // Stop services
+        stopService(new Intent(MainActivity.this, ChatNotificationsService.class));
+        stopService(new Intent(MainActivity.this, NotificationsService.class));
 
         // Delete saved user session
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);

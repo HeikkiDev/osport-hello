@@ -1,7 +1,6 @@
 package com.proyecto.enrique.osporthello.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +20,6 @@ import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
-import com.proyecto.enrique.osporthello.NotificationsService;
 import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;

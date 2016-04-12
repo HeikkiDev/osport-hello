@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Services;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,6 +23,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.Message;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -36,7 +39,7 @@ import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
 
-public class NotificationsService extends Service {
+public class ChatNotificationsService extends Service {
 
     private Firebase refChats;
     private Timer timer;
@@ -47,14 +50,14 @@ public class NotificationsService extends Service {
     ArrayList<Chat> listChats;
     ArrayList<ChildEventListener> listFirebaseListeners = new ArrayList<>();
 
-    public NotificationsService() {
+    public ChatNotificationsService() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         listChats = new ArrayList<>();
-        Toast.makeText(getApplicationContext(), "Servicio arrancado!", Toast.LENGTH_SHORT).show();
+
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
@@ -84,7 +87,7 @@ public class NotificationsService extends Service {
 
         listChats = null;
         listFirebaseListeners = null;
-        Toast.makeText(getApplicationContext(), "Servicio parado!", Toast.LENGTH_SHORT).show();
+
         if(timer != null)
             timer.cancel();
     }
@@ -98,7 +101,7 @@ public class NotificationsService extends Service {
             ApiClient.getUserChats("api/chats/" + user.getEmail(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    Log.e("CHATS", "ERROR!!");
+                    Log.e("CHAT_NOTIFICATIONS", "ERROR!!");
                 }
 
                 @Override
@@ -121,7 +124,7 @@ public class NotificationsService extends Service {
             });
         }
         catch (Exception e){
-            Log.e("CHATS", "ERROR!!");
+            Log.e("CHAT_NOTIFICATIONS", "ERROR!!");
         }
     }
 
@@ -152,7 +155,7 @@ public class NotificationsService extends Service {
             }
             listFirebaseListeners.clear();
         }
-        catch (Exception e){Log.e("NOTIFICATIONS", "ERROR!!");}
+        catch (Exception e){Log.e("CHAT_NOTIFICATIONS", "ERROR!!");}
 
         // Add Firebase listeners
         for (Chat chat : localListChats) {

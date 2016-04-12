@@ -102,7 +102,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         progressDialog.execute();
 
         User user = MainActivity.USER_ME;
-        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 progressDialog.cancel(true);

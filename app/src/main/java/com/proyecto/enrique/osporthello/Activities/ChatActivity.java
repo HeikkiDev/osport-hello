@@ -21,14 +21,13 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Adapters.MessagesAdapter;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.Message;
-import com.proyecto.enrique.osporthello.NotificationsService;
+import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
@@ -107,7 +106,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        stopService(new Intent(ChatActivity.this, NotificationsService.class));
+        stopService(new Intent(ChatActivity.this, ChatNotificationsService.class));
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(this.CHAT.getId());
@@ -119,7 +118,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        startService(new Intent(ChatActivity.this, NotificationsService.class));
+        startService(new Intent(ChatActivity.this, ChatNotificationsService.class));
         this.refChild.removeEventListener(childEventListener);
     }
 
