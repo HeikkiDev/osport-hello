@@ -84,14 +84,14 @@ public class LocalDataBase {
     }
 
     // Insert chat list
-    public void insertChatList(ArrayList<Chat> chatList){
+    public void insertChatList(ArrayList<Chat> chatList, String userEmail){
         // Delete all table
         long deleted = miDB.delete(TABLE_CHAT, null, new String[]{});
         // Populate table
         for (Chat chat:chatList) {
             ContentValues values = new ContentValues();
             values.put(CHAT_ID, chat.getId());
-            values.put(CHAT_MYEMAIL, MainActivity.USER_ME.getEmail());
+            values.put(CHAT_MYEMAIL, userEmail);
             values.put(CHAT_RECEIVER, chat.getReceiver_email());
             values.put(CHAT_NAME, chat.getReceiver_name());
             values.put(CHAT_IMAGE, chat.getReceiver_image());

@@ -40,7 +40,8 @@ public class ApiClient {
 
     public static void getUserChats(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
-        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+        // This method is called in a service, so can't access to MainActivity.USER_ME.getApiKey()
+        client.get(HOST + url, responseHandler);
     }
 
     public static void postNewChat(String url, JsonHttpResponseHandler responseHandler){

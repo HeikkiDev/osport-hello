@@ -32,7 +32,7 @@
                 android:background="@color/primaryColor"
                 android:src="@drawable/ic_account_circle_black_48dp"
                 android:fitsSystemWindows="true"
-                android:scaleType="centerInside"
+                android:scaleType="fitCenter"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar

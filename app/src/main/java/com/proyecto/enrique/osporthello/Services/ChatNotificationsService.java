@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,9 +42,13 @@ import cz.msebera.android.httpclient.Header;
 
 public class ChatNotificationsService extends Service {
 
+    private static final String SESSION_FILE = "my_session";
+
     private Firebase refChats;
     private Timer timer;
     private TimerTask timerTask;
+
+    private static User USER_ME;
 
     //private int idNotification = 0;
     private Handler mHandler = new Handler();
@@ -56,6 +61,21 @@ public class ChatNotificationsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Firebase.setAndroidContext(this);
+        Toast.makeText(getApplicationContext(), "Servicio CHAT arrancado!", Toast.LENGTH_SHORT).show();
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        User user = new User(sharedPreferences.getString("email", null),
+                sharedPreferences.getString("firstname", null),
+                sharedPreferences.getString("lastname", null), null,
+                sharedPreferences.getString("apikey", null),
+                sharedPreferences.getString("sex", null),
+                sharedPreferences.getString("age", null),
+                sharedPreferences.getString("city", null),
+                sharedPreferences.getString("weight", null),
+                sharedPreferences.getString("height", null));
+        this.USER_ME = user;
+
         listChats = new ArrayList<>();
 
         timer = new Timer();
@@ -80,6 +100,7 @@ public class ChatNotificationsService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Toast.makeText(getApplicationContext(), "Servicio CHAT parado!", Toast.LENGTH_SHORT).show();
 
         for (ChildEventListener listener : listFirebaseListeners) {
             this.refChats.removeEventListener(listener);
@@ -97,11 +118,11 @@ public class ChatNotificationsService extends Service {
      */
     private void checkUserChats() {
         try {
-            User user = MainActivity.USER_ME;
-            ApiClient.getUserChats("api/chats/" + user.getEmail(), new JsonHttpResponseHandler() {
+            final User user = this.USER_ME;
+            ApiClient.getUserChats("api/chats/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    Log.e("CHAT_NOTIFICATIONS", "ERROR!!");
+                    Log.e("CHAT_NOTIFICATIONS", "ERROR 1!!");
                 }
 
                 @Override
@@ -110,10 +131,10 @@ public class ChatNotificationsService extends Service {
                         LocalDataBase dataBase = new LocalDataBase(getApplicationContext());
                         if (!response.getString("data").equals("null")) {
                             listChats = AnalyzeJSON.analyzeChats(response);
-                            dataBase.insertChatList(listChats);
+                            dataBase.insertChatList(listChats, user.getEmail());
                         } else {
                             listChats.clear();
-                            dataBase.insertChatList(listChats);
+                            dataBase.insertChatList(listChats, user.getEmail());
                         }
 
                         addChatsListener();
@@ -124,7 +145,7 @@ public class ChatNotificationsService extends Service {
             });
         }
         catch (Exception e){
-            Log.e("CHAT_NOTIFICATIONS", "ERROR!!");
+            Log.e("CHAT_NOTIFICATIONS", "ERROR 2!!"+e.getMessage());
         }
     }
 
@@ -133,7 +154,7 @@ public class ChatNotificationsService extends Service {
      */
     private void addChatsListener() {
         LocalDataBase dataBase = new LocalDataBase(getApplicationContext());
-        Cursor cursor = dataBase.getMyChats(MainActivity.USER_ME.getEmail());
+        Cursor cursor = dataBase.getMyChats(this.USER_ME.getEmail());
         ArrayList<Chat> localListChats = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
@@ -155,7 +176,9 @@ public class ChatNotificationsService extends Service {
             }
             listFirebaseListeners.clear();
         }
-        catch (Exception e){Log.e("CHAT_NOTIFICATIONS", "ERROR!!");}
+        catch (Exception e){
+            Log.e("CHAT_NOTIFICATIONS", "ERROR 3!!");
+        }
 
         // Add Firebase listeners
         for (Chat chat : localListChats) {
@@ -173,7 +196,8 @@ public class ChatNotificationsService extends Service {
         String[] arrEmail = chat.getReceiver_email().split("\\.");
         String receiverEmail = arrEmail[0] + arrEmail[1];
         // Leo de mi zona del chat, que es mi buffer de lectura y el de escritura de mi interlocutor
-        refChats = MainActivity.FIREBASE.child("messages").child(id).child(receiverEmail);
+        Firebase firebase = new Firebase("https://osporthello.firebaseio.com/");
+        refChats = firebase.child("messages").child(id).child(receiverEmail);
 
         ChildEventListener childEventListener = refChats.addChildEventListener(new ChildEventListener() {
             @Override

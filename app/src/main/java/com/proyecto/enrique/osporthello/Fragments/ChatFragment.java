@@ -114,8 +114,8 @@ public class ChatFragment extends Fragment {
 
     private void getMyChats() {
         try {
-            User user = MainActivity.USER_ME;
-            ApiClient.getUserChats("api/chats/" + user.getEmail(), new JsonHttpResponseHandler() {
+            final User user = MainActivity.USER_ME;
+            ApiClient.getUserChats("api/chats/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("CHATS", "ERROR!!");
@@ -127,10 +127,10 @@ public class ChatFragment extends Fragment {
                         LocalDataBase dataBase = new LocalDataBase(context);
                         if (!response.getString("data").equals("null")) {
                             listChats = AnalyzeJSON.analyzeChats(response);
-                            dataBase.insertChatList(listChats);
+                            dataBase.insertChatList(listChats, user.getEmail());
                         } else {
                             listChats.clear();
-                            dataBase.insertChatList(listChats);
+                            dataBase.insertChatList(listChats, user.getEmail());
                         }
                         dataBase.Close();
 
