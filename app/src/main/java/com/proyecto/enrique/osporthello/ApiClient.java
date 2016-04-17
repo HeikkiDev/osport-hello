@@ -24,6 +24,11 @@ public class ApiClient {
         client.get(HOST + url, params, responseHandler);
     }
 
+    public static void getRestorePassword(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.get(HOST + url, responseHandler);
+    }
+
     public static void postFacebookLogin(String url, RequestParams params, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
         client.post(HOST + url, params, responseHandler);

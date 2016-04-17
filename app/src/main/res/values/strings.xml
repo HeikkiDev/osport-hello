@@ -55,4 +55,6 @@
     <!-- User Profile Activity -->
     <string name="title_activity_search_users">Search users</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="restore_password_email">Restore password in email</string>
+    <string name="restore_password_failed">Restoring password failed</string>
 </resources>

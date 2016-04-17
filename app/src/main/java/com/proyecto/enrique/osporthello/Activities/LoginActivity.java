@@ -9,10 +9,13 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -49,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etxPassword;
     private TextInputLayout txtLayoutPassword;
     private Button btnLogin;
+    private TextView txtForgotPassword;
     private LoginButton btnFacebookLogin;
     private Button btnCreateAccount;
     private Toolbar mToolbar;
@@ -71,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         etxPassword = (EditText)findViewById(R.id.input_password);
         txtLayoutPassword = (TextInputLayout)findViewById(R.id.input_layout_password);
         btnLogin = (Button)findViewById(R.id.btnLogin);
+        txtForgotPassword = (TextView)findViewById(R.id.txtForgotPassword);
         btnFacebookLogin = (LoginButton)findViewById(R.id.login_facebook);
         btnCreateAccount = (Button)findViewById(R.id.btnCreateAccount);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
@@ -78,11 +83,22 @@ public class LoginActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        txtForgotPassword.setClickable(true);
+        txtForgotPassword.setMovementMethod(LinkMovementMethod.getInstance());
+        String text = "<u>Forgot your password?</u>";
+        txtForgotPassword.setText(Html.fromHtml(text));
+
         try {
             FacebookLogin();
         }
         catch (Exception e){onLoginFailed();}
 
+        txtForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restorePassword();
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +143,54 @@ public class LoginActivity extends AppCompatActivity {
     private void activityCreateAccount() {
         Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
         startActivityForResult(intent, CREATE_ACCOUNT);
+    }
+
+    private void restorePassword(){
+        String email = etxUser.getText().toString();
+
+        if(email.equals("")){
+            Toast.makeText(this, getString(R.string.enter_valid_email), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else{
+            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, "Wait a moment...");
+            progressDialog.execute();
+
+            ApiClient.getRestorePassword("api/restore-password/"+email,
+                    new JsonHttpResponseHandler() {
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            progressDialog.cancel(true);
+                            Snackbar snackbar = Snackbar.make(coordinatorLayout, R.string.restore_password_failed, Snackbar.LENGTH_LONG);
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                            textView.setTextColor(Color.parseColor("#F44336"));
+                            snackbar.show();
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            try {
+                                if (response.getString("code").equals("true")) {
+                                    Snackbar.make(coordinatorLayout, R.string.restore_password_email, Snackbar.LENGTH_LONG)
+                                            .setAction(R.string.go_to_email, new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                                                    startActivity(Intent.createChooser(intent, getString(R.string.choose_email_app)));
+                                                }
+                                            }).show();
+                                }
+                                progressDialog.cancel(true);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                progressDialog.cancel(true);
+                            }
+                        }
+                    });
+        }
     }
 
     private void FacebookLogin(){
