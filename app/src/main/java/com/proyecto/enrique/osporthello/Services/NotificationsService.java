@@ -10,17 +10,25 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by enrique on 12/04/16.
@@ -62,7 +70,7 @@ public class NotificationsService extends Service {
      */
     private void addFirebaseListener(){
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
-        User user = new User(sharedPreferences.getString("email", null),
+        final User user = new User(sharedPreferences.getString("email", null),
                 sharedPreferences.getString("firstname", null),
                 sharedPreferences.getString("lastname", null), null,
                 sharedPreferences.getString("apikey", null),
@@ -84,7 +92,7 @@ public class NotificationsService extends Service {
                 // New message from my interlocutor
                 dataSnapshot.getRef().removeValue();
                 String email = dataSnapshot.getValue(String.class);
-                notifyNewFriend(email);
+                notifyNewFriend(email, user.getApiKey());
             }
 
             @Override
@@ -113,14 +121,38 @@ public class NotificationsService extends Service {
     /**
      *
      */
-    private void notifyNewFriend(String email){
+    private void notifyNewFriend(final String email, String apiKey){
+        ApiClient.getUserName("api/users/name/"+email,apiKey, new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification(email,"");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    final String objectName = "data";
+                    String firstname = response.getJSONObject(objectName).getString("User_firstname");
+                    String lastname = response.getJSONObject(objectName).getString("User_lastname");
+
+                    // Notification
+                    buildNotification(email, firstname+" "+lastname);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void buildNotification(String email, String name){
         final Context context = getApplicationContext();
 
-        // Notification
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
-                        .setContentTitle(email + " now follows you");
+                        .setContentText(name)
+                        .setContentTitle("You have a new follower");
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 

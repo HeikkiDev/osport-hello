@@ -1,5 +1,7 @@
 package com.proyecto.enrique.osporthello.Adapters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Message;
+import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
 import java.text.SimpleDateFormat;
@@ -22,10 +25,23 @@ import java.util.Date;
  */
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MessageViewHolder> {
     private ArrayList<Message> items;
+    private static User USER_ME;
+
+    private static final String SESSION_FILE = "my_session";
 
     // Constructor
-    public MessagesAdapter(ArrayList<Message> messages) {
+    public MessagesAdapter(ArrayList<Message> messages, Context context) {
         this.items = messages;
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        this.USER_ME = new User(sharedPreferences.getString("email", null),
+                sharedPreferences.getString("firstname", null),
+                sharedPreferences.getString("lastname", null), null,
+                sharedPreferences.getString("apikey", null),
+                sharedPreferences.getString("sex", null),
+                sharedPreferences.getString("age", null),
+                sharedPreferences.getString("city", null),
+                sharedPreferences.getString("weight", null),
+                sharedPreferences.getString("height", null));
     }
 
     @Override
@@ -47,18 +63,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         else
             datetime = items.get(i).getDate() + " " + items.get(i).getHour();
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        if (author.equals(MainActivity.USER_ME.getEmail())) {
-            params.gravity = Gravity.RIGHT;
+        LinearLayout.LayoutParams paramsCardView = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramsDatetime = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        if (author.equals(this.USER_ME.getEmail())) {
+            paramsCardView.gravity = Gravity.RIGHT;
+            paramsCardView.leftMargin = 200;
+            paramsDatetime.gravity = Gravity.RIGHT;
             viewHolder.cardView.setCardBackgroundColor(viewHolder.cardView.getContext().getResources().getColor(android.R.color.white));
         }
         else{
-            params.gravity = Gravity.LEFT;
+            paramsCardView.gravity = Gravity.LEFT;
+            paramsCardView.rightMargin = 200;
+            paramsDatetime.gravity = Gravity.LEFT;
             viewHolder.cardView.setCardBackgroundColor(viewHolder.cardView.getContext().getResources().getColor(R.color.primaryColor));
         }
-        viewHolder.cardView.setLayoutParams(params);
+        viewHolder.cardView.setLayoutParams(paramsCardView);
         viewHolder.message.setText(message);
         viewHolder.datetime.setText(datetime);
+        viewHolder.datetime.setLayoutParams(paramsDatetime);
     }
 
     @Override

@@ -135,7 +135,7 @@ public class ChatActivity extends AppCompatActivity {
                 messagesList.add(message);
             } while (cursor.moveToNext());
         }
-        adapter = new MessagesAdapter(messagesList);
+        adapter = new MessagesAdapter(messagesList, this);
         recycler.setAdapter(adapter);
     }
 

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -87,7 +88,16 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // User data to edit
-        showUserData();
+        if(savedInstanceState == null)
+            showUserData();
+        else{
+            Bitmap savedBitmap = savedInstanceState.getParcelable("image_user");
+            if(savedBitmap != null){
+                imageView.setImageBitmap(savedBitmap);
+            }
+            else
+                showUserData();
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingButton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -119,16 +129,30 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
+            //Uri uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                Bitmap bitmap = null;
+                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP){
+                    bitmap  = (Bitmap) data.getExtras().get("data");
+                } else{
+                    Uri uri = data.getData();
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                }
+                //bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 imageView.setImageBitmap(bitmap);
                 this.bitmapImage = bitmap;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("image_user", bitmapImage);
     }
 
     @Override

@@ -1,11 +1,15 @@
 package com.proyecto.enrique.osporthello.Adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,8 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
@@ -69,6 +75,24 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                 newChat(user);
             }
         });
+
+        viewHolder.friendCardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Unfollow")
+                        .setMessage("Are you sure about unfollow this user?")
+                        .setPositiveButton("Unfollow", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteFriend(i);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+                return true;
+            }
+        });
     }
 
     private void newChat(final User user) {
@@ -77,7 +101,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         client.post(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                //
+                Log.e("NEW_CHAT", "ERROR!!");
             }
 
             @Override
@@ -90,6 +114,29 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + user.getLastname(), user.getImage()));
                         context.startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void deleteFriend(final int i) {
+        final FriendsAdapter friendsAdapter = this;
+        User user = MainActivity.USER_ME;
+        ApiClient.deleteFriend("api/friends/" + user.getEmail() + "/" + items.get(i).getEmail(), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("DELETE_FRIEND", "ERROR!!");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getString("code").equals("true")) {
+                        items.remove(i);
+                        friendsAdapter.notifyDataSetChanged();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -115,6 +162,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     }
 
     static class FriendViewHolder extends RecyclerView.ViewHolder {
+        public CardView friendCardView;
         public CircleImageView image;
         public TextView name;
         public TextView city;
@@ -123,6 +171,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         public FriendViewHolder(View v) {
             super(v);
 
+            friendCardView = (CardView)v.findViewById(R.id.friendCardView);
             image = (CircleImageView) v.findViewById(R.id.user_image);
             name = (TextView) v.findViewById(R.id.name);
             city = (TextView) v.findViewById(R.id.city);

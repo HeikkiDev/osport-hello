@@ -1,13 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:id="@+id/rootLayoutHome">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragment HOME"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal"
-        android:textSize="32dp" />
+    <LinearLayout
+        android:id="@+id/layoutInfoWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/duration"
+            android:textSize="20dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/primary_text_disabled_material_light" />
+
+        <TextView
+            android:id="@+id/txtDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="00:00:00"
+            android:textSize="38dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/primary_dark_material_dark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="9"
+            android:layout_margin="10dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="3">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/speed_km_h"
+                    android:textSize="18dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_text_disabled_material_light"/>
+                <TextView
+                    android:id="@+id/txtSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textSize="32dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_dark_material_dark"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="3">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/distance_km"
+                    android:textSize="18dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_text_disabled_material_light"/>
+                <TextView
+                    android:id="@+id/txtDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textSize="32dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_dark_material_dark"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="3">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/calories"
+                    android:textSize="18dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_text_disabled_material_light"/>
+                <TextView
+                    android:id="@+id/txtCalories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="32dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_dark_material_dark"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.enrique.google_maps.MapsActivity" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_alignBottom="@+id/map"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/layoutStartWorkout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@android:color/white"
+                android:weightSum="10">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/activity"
+                    android:textSize="16dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/primary_text_disabled_material_light"
+                    android:layout_marginTop="10dp" />
+                <TextView
+                    android:id="@+id/txtChooseActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:text="Running"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="30dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/primary_text_disabled_material_light"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="10"
+                    android:layout_weight="5">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Distance"
+                            android:textSize="16dp"
+                            android:gravity="center_horizontal"
+                            android:textColor="@color/primary_text_disabled_material_light"
+                            android:layout_marginTop="10dp" />
+                        <TextView
+                            android:id="@+id/txtChooseDistanceUnit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18dp"
+                            android:text="Kms"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="30dp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="70dp"
+                        android:background="@color/primary_text_disabled_material_light"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Speed"
+                            android:textSize="16dp"
+                            android:gravity="center_horizontal"
+                            android:textColor="@color/primary_text_disabled_material_light"
+                            android:layout_marginTop="10dp" />
+                        <TextView
+                            android:id="@+id/txtChooseSpeedUnit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18dp"
+                            android:text="Km/h"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="30dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnStartWorkout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_workout"
+                android:layout_marginTop="20dp"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18dp"
+                android:background="@color/primaryDarkColor"
+                android:elevation="30dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_alignBottom="@+id/map"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/layoutStopPause"
+            android:weightSum="10"
+            android:visibility="invisible">
+
+            <Button
+                android:id="@+id/btnStopWorkout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stop"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18dp"
+                android:background="@color/cancelColor"
+                android:layout_weight="5"
+                android:layout_marginRight="5dp"
+                android:elevation="30dp"/>
+            <Button
+                android:id="@+id/btnPauseWorkout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pause"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18dp"
+                android:background="@color/accent_material_light"
+                android:layout_weight="5"
+                android:layout_marginLeft="5dp"
+                android:elevation="30dp"/>
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

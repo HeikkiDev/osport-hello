@@ -3,6 +3,7 @@ package com.proyecto.enrique.osporthello.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             // Retrieve user session and information and show it
             retrieveUserData();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
 
         // Restore selected option of drawer menu
@@ -150,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startService(new Intent(MainActivity.this, ChatNotificationsService.class));
                 // Service for listen new friends
                 startService(new Intent(MainActivity.this, NotificationsService.class));
+
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             } else
                 Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
         }

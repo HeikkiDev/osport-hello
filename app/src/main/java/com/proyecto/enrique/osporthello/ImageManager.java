@@ -40,7 +40,7 @@ public class ImageManager {
         FileOutputStream fos = null;
         try {
             fos = context.openFileOutput(nameFile, Context.MODE_PRIVATE);
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
             uploadStringImageToRemote(bitmapImage);
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class ImageManager {
      */
     public static String getStringImage(Bitmap bmp){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;

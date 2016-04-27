@@ -20,6 +20,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.MyFragmentPagerAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 import com.proyecto.enrique.osporthello.Activities.SearchUsersActivity;
@@ -103,17 +104,16 @@ public class FriendsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SEARCH_CODE){
             if(resultCode == Activity.RESULT_OK){
-                getMyFriends(); // Update friends list
+                getMyFriendsTab(); // Update friends list
             }
         }
     }
 
     private void getMyFriends(){
         try {
-            AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
-            client.setTimeout(10000);
             User user = MainActivity.USER_ME;
-            client.get(MainActivity.HOST + "api/friends/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+
+            ApiClient.getMyFriends("api/friends/" + user.getEmail(),  new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("FRIENDS", "ERROR!!");
@@ -125,6 +125,35 @@ public class FriendsFragment extends Fragment {
                         if (!response.getString("data").equals("null")) {
                             FRIENDS_LIST = AnalyzeJSON.analyzeAllUsers(response);
                             viewPager.setAdapter(pagerAdapter);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            Log.e("FRIENDS", "ERROR!!");
+        }
+    }
+
+    private void getMyFriendsTab(){
+        try {
+            User user = MainActivity.USER_ME;
+
+            ApiClient.getMyFriends("api/friends/" + user.getEmail(),  new JsonHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                    Log.e("FRIENDS", "ERROR!!");
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        if (!response.getString("data").equals("null")) {
+                            FRIENDS_LIST = AnalyzeJSON.analyzeAllUsers(response);
+                            viewPager.setAdapter(pagerAdapter);
+                            viewPager.setCurrentItem(1);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

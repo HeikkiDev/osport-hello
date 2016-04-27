@@ -64,6 +64,9 @@ public class ChatNotificationsService extends Service {
         Firebase.setAndroidContext(this);
         Toast.makeText(getApplicationContext(), "Servicio CHAT arrancado!", Toast.LENGTH_SHORT).show();
 
+        if(listFirebaseListeners == null)
+            listFirebaseListeners = new ArrayList<>();
+
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
         User user = new User(sharedPreferences.getString("email", null),
                 sharedPreferences.getString("firstname", null),
@@ -105,9 +108,6 @@ public class ChatNotificationsService extends Service {
         for (ChildEventListener listener : listFirebaseListeners) {
             this.refChats.removeEventListener(listener);
         }
-
-        listChats = null;
-        listFirebaseListeners = null;
 
         if(timer != null)
             timer.cancel();
@@ -233,14 +233,39 @@ public class ChatNotificationsService extends Service {
     /**
      *
      */
-    private void notifyNewMessage(Chat chat){
+    private void notifyNewMessage(final Chat chat){
+
+        ApiClient.getUserName("api/users/name/"+chat.getReceiver_email(),this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification("", chat);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    final String objectName = "data";
+                    String firstname = response.getJSONObject(objectName).getString("User_firstname");
+                    String lastname = response.getJSONObject(objectName).getString("User_lastname");
+
+                    // Notification
+                    buildNotification(firstname+" "+lastname, chat);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void buildNotification(String name, Chat chat){
         final Context context = getApplicationContext();
 
-        // Notification
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
-                        .setContentTitle("New merssage in chat "+chat.getId()+" from "+chat.getReceiver_email());
+                        .setContentText(name)
+                        .setContentTitle("New message from");
 
         Intent resultIntent = new Intent(context, ChatActivity.class);
         resultIntent.putExtra("myChat", chat);

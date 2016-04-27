@@ -1,5 +1,6 @@
 package com.proyecto.enrique.osporthello.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -68,6 +70,8 @@ public class SearchUsersActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 searchUsersByName();
+                InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             }
         });
     }

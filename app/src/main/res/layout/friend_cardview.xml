@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="4dp"
-    card_view:cardUseCompatPadding="true">
+    card_view:cardUseCompatPadding="true"
+    android:id="@+id/friendCardView">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -50,7 +51,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="right"
-                android:gravity="right">
+                android:gravity="right"
+                android:weightSum="10">
 
                 <Button
                     android:id="@+id/btnChat"
@@ -63,7 +65,8 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:textColor="@android:color/white"
-                    android:layout_marginRight="10dp" />
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="2" />
             </LinearLayout>
 
         </LinearLayout>

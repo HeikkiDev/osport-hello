@@ -57,4 +57,27 @@
     <string name="title_activity_chat">ChatActivity</string>
     <string name="restore_password_email">Restore password in email</string>
     <string name="restore_password_failed">Restoring password failed</string>
+
+    <!-- Maps -->
+    <string name="duration">Duration</string>
+    <string name="speed_km_h">Speed (km/h)</string>
+    <string name="distance_km">Distance (km)</string>
+    <string name="calories">Calories</string>
+    <string name="start_workout">Start workout</string>
+    <string name="activity">Activity</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="restart">Restart</string>
+
+    <string-array name="array_activities">
+        <item>Cycling</item>
+        <item>Runningn</item>
+        <item>Jogging</item>
+    </string-array>
+    <string-array name="icons_activities">
+        <item>icon_cycling</item>
+        <item>icon_running</item>
+        <item>icon_jogging</item>
+    </string-array>
 </resources>

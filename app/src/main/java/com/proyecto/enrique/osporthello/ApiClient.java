@@ -34,6 +34,11 @@ public class ApiClient {
         client.post(HOST + url, params, responseHandler);
     }
 
+    public static void getUserName(String url, String apiKey, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.get(HOST + url + "/" + apiKey, responseHandler);
+    }
+
     public static void getUsersByName(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
@@ -72,6 +77,11 @@ public class ApiClient {
     /**
      * FRIENDS
      */
+
+    public static void getMyFriends(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
 
     public static void postNewFriend(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);

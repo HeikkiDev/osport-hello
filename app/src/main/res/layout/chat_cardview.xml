@@ -23,9 +23,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_account_circle_black_48dp"
             app:border_color="@android:color/white"
-            app:border_width="1dp"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="2"/>
+            app:border_width="1dp"/>
 
         <TextView
             android:layout_width="wrap_content"
