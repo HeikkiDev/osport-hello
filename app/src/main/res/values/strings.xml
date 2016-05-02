@@ -60,24 +60,28 @@
 
     <!-- Maps -->
     <string name="duration">Duration</string>
-    <string name="speed_km_h">Speed (km/h)</string>
-    <string name="distance_km">Distance (km)</string>
-    <string name="calories">Calories</string>
+    <string name="speed_km_h">Speed\n(km/h)</string>
+    <string name="speed_miles_h">Speed\n(miles/h)</string>
+    <string name="distance_km">Distance\n(km)</string>
+    <string name="distance_miles">Distance\n(miles)</string>
+    <string name="calories">Calories\n</string>
     <string name="start_workout">Start workout</string>
     <string name="activity">Activity</string>
     <string name="title_activity_maps">Map</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
     <string name="restart">Restart</string>
+    <string name="km_units">Kms</string>
+    <string name="miles_units">Miles</string>
+    <string name="choose_distance">Choose distance units</string>
+    <string name="choose_speed">Choose speed units</string>
+    <string name="km_h_units">Km/h</string>
+    <string name="miles_h_units">Miles/h</string>
+    <string name="choose_your_activity">Choose your activity</string>
 
     <string-array name="array_activities">
         <item>Cycling</item>
-        <item>Runningn</item>
+        <item>Running</item>
         <item>Jogging</item>
-    </string-array>
-    <string-array name="icons_activities">
-        <item>icon_cycling</item>
-        <item>icon_running</item>
-        <item>icon_jogging</item>
     </string-array>
 </resources>

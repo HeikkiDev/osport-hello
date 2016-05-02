@@ -23,6 +23,7 @@ import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -122,7 +123,7 @@ public class NotificationsService extends Service {
      *
      */
     private void notifyNewFriend(final String email, String apiKey){
-        ApiClient.getUserName("api/users/name/"+email,apiKey, new JsonHttpResponseHandler() {
+        ApiClient.getUserName("api/username/id/"+email,apiKey, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");

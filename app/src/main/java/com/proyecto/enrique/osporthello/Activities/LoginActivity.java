@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +40,8 @@ import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -272,8 +275,12 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.execute();
 
         String stringImage = "";
-        if(bitmap != null)
-            stringImage = ImageManager.getStringImage(bitmap);
+        if(bitmap != null){
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos);
+            byte[] imageBytes = baos.toByteArray();
+            stringImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        }
         if(location == null)
             location = "null";
 

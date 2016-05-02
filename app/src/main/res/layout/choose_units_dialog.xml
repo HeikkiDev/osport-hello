@@ -5,7 +5,8 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="@string/choose_your_activity"
+        android:id="@+id/txtTitle"
+        android:text="Choose units"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -17,11 +18,22 @@
         android:layout_height="1dp"
         android:background="@color/primaryDarkColor"/>
 
-    <ListView
-        android:id="@android:id/list"
+    <TextView
+        android:id="@+id/txtKms"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp"></ListView>
+        android:layout_margin="10dp"
+        android:textSize="18dp"
+        android:padding="5dp"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/txtMiles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:textSize="18dp"
+        android:padding="5dp"
+        android:gravity="center_horizontal" />
 
 </LinearLayout>

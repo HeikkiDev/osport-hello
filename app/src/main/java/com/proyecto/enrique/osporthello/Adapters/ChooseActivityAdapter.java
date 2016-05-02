@@ -8,10 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.proyecto.enrique.osporthello.Models.RowActivity;
 import com.proyecto.enrique.osporthello.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +35,8 @@ public class ChooseActivityAdapter extends ArrayAdapter<RowActivity> {
             LayoutInflater inflator = context.getLayoutInflater();
             view = inflator.inflate(R.layout.row_activities, null);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.txtName = (TextView) view.findViewById(R.id.name);
-            viewHolder.imageView = (ImageView) view.findViewById(R.id.image);
+            viewHolder.txtName = (TextView) view.findViewById(R.id.txtName);
+            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
             view.setTag(viewHolder);
         } else {
             view = convertView;

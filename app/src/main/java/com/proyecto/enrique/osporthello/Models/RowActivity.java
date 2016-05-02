@@ -3,10 +3,9 @@ package com.proyecto.enrique.osporthello.Models;
 import android.graphics.drawable.Drawable;
 
 /**
- * Created by enrique on 27/04/16.
+ * Created by enrique on 28/04/16.
  */
 public class RowActivity {
-
     private Drawable image;
     private String name;
 

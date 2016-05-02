@@ -192,7 +192,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             etxHeight.setText(height);
         try {
             ImageManager storage = new ImageManager(getApplicationContext());
-            storage.loadImageFromStorage(user.getEmail() + ".jpg", imageView);
+            storage.loadImageFromStorage(user.getEmail() + ".png", imageView);
         } catch (Exception e){}
     }
 
@@ -217,7 +217,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
         if(bitmapImage != null) { // Save the new user image
             ImageManager storage = new ImageManager(this);
-            storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".jpg");
+            storage.saveToInternalStorage(bitmapImage, user.getEmail() + ".png");
         }
         if(!username.isEmpty())
             user.setFirstname(username);

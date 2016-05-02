@@ -235,7 +235,7 @@ public class ChatNotificationsService extends Service {
      */
     private void notifyNewMessage(final Chat chat){
 
-        ApiClient.getUserName("api/users/name/"+chat.getReceiver_email(),this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.getUserName("api/username/id/"+chat.getReceiver_email(),this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");

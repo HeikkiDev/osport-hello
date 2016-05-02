@@ -35,6 +35,8 @@ import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.R;
 import com.proyecto.enrique.osporthello.Services.NotificationsService;
 
+import java.io.File;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -141,8 +143,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 txtUsername.setText(user.getFirstname().toString());
                 txtEmail.setText(user.getEmail().toString());
                 try {
-                    ImageManager storage = new ImageManager(getApplicationContext());
-                    storage.saveToInternalStorage(stringToBitMap(user.getImage()), user.getEmail() + ".jpg");
+                    File file = getBaseContext().getFileStreamPath(user.getEmail()+".png");
+                    if(!file.exists()){
+                        ImageManager storage = new ImageManager(getApplicationContext());
+                        storage.saveToInternalStorage(stringToBitMap(user.getImage()), user.getEmail() + ".png");
+                    }
                 } catch (Exception e){}
 
                 saveUserSession();
@@ -166,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
                 try {
                     ImageManager storage = new ImageManager(getApplicationContext());
-                    storage.loadImageFromStorage(this.USER_ME.getEmail() + ".jpg", circleImage);
+                    storage.loadImageFromStorage(this.USER_ME.getEmail() + ".png", circleImage);
                 } catch (Exception e) {e.printStackTrace();}
             }
         }
@@ -274,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtEmail.setText(sharedPreferences.getString("email", null));
         try {
             ImageManager storage = new ImageManager(getApplicationContext());
-            storage.loadImageFromStorage(user.getEmail() + ".jpg", circleImage);
+            storage.loadImageFromStorage(user.getEmail() + ".png", circleImage);
         } catch (Exception e){}
     }
 

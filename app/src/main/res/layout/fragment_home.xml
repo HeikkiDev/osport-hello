@@ -47,7 +47,8 @@
                     android:text="@string/speed_km_h"
                     android:textSize="18dp"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/primary_text_disabled_material_light"/>
+                    android:textColor="@color/primary_text_disabled_material_light"
+                    android:id="@+id/txtTitleSpeed" />
                 <TextView
                     android:id="@+id/txtSpeed"
                     android:layout_width="match_parent"
@@ -68,7 +69,8 @@
                     android:text="@string/distance_km"
                     android:textSize="18dp"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/primary_text_disabled_material_light"/>
+                    android:textColor="@color/primary_text_disabled_material_light"
+                    android:id="@+id/txtTitleDistance" />
                 <TextView
                     android:id="@+id/txtDistance"
                     android:layout_width="match_parent"
@@ -89,7 +91,8 @@
                     android:text="@string/calories"
                     android:textSize="18dp"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/primary_text_disabled_material_light"/>
+                    android:textColor="@color/primary_text_disabled_material_light"
+                    android:id="@+id/txtTitleCalories" />
                 <TextView
                     android:id="@+id/txtCalories"
                     android:layout_width="match_parent"
@@ -132,6 +135,11 @@
                 android:orientation="vertical"
                 android:background="@android:color/white"
                 android:weightSum="10">
+                <LinearLayout
+                    android:id="@+id/layoutChoosActivity"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,7 +157,9 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginLeft="30dp" />
+                    android:layout_marginLeft="30dp"
+                    android:textColor="@android:color/black" />
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
@@ -167,7 +177,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:layout_weight="5">
+                        android:layout_weight="5"
+                        android:id="@+id/layoutChooseDistance">
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -185,7 +196,10 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="10dp"
                             android:layout_marginRight="30dp"
-                            android:layout_marginLeft="30dp" />
+                            android:layout_marginLeft="30dp"
+                            android:visibility="visible"
+                            android:textColor="@android:color/black" />
+
                     </LinearLayout>
 
                     <View
@@ -197,7 +211,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:layout_weight="5">
+                        android:layout_weight="5"
+                        android:id="@+id/layoutChooseSpeed">
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -215,7 +230,10 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="10dp"
                             android:layout_marginRight="30dp"
-                            android:layout_marginLeft="30dp" />
+                            android:layout_marginLeft="30dp"
+                            android:visibility="visible"
+                            android:textColor="@android:color/black" />
+
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
