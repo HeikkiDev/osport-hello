@@ -4,6 +4,14 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.ChatFragment">
 
+    <TextView
+        android:text="@string/not_chats_to_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:id="@+id/txtNotToShow"
+        android:visibility="gone" />
     <ProgressBar
         android:id="@+id/progressChats"
         android:layout_width="wrap_content"

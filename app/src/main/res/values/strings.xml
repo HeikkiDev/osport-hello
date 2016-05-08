@@ -64,7 +64,12 @@
     <string name="speed_miles_h">Speed\n(miles/h)</string>
     <string name="distance_km">Distance\n(km)</string>
     <string name="distance_miles">Distance\n(miles)</string>
-    <string name="calories">Calories\n</string>
+    <string name="calories">Calories\n(kcal)</string>
+    <string name="speed_km_h_oneline">Speed (km/h)</string>
+    <string name="speed_miles_h_oneline">Speed (miles/h)</string>
+    <string name="distance_km_oneline">Distance (km)</string>
+    <string name="distance_miles_oneline">Distance (miles)</string>
+    <string name="calories_oneline">Calories (kcal)</string>
     <string name="start_workout">Start workout</string>
     <string name="activity">Activity</string>
     <string name="title_activity_maps">Map</string>
@@ -73,15 +78,32 @@
     <string name="restart">Restart</string>
     <string name="km_units">Kms</string>
     <string name="miles_units">Miles</string>
-    <string name="choose_distance">Choose distance units</string>
+    <string name="choose_distance">Choose distanceMetres units</string>
     <string name="choose_speed">Choose speed units</string>
     <string name="km_h_units">Km/h</string>
     <string name="miles_h_units">Miles/h</string>
     <string name="choose_your_activity">Choose your activity</string>
+    <string name="gps_disabled">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="wait_a_moment">Wait a moment...</string>
+    <string name="forgot_your_password"><![CDATA[<u>Forgot your password?</u>]]></string>
+    <string name="logging_in">Logging in...</string>
+    <string name="stop_workout">Stop workout</string>
+    <string name="want_stop_worktout">Are you sure you want stop the workout?</string>
+    <string name="saving_work_data">Saving workout data...</string>
+    <string name="save_activity">Save</string>
+    <string name="discard_activity">Discard</string>
+    <string name="save_workout_data">Workout data</string>
+    <string name="want_save_wokout">Do you want to save and publish this workout data?</string>
+    <string name="not_activities_to_show">There aren\'t activities to show</string>
+    <string name="not_chats_to_show">There aren\'t chats to show</string>
 
     <string-array name="array_activities">
         <item>Cycling</item>
         <item>Running</item>
         <item>Jogging</item>
+        <item>Walking (moderate)</item>
+        <item>Walking (high)</item>
     </string-array>
 </resources>

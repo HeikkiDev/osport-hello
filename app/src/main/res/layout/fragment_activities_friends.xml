@@ -4,17 +4,27 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.ActivitiesFriendsFragment">
 
+    <TextView
+        android:text="@string/not_activities_to_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="20dp"
+        android:id="@+id/txtNotToShow"
+        android:visibility="gone" />
     <ProgressBar
-        android:id="@+id/progressActivitiesFriends"
+        android:id="@+id/progressFriendsActivities"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:layout_gravity="center_horizontal" />
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewFriendsActivities"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Friends Activities Fragment"
-        android:textSize="28dp" />
+        android:layout_alignParentTop="true"
+        android:layout_weight="8"
+        ></android.support.v7.widget.RecyclerView>
 
 </FrameLayout>

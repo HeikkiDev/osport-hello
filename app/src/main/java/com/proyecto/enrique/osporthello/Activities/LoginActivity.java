@@ -88,8 +88,7 @@ public class LoginActivity extends AppCompatActivity {
 
         txtForgotPassword.setClickable(true);
         txtForgotPassword.setMovementMethod(LinkMovementMethod.getInstance());
-        String text = "<u>Forgot your password?</u>";
-        txtForgotPassword.setText(Html.fromHtml(text));
+        txtForgotPassword.setText(Html.fromHtml(getString(R.string.forgot_your_password)));
 
         try {
             FacebookLogin();
@@ -156,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         else{
-            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, "Wait a moment...");
+            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, getString(R.string.wait_a_moment));
             progressDialog.execute();
 
             ApiClient.getRestorePassword("api/restore-password/"+email,
@@ -271,7 +270,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkFacebookUser(String email, String firstname, String lastname, String genre, String location, Bitmap bitmap){
         // Facebook login success. Now check user in my server.
-        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, "Wait a moment...");
+        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, getString(R.string.wait_a_moment));
         progressDialog.execute();
 
         String stringImage = "";
@@ -337,7 +336,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setEnabled(false);
 
-        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, "Log in...");
+        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(LoginActivity.this, getString(R.string.logging_in));
         progressDialog.execute();
 
         final String email = etxUser.getText().toString();

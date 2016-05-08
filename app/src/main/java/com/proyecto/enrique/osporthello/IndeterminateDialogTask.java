@@ -24,6 +24,8 @@ public class IndeterminateDialogTask extends AsyncTask<Void, Void, Void> {
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(message);
         progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
     }
 

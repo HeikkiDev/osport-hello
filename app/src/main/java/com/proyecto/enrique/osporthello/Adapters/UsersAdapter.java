@@ -176,7 +176,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage()));
+                        String lastname = (user.getLastname() != null)?user.getLastname():"";
+                        intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + lastname, user.getImage()));
                         context.startActivity(intent);
 
                         //if(!response.getString("message").equals("ALREADY EXISTS")){

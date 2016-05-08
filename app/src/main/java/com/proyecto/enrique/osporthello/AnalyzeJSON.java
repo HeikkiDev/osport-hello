@@ -1,7 +1,10 @@
 package com.proyecto.enrique.osporthello;
 
+import android.app.Activity;
+
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.Models.User;
 
 import org.json.JSONException;
@@ -89,5 +92,30 @@ public class AnalyzeJSON {
         }
 
         return chatsList;
+    }
+
+    public static ArrayList<SportActivityInfo> analyzeListActivities(JSONObject jsonObject) throws JSONException {
+        ArrayList<SportActivityInfo> activitiesList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            int id = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_id");
+            String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_userEmail");
+            String name = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_name");
+            String date = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_date");
+            double avgSpeed = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("Activity_avSpeed");
+            int calories = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_calories");
+            long duration = jsonObject.getJSONArray("data").getJSONObject(i).getLong("Activity_duration");
+            double distance = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("Activity_distance");
+            String sportType = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_sportType");
+            String distanceUnits = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_distanceUnits");
+            String speedUnits = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_speedUnits");
+            String geoPoints = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_geoPoints");
+
+            SportActivityInfo activity =
+                    new SportActivityInfo(id,email,name,date,avgSpeed,calories,duration,distance,sportType,distanceUnits,speedUnits,geoPoints);
+            activitiesList.add(activity);
+        }
+
+        return activitiesList;
     }
 }

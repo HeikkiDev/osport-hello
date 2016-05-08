@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.ChatsAdapter;
@@ -32,6 +33,7 @@ import cz.msebera.android.httpclient.Header;
 public class ChatFragment extends Fragment {
 
     private Context context;
+    private TextView txtNotToShow;
     private ProgressBar progressBar;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
@@ -47,7 +49,9 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        txtNotToShow = (TextView)view.findViewById(R.id.txtNotToShow);
         progressBar = (ProgressBar)view.findViewById(R.id.progressChats);
+        txtNotToShow.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
 
         context = getActivity().getApplicationContext();
@@ -91,6 +95,11 @@ public class ChatFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         adapter = new ChatsAdapter(context, listChats);
         recycler.setAdapter(adapter);
+
+        if(listChats.isEmpty())
+            txtNotToShow.setVisibility(View.VISIBLE);
+        else
+            txtNotToShow.setVisibility(View.GONE);
     }
 
     @Override

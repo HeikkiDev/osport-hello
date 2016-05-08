@@ -15,10 +15,20 @@ android {
         multiDexEnabled true
 
     }
+    signingConfigs {
+        release {
+            storeFile file("osport.keystore")
+            storePassword "usuario"
+            keyAlias "osportkey"
+            keyPassword "usuario"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     dexOptions{
@@ -47,4 +57,5 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.5.2+'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4+'
 }

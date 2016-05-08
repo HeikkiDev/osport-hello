@@ -92,4 +92,17 @@ public class ApiClient {
         client.setTimeout(6000);
         client.delete(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
+
+    /**
+     * ACTIVITIES
+     */
+    public static void getMyActivities(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
+    public static void getFriendsActivities(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
 }
