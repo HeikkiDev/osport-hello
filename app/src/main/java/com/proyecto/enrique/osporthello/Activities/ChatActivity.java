@@ -144,7 +144,7 @@ public class ChatActivity extends AppCompatActivity {
      */
     private void sendMessage() {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
         Date now = new Date();
         String id = String.valueOf(this.CHAT.getId());
         String date = dateFormatter.format(now);

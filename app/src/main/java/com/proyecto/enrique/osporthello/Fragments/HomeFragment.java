@@ -93,6 +93,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private long timePause = 0;
     private double distance = 0d;
     private double avgSpeed = 0d;
+    private int calories = 0;
     private double factor = 1;
     private long countAvgSpeed = 0;
     private long previousTime = 0;
@@ -163,6 +164,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             polyline = savedInstanceState.getParcelable("polyline");
             factor = savedInstanceState.getDouble("factor");
             distance = savedInstanceState.getDouble("distance");
+            calories = savedInstanceState.getInt("calories");
 
             if(isTimerRunning){
                 if(timeStart > 0)
@@ -221,6 +223,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         outState.putParcelable("polyline", polyline);
         outState.putDouble("factor",factor);
         outState.putDouble("distance",distance);
+        outState.putInt("calories",calories);
     }
 
     @Override
@@ -485,8 +488,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         activityInfo.setSpeedUnits(txtChooseSpeed.getText().toString());
         activityInfo.setDistanceUnits(txtChooseDistance.getText().toString());
         activityInfo.setAvgSpeed((this.countAvgSpeed > 0)?(this.avgSpeed/this.countAvgSpeed):0);
-        activityInfo.setDistanceMetres(this.distance);
-        //activityInfo.setCalories(this.calories);
+        activityInfo.setDistanceMetres(this.distance*1000);
+        activityInfo.setCalories(this.calories);
         activityInfo.setEncodedPointsList(PolyUtil.encode(polyline.getPoints()));
         activityInfo.setDurationMillis(myTimerTask.getFinalDuration());
 
@@ -530,6 +533,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             timeStart = 0;
             timePause = 0;
             this.distance = 0;
+            this.calories = 0;
             this.avgSpeed = 0;
             this.previousTime = 0;
             this.countAvgSpeed = 0;
@@ -657,6 +661,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         alert.show();
     }
 
+    /**
+     *
+     * @param kg
+     * @param millis
+     * @param factor
+     * @return
+     */
     private int calculateCalories(int kg, long millis, double factor){
         double minutes = (millis % 3600000) / 60000;
         double calories = (kg*2.2)*minutes*factor;
@@ -690,8 +701,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
 
         String userWeight = MainActivity.USER_ME.getWeight();
         int weight = Integer.parseInt((userWeight != null && !userWeight.equals("") && !userWeight.equals("null")?userWeight:"0"));
-        String calories = String.valueOf(calculateCalories(weight,this.myTimerTask.getFinalDuration(),this.typeFactor));
-        txtCalories.setText(calories);
+        this.calories = calculateCalories(weight,this.myTimerTask.getFinalDuration(),this.typeFactor);
+        txtCalories.setText(String.valueOf(this.calories));
 
         this.countAvgSpeed++;
         this.previousLocation = location;

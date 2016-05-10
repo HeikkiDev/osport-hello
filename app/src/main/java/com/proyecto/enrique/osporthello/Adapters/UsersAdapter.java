@@ -21,7 +21,6 @@ import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
-import com.proyecto.enrique.osporthello.Activities.SearchUsersActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,10 +37,17 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     private Context context;
     private ArrayList<User> items;
     private ArrayList<User> myFriends;
+    private FriendsChanges myInterface;
+
+    public interface FriendsChanges
+    {
+        void onFriendsChanges();
+    }
 
     // Constructor
-    public UsersAdapter(Context context, ArrayList<User> items, ArrayList<User> friends) {
+    public UsersAdapter(Context context, FriendsChanges inter, ArrayList<User> items, ArrayList<User> friends) {
         this.context = context;
+        this.myInterface = inter;
         this.items = items;
         this.myFriends = friends;
     }
@@ -93,7 +99,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 else{
                     deleteFriend(position, btn);
                 }
-                SearchUsersActivity.FRIENDS_CHANGE = true;
+                myInterface.onFriendsChanges();
             }
         });
 

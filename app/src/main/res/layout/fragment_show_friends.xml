@@ -11,12 +11,79 @@
         android:indeterminate="true"
         android:layout_gravity="center_horizontal" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewFriends"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_weight="8"
-        ></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:id="@+id/layoutOrientation"
+        android:gravity="center_vertical|center_horizontal">
+
+        <LinearLayout
+            android:id="@+id/layoutFollowers"
+            android:background="@color/primaryColor"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:padding="30dp"
+            android:gravity="center_vertical|center_horizontal">
+            <TextView
+                android:id="@+id/txtNumFollowers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@android:color/white"
+                android:gravity="center_horizontal"
+                android:textSize="40dp"
+                android:layout_gravity="center" />
+            <TextView
+                android:text="Followers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textColor="@android:color/white"
+                android:textSize="24dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutFollowing"
+            android:background="@color/primaryColor"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:padding="30dp"
+            android:gravity="center_vertical|center_horizontal">
+            <TextView
+                android:id="@+id/txtNumFollowing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@android:color/white"
+                android:gravity="center_horizontal"
+                android:textSize="40dp"
+                android:layout_gravity="center" />
+            <TextView
+                android:text="Following"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textColor="@android:color/white"
+                android:textSize="24dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.proyecto.enrique.osporthello" >
+    package="com.proyecto.enrique.osporthello">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -9,13 +9,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
-
+        android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value=" AIzaSyB8SjEn9p-wMVWrRCaiMMmaAPNbAspRGO4" />
@@ -26,7 +25,7 @@
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,7 +45,7 @@
             android:name=".Activities.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
             android:parentActivityName=".Activities.LoginActivity"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -77,6 +76,15 @@
             android:name=".Services.NotificationsService"
             android:enabled="true"
             android:exported="true" />
+
+        <activity
+            android:name=".Activities.FollowersActivity"
+            android:label="@string/title_activity_followers"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.FollowingActivity"
+            android:label="@string/title_activity_following"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

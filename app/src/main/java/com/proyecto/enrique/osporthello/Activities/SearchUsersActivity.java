@@ -18,6 +18,7 @@ import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
+import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class SearchUsersActivity extends AppCompatActivity {
+public class SearchUsersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges {
 
     private Context context;
     private RecyclerView recycler;
@@ -38,6 +39,7 @@ public class SearchUsersActivity extends AppCompatActivity {
     private ArrayList<User> usersList = null;
     private ArrayList<User> friendsList = null;
 
+    private static UsersAdapter.FriendsChanges myInterface;
     public static boolean FRIENDS_CHANGE = false;
 
     EditText etxSearchUsers;
@@ -50,9 +52,10 @@ public class SearchUsersActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //
         this.context = this;
+        this.myInterface = this;
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
         usersList = new ArrayList<>();
-        friendsList = FriendsFragment.FRIENDS_LIST;
+        friendsList = new ArrayList<>();
 
         // Obtain Recycler
         recycler = (RecyclerView) findViewById(R.id.recyclerViewSearch);
@@ -61,6 +64,14 @@ public class SearchUsersActivity extends AppCompatActivity {
         // LinearLayout administrator
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
+
+        if(savedInstanceState != null){
+            usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
+            friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
+            // Instance adapter
+            adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
+            recycler.setAdapter(adapter);
+        }
 
         // To show back arrow
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,16 +94,6 @@ public class SearchUsersActivity extends AppCompatActivity {
         outState.putSerializable("friendslist", friendsList);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
-        friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
-        // Instance adapter
-        adapter = new UsersAdapter(context, usersList, friendsList);
-        recycler.setAdapter(adapter);
-    }
-
     /**
      * Obtains list of my friends
      * @return
@@ -106,7 +107,7 @@ public class SearchUsersActivity extends AppCompatActivity {
         progressDialog.execute();
 
         User user = MainActivity.USER_ME;
-        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name, new JsonHttpResponseHandler() {
+        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 progressDialog.cancel(true);
@@ -117,8 +118,9 @@ public class SearchUsersActivity extends AppCompatActivity {
                 try {
                     if (response.getString("code").equals("true")) {
                         usersList = AnalyzeJSON.analyzeAllUsers(response);
+                        friendsList = AnalyzeJSON.analyzeMyFriends(response);
                         // Instance adapter
-                        adapter = new UsersAdapter(context, usersList, friendsList);
+                        adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
                     progressDialog.cancel(true);
@@ -135,8 +137,10 @@ public class SearchUsersActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(FRIENDS_CHANGE == true)
+                if(FRIENDS_CHANGE == true) {
+                    ShowFriendsFragment.FRIENDS_CHANGE = true;
                     setResult(RESULT_OK);
+                }
                 finish();
                 return true;
         }
@@ -146,7 +150,14 @@ public class SearchUsersActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(FRIENDS_CHANGE == true)
+        if(FRIENDS_CHANGE == true) {
+            ShowFriendsFragment.FRIENDS_CHANGE = true;
             setResult(RESULT_OK);
+        }
+    }
+
+    @Override
+    public void onFriendsChanges() {
+        ShowFriendsFragment.FRIENDS_CHANGE = true;
     }
 }

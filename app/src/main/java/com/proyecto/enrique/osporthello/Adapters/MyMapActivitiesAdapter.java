@@ -106,10 +106,10 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         // Ensure the map has been initialised by the on map ready callback in ViewHolder.
         // If it is not ready yet, it will be initialised with the NamedLocation set as its tag
         // when the callback is received.
-        if (viewHolder.map != null) {
+        /*if (viewHolder.map != null) {
             // The map is already ready to be used
             setMapLocation(viewHolder.map, item);
-        }
+        }*/
     }
 
     /**

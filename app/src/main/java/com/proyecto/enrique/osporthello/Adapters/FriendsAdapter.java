@@ -40,10 +40,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
     private Context context;
     private ArrayList<User> items;
+    private FriendsChanges myInterface;
+
+    public interface FriendsChanges
+    {
+        void onFriendsChanges();
+    }
 
     // Constructor
-    public FriendsAdapter(Context context, ArrayList<User> friends) {
+    public FriendsAdapter(Context context, FriendsChanges interf, ArrayList<User> friends) {
         this.context = context;
+        this.myInterface = interf;
         this.items = friends;
     }
 
@@ -129,6 +136,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("DELETE_FRIEND", "ERROR!!");
+                myInterface.onFriendsChanges();
             }
 
             @Override
@@ -138,6 +146,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                         items.remove(i);
                         friendsAdapter.notifyDataSetChanged();
                     }
+                    myInterface.onFriendsChanges();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

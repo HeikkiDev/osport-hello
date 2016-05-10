@@ -42,7 +42,6 @@ public class FriendsFragment extends Fragment {
     MyFragmentPagerAdapter pagerAdapter;
 
     private static int SEARCH_CODE = 1;
-    public static ArrayList<User> FRIENDS_LIST = new ArrayList<>();
 
     public FriendsFragment(){
         // Required empty constructor
@@ -74,9 +73,6 @@ public class FriendsFragment extends Fragment {
             }
         });
 
-        if(savedInstanceState == null)
-            getMyFriends();
-
         return view;
     }
 
@@ -104,65 +100,8 @@ public class FriendsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SEARCH_CODE){
             if(resultCode == Activity.RESULT_OK){
-                getMyFriendsTab(); // Update friends list
+                // Update friends list
             }
-        }
-    }
-
-    private void getMyFriends(){
-        try {
-            User user = MainActivity.USER_ME;
-
-            ApiClient.getMyFriends("api/friends/" + user.getEmail(),  new JsonHttpResponseHandler() {
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    Log.e("FRIENDS", "ERROR!!");
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    try {
-                        if (!response.getString("data").equals("null")) {
-                            FRIENDS_LIST = AnalyzeJSON.analyzeAllUsers(response);
-                            viewPager.setAdapter(pagerAdapter);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        catch (Exception e){
-            Log.e("FRIENDS", "ERROR!!");
-        }
-    }
-
-    private void getMyFriendsTab(){
-        try {
-            User user = MainActivity.USER_ME;
-
-            ApiClient.getMyFriends("api/friends/" + user.getEmail(),  new JsonHttpResponseHandler() {
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                    Log.e("FRIENDS", "ERROR!!");
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    try {
-                        if (!response.getString("data").equals("null")) {
-                            FRIENDS_LIST = AnalyzeJSON.analyzeAllUsers(response);
-                            viewPager.setAdapter(pagerAdapter);
-                            viewPager.setCurrentItem(1);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        catch (Exception e){
-            Log.e("FRIENDS", "ERROR!!");
         }
     }
 }

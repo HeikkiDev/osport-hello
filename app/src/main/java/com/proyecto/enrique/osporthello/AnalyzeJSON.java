@@ -75,6 +75,32 @@ public class AnalyzeJSON {
         return usersList;
     }
 
+    public static ArrayList<User> analyzeMyFriends(JSONObject jsonObject) throws JSONException {
+        ArrayList<User> usersList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data_aux").length(); i++) {
+            String email = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_email");
+            String firstname = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_firstname");
+            String lastname = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_lastname");
+            String image = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_image");
+            String city = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_city");
+
+            if(email.equals(MainActivity.USER_ME.getEmail()))
+                break;
+            if(lastname.equals("null"))
+                lastname = null;
+            if(image.equals("null"))
+                image = null;
+            if(city.equals("null"))
+                city = null;
+
+            User user = new User(email,firstname,lastname,image,city);
+            usersList.add(user);
+        }
+
+        return usersList;
+    }
+
     public static ArrayList<Chat> analyzeChats(JSONObject jsonObject) throws JSONException{
         ArrayList<Chat> chatsList = new ArrayList<>();
 

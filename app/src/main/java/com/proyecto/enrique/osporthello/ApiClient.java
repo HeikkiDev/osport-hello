@@ -83,6 +83,11 @@ public class ApiClient {
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 
+    public static void getFollowsCounters(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
     public static void postNewFriend(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
         client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);

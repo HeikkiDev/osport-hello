@@ -1,9 +1,11 @@
 package com.proyecto.enrique.osporthello.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by enrique on 7/05/16.
  */
-public class SportActivityInfo {
+public class SportActivityInfo implements Serializable{
 
     private int _id;
     private String email;
