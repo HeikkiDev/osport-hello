@@ -72,7 +72,6 @@ public class ChatNotificationsService extends Service {
                 sharedPreferences.getString("firstname", null),
                 sharedPreferences.getString("lastname", null), null,
                 sharedPreferences.getString("apikey", null),
-                sharedPreferences.getString("sex", null),
                 sharedPreferences.getString("age", null),
                 sharedPreferences.getString("city", null),
                 sharedPreferences.getString("weight", null),

@@ -20,7 +20,9 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp">
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/user_image"
                 android:layout_width="45dp"
@@ -37,7 +39,7 @@
                 android:id="@+id/username"
                 android:textColor="@android:color/black"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp" />
         </LinearLayout>
 
         <TextView

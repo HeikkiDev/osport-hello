@@ -78,7 +78,7 @@
     <string name="restart">Restart</string>
     <string name="km_units">Kms</string>
     <string name="miles_units">Miles</string>
-    <string name="choose_distance">Choose distanceMetres units</string>
+    <string name="choose_distance">Choose distanceKms units</string>
     <string name="choose_speed">Choose speed units</string>
     <string name="km_h_units">Km/h</string>
     <string name="miles_h_units">Miles/h</string>
@@ -110,4 +110,10 @@
     <string name="title_activity_followers">Followers</string>
     <string name="title_activity_following">Following</string>
     <string name="searching">Searching...</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="workout_saved">Workout saved correctly</string>
+    <string name="cycling">Cycling</string>
+    <string name="start_route">Start</string>
+    <string name="finish_route">Finish</string>
 </resources>

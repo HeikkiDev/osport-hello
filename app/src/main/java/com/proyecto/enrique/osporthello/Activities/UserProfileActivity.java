@@ -44,7 +44,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private TextInputLayout txtLayoutUser;
     private EditText etxLastname;
     AutoCompleteTextView txtAutoCity;
-    private EditText etxSex;
     private EditText etxAge;
     private EditText etxWeight;
     private EditText etxHeight;
@@ -67,7 +66,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         etxUser = (EditText)findViewById(R.id.input_username);
         txtLayoutUser = (TextInputLayout)findViewById(R.id.input_layout_username);
         etxLastname = (EditText)findViewById(R.id.input_lastname);
-        etxSex = (EditText)findViewById(R.id.input_sex);
         etxAge = (EditText)findViewById(R.id.input_age);
         etxWeight = (EditText)findViewById(R.id.input_weight);
         etxHeight = (EditText)findViewById(R.id.input_height);
@@ -170,7 +168,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         User user = MainActivity.USER_ME;
         String username = user.getFirstname();
         String lastname = user.getLastname();
-        String sex = user.getSex();
         String age = user.getAge();
         String city = user.getCity();
         String weight = user.getWeight();
@@ -180,8 +177,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             etxUser.setText(username);
         if(lastname != null)
             etxLastname.setText(lastname);
-        if(sex != null)
-            etxSex.setText(sex);
         if(age != null)
             etxAge.setText(age);
         if (city != null)
@@ -209,7 +204,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         User user = MainActivity.USER_ME;
         String username = etxUser.getText().toString();
         String lastname = etxLastname.getText().toString();
-        String sex = etxSex.getText().toString();
         String age = etxAge.getText().toString();
         String city = txtAutoCity.getText().toString();
         String weight = etxWeight.getText().toString();
@@ -225,10 +219,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             user.setLastname(null);
         else
             user.setLastname(lastname);
-        if(sex.isEmpty())
-            user.setSex(null);
-        else
-            user.setSex(sex);
         if(age.isEmpty())
             user.setAge(null);
         else
@@ -271,7 +261,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             User user = params[0];
 
             String lastname = (user.getLastname() != null)?user.getLastname():"";
-            String sex = (user.getSex() != null)?user.getSex():"";
             String age = (user.getAge() != null)?user.getAge():"";
             String city = (user.getCity() != null)?user.getCity():"";
             String weight = (user.getWeight() != null)? user.getWeight():"";
@@ -282,7 +271,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 json.put("email", user.getEmail());
                 json.put("firstname", user.getFirstname());
                 json.put("lastname", lastname);
-                json.put("sex", sex);
                 json.put("age", age);
                 json.put("city", city);
                 json.put("weight", weight);

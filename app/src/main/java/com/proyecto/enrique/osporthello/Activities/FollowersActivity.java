@@ -38,7 +38,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
 
     private static UsersAdapter.FriendsChanges myInterface;
     private ArrayList<User> followingList = null;
-    private ArrayList<User> followersList = new ArrayList<>();
+    private ArrayList<User> followersList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +70,11 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
         else{
             followersList = (ArrayList<User>) savedInstanceState.getSerializable("followersList");
             followingList = (ArrayList<User>)savedInstanceState.getSerializable("followingList");
-            if(followersList == null)
+            if(followersList == null || followingList == null){
+                progressBar.setVisibility(View.VISIBLE);
+                getMyFollowers();
                 return;
+            }
             adapter = new UsersAdapter(context, myInterface, followersList, followingList);
             recycler.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
@@ -135,7 +138,17 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     }
 
     @Override
-    public void onFriendsChanges() {
+    public void onFriendsChanges(String friendEmail, boolean added) {
         ShowFriendsFragment.FRIENDS_CHANGE = true;
+        if(added){
+            followingList.add(new User(friendEmail, null, null, null, null));
+        }
+        else {
+            for (int i = 0; i < followingList.size(); i++) {
+                User user = followingList.get(i);
+                if(user.getEmail().equals(friendEmail))
+                    followingList.remove(i);
+            }
+        }
     }
 }

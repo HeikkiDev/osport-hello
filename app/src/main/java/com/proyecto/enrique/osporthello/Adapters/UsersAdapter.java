@@ -41,7 +41,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     public interface FriendsChanges
     {
-        void onFriendsChanges();
+        void onFriendsChanges(String friendEmail, boolean added);
     }
 
     // Constructor
@@ -83,7 +83,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         }
 
         if(contains){
-            viewHolder.btnFriend.setText("Unfollow");
+            viewHolder.btnFriend.setText(R.string.unfollow);
             viewHolder.btnFriend.setBackgroundResource(R.color.cancelColor);
             viewHolder.btnFriend.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
         }
@@ -93,13 +93,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             @Override
             public void onClick(View v) {
                 Button btn = (Button)v;
-                if(btn.getText().equals("Follow")){
+                if(btn.getText().equals(context.getString(R.string.follow))){
                     makeNewFriend(position, btn);
                 }
                 else{
                     deleteFriend(position, btn);
                 }
-                myInterface.onFriendsChanges();
             }
         });
 
@@ -129,6 +128,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setBackgroundResource(R.color.cancelColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
 
+                        myFriends.add(items.get(i));
+                        myInterface.onFriendsChanges(items.get(i).getEmail(), true);
+
                         // Notify new friend
                         String[] arrEmail = items.get(i).getEmail().split("\\.");
                         String email = arrEmail[0] + arrEmail[1];
@@ -144,7 +146,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         });
     }
 
-    private void deleteFriend(int i, final Button btn) {
+    private void deleteFriend(final int i, final Button btn) {
         User user = MainActivity.USER_ME;
         ApiClient.deleteFriend("api/friends/" + user.getEmail() + "/" + items.get(i).getEmail(), new JsonHttpResponseHandler() {
             @Override
@@ -159,6 +161,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setText("Follow");
                         btn.setBackgroundResource(R.color.primaryColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add_white_24dp, 0, 0, 0);
+
+                        User user = items.get(i);
+                        for (int i = 0; i < myFriends.size(); i++) {
+                            if(myFriends.get(i).getEmail().equals(user.getEmail())) {
+                                myFriends.remove(i);
+                                myInterface.onFriendsChanges(user.getEmail(), false);
+                            }
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

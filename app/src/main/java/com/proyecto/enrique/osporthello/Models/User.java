@@ -19,7 +19,6 @@ public class User implements Serializable {
     private String image;
     @SerializedName("User_apiKey")
     private String apiKey;
-    private String sex;
     private String age;
     private String city;
     private String weight;
@@ -44,10 +43,6 @@ public class User implements Serializable {
     public String getApiKey() {return apiKey;}
 
     public void setApiKey(String apiKey) {this.apiKey = apiKey;}
-
-    public String getSex() {return sex;}
-
-    public void setSex(String sex) {this.sex = sex;}
 
     public String getAge() {return age;}
 
@@ -77,22 +72,12 @@ public class User implements Serializable {
         this.city = city;
     }
 
-    public User(String email, String first, String last, String img, String city, String sex){
-        this.email = email;
-        this.firstname = first;
-        this.lastname = last;
-        this.image = img;
-        this.city = city;
-        this.sex = sex;
-    }
-
-    public User(String email, String first, String last, String image, String apiKey, String sex, String age, String city, String weight, String height){
+    public User(String email, String first, String last, String image, String apiKey, String age, String city, String weight, String height){
         this.email = email;
         this.firstname = first;
         this.lastname = last;
         this.image = image;
         this.apiKey = apiKey;
-        this.sex = sex;
         this.age = age;
         this.city = city;
         this.weight = weight;

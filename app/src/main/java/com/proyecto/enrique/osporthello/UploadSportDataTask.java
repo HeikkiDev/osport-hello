@@ -3,7 +3,6 @@ package com.proyecto.enrique.osporthello;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,10 +12,13 @@ import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
+
+import static com.google.android.gms.internal.zzir.runOnUiThread;
 
 /**
  * Created by enrique on 7/05/16.
@@ -49,10 +51,11 @@ public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void
             JSONObject json = new JSONObject();
             json.put("email", MainActivity.USER_ME.getEmail());
             json.put("sportType", activityInfo.getSportType());
+            json.put("typeName", activityInfo.getName());
             json.put("distanceUnits", activityInfo.getDistanceUnits());
             json.put("speedUnits", activityInfo.getSpeedUnits());
             json.put("avgSpeed", activityInfo.getAvgSpeed());
-            json.put("distance", activityInfo.getDistanceMetres());
+            json.put("distance", activityInfo.getDistanceKms());
             json.put("duration", activityInfo.getDurationMillis());
             json.put("calories", activityInfo.getCalories());
             json.put("geo_points", activityInfo.getEncodedPointsList());
@@ -70,10 +73,29 @@ public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void
                 }
 
                 @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.e("SPORT_DATA", "Error");
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    Log.e("SPORT_DATA", "Error");
+                    progressDialog.dismiss();
+                }
+
+                @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.e("SPORT_DATA","Success");
                     progressDialog.dismiss();
-                    Toast.makeText(context.getApplicationContext(),"Workout saved correctly",Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run(){
+                            Toast.makeText(context.getApplicationContext(), R.string.workout_saved,Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
         } catch (JSONException e) {Log.e("NEW_ACTIVITY", e.getMessage());}

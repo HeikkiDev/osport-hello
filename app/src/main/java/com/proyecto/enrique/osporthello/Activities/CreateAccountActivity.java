@@ -162,18 +162,12 @@ public class CreateAccountActivity extends AppCompatActivity {
         else
         txtLayoutRepeatPassword.setError(null);
 
-        if(alternativeEmail.isEmpty()){
-            txtLayoutAlternativeEmail.setError(getString(R.string.recovery_email_empty));
+        if (alternativeEmail.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(alternativeEmail).matches()) {
+            txtLayoutAlternativeEmail.setError(getString(R.string.enter_valid_email));
             valid = false;
         }
-        else{
-            if(alternativeEmail.equals(email)){
-                txtLayoutAlternativeEmail.setError(getString(R.string.recovery_email_equal_email_id));
-                valid = false;
-            }
-            else
-                txtLayoutAlternativeEmail.setError(null);
-        }
+        else
+            txtLayoutAlternativeEmail.setError(null);
 
         return valid;
     }

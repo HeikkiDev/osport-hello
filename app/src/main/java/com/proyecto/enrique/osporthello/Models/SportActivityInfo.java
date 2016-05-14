@@ -1,5 +1,7 @@
 package com.proyecto.enrique.osporthello.Models;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -9,13 +11,15 @@ public class SportActivityInfo implements Serializable{
 
     private int _id;
     private String email;
+    private String userName;
+    private Bitmap userImage;
     private String name;
     private String date;
-    private String sportType;
-    private String distanceUnits;
-    private String speedUnits;
+    private int sportType;
+    private int distanceUnits;
+    private int speedUnits;
     private double avgSpeed;
-    private double distanceMetres;
+    private double distanceKms;
     private long durationMillis;
     private int calories;
     private String encodedPointsList;
@@ -36,6 +40,22 @@ public class SportActivityInfo implements Serializable{
         this.email = email;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Bitmap getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(Bitmap userImage) {
+        this.userImage = userImage;
+    }
+
     public String getName() {
         return name;
     }
@@ -52,27 +72,27 @@ public class SportActivityInfo implements Serializable{
         this.date = date;
     }
 
-    public String getSportType() {
+    public int getSportType() {
         return sportType;
     }
 
-    public void setSportType(String sportType) {
+    public void setSportType(int sportType) {
         this.sportType = sportType;
     }
 
-    public String getDistanceUnits() {
+    public int getDistanceUnits() {
         return distanceUnits;
     }
 
-    public void setDistanceUnits(String distanceUnits) {
+    public void setDistanceUnits(int distanceUnits) {
         this.distanceUnits = distanceUnits;
     }
 
-    public String getSpeedUnits() {
+    public int getSpeedUnits() {
         return speedUnits;
     }
 
-    public void setSpeedUnits(String speedUnits) {
+    public void setSpeedUnits(int speedUnits) {
         this.speedUnits = speedUnits;
     }
 
@@ -84,12 +104,12 @@ public class SportActivityInfo implements Serializable{
         this.avgSpeed = avgSpeed;
     }
 
-    public double getDistanceMetres() {
-        return distanceMetres;
+    public double getDistanceKms() {
+        return distanceKms;
     }
 
-    public void setDistanceMetres(double distanceMetres) {
-        this.distanceMetres = distanceMetres;
+    public void setDistanceKms(double distanceKms) {
+        this.distanceKms = distanceKms;
     }
 
     public long getDurationMillis() {
@@ -121,7 +141,7 @@ public class SportActivityInfo implements Serializable{
         //
     }
     public SportActivityInfo(int id, String email, String name, String date, double avgSpeed, int calories, long duration, double distance
-            , String sportType, String distanceU, String speedU, String geoPoints){
+            , int sportType, int distanceU, int speedU, String geoPoints){
         this._id = id;
         this.email = email;
         this.name = name;
@@ -129,7 +149,7 @@ public class SportActivityInfo implements Serializable{
         this.avgSpeed = avgSpeed;
         this.calories = calories;
         this.durationMillis = duration;
-        this.distanceMetres = distance;
+        this.distanceKms = distance;
         this.sportType = sportType;
         this.distanceUnits = distanceU;
         this.speedUnits = speedU;

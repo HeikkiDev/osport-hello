@@ -243,8 +243,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (user.getLastname() != null)
             editor.putString("lastname", user.getLastname());
         editor.putString("apikey", user.getApiKey());
-        if(user.getSex() != null)
-            editor.putString("sex", user.getSex());
         if(user.getAge() != null)
             editor.putString("age", user.getAge());
         if(user.getCity() != null)
@@ -265,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sharedPreferences.getString("firstname", null),
                 sharedPreferences.getString("lastname", null), null,
                 sharedPreferences.getString("apikey", null),
-                sharedPreferences.getString("sex", null),
                 sharedPreferences.getString("age", null),
                 sharedPreferences.getString("city", null),
                 sharedPreferences.getString("weight", null),

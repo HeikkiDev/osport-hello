@@ -60,6 +60,7 @@
         <activity
             android:name=".Activities.SearchUsersActivity"
             android:label="@string/title_activity_search_users"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme" />
         <activity

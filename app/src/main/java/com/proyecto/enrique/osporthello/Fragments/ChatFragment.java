@@ -55,7 +55,6 @@ public class ChatFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
 
         context = getActivity().getApplicationContext();
-        listChats = new ArrayList<>();
 
         // Obtain Recycler
         recycler = (RecyclerView) view.findViewById(R.id.recyclerViewChats);
@@ -65,12 +64,25 @@ public class ChatFragment extends Fragment {
         lManager = new LinearLayoutManager(getContext());
         recycler.setLayoutManager(lManager);
 
-        if(savedInstanceState == null) {
+        if(savedInstanceState != null) {
+            listChats = (ArrayList<Chat>) savedInstanceState.getSerializable("chatsList");
+            if(listChats == null){
+                progressBar.setVisibility(View.VISIBLE);
+                getMyChats();
+            }
+            else {
+                adapter = new ChatsAdapter(context, listChats);
+                recycler.setAdapter(adapter);
+                if(listChats.isEmpty())
+                    txtNotToShow.setVisibility(View.VISIBLE);
+                else
+                    txtNotToShow.setVisibility(View.GONE);
+            }
+        }
+        else{
             progressBar.setVisibility(View.VISIBLE);
             getMyChats();
         }
-        else
-            updateFromLocalDB();
 
         return view;
     }
@@ -103,19 +115,6 @@ public class ChatFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            if(savedInstanceState.containsKey("chatsList")) {
-                listChats = (ArrayList<Chat>) savedInstanceState.getSerializable("chatsList");
-                adapter = new ChatsAdapter(context, listChats);
-                recycler.setAdapter(adapter);
-            }
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("chatsList", listChats);
@@ -138,7 +137,10 @@ public class ChatFragment extends Fragment {
                             listChats = AnalyzeJSON.analyzeChats(response);
                             dataBase.insertChatList(listChats, user.getEmail());
                         } else {
-                            listChats.clear();
+                            if(listChats != null)
+                                listChats.clear();
+                            else
+                                listChats = new ArrayList<Chat>();
                             dataBase.insertChatList(listChats, user.getEmail());
                         }
                         dataBase.Close();

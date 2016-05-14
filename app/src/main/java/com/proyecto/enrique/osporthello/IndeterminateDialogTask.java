@@ -31,11 +31,18 @@ public class IndeterminateDialogTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        while (true){
-            if(isCancelled())
-                break;
-        }
-        progressDialog.dismiss();
         return null;
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        progressDialog.dismiss();
+    }
+
+    @Override
+    protected void onCancelled(Void aVoid) {
+        super.onCancelled(aVoid);
+        progressDialog.dismiss();
     }
 }

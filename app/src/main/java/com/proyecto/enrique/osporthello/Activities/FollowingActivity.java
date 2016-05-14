@@ -35,7 +35,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
     private RecyclerView.LayoutManager lManager;
 
     private static FriendsAdapter.FriendsChanges myInterface;
-    private ArrayList<User> friendsList = new ArrayList<>();
+    private ArrayList<User> friendsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +65,11 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
         }
         else{
             friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendsList");
-            if(friendsList == null)
+            if(friendsList == null) {
+                progressBar.setVisibility(View.VISIBLE);
+                getMyFriends();
                 return;
+            }
             adapter = new FriendsAdapter(getApplicationContext(), myInterface, friendsList);
             recycler.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);

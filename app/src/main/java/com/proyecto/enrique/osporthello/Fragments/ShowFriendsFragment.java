@@ -44,8 +44,8 @@ public class ShowFriendsFragment extends Fragment {
     private LinearLayout layoutFollowing;
     private LinearLayout layoutOrientation;
 
-    private static int numFollowers = 0;
-    private static int numFollowing = 0;
+    private static int numFollowers = -1;
+    private static int numFollowing = -1;
     public static boolean FRIENDS_CHANGE = false;
 
     private final int FOLLOWERS = 1;
@@ -71,9 +71,16 @@ public class ShowFriendsFragment extends Fragment {
         if(savedInstanceState != null){
             numFollowers = savedInstanceState.getInt("numFollowers");
             numFollowing = savedInstanceState.getInt("numFollowing");
-            txtNumFollowers.setText(numFollowers+"");
-            txtNumFollowing.setText(numFollowing+"");
-            progressBar.setVisibility(View.GONE);
+
+            if(numFollowers == -1 || numFollowing == -1){
+                progressBar.setVisibility(View.VISIBLE);
+                updateFollowCounters();
+            }
+            else {
+                txtNumFollowers.setText(numFollowers + "");
+                txtNumFollowing.setText(numFollowing + "");
+                progressBar.setVisibility(View.GONE);
+            }
         }
         else {
             progressBar.setVisibility(View.VISIBLE);

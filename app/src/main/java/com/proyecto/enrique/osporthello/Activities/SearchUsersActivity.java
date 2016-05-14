@@ -1,7 +1,9 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -68,6 +70,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         if(savedInstanceState != null){
             usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
             friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
+
             // Instance adapter
             adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
             recycler.setAdapter(adapter);
@@ -103,14 +106,22 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         if(name.isEmpty())
             return;
 
-        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(SearchUsersActivity.this, "Searching...");
-        progressDialog.execute();
-
         User user = MainActivity.USER_ME;
+        final ProgressDialog progressDialog = new ProgressDialog(context);
         ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
+            public void onStart() {
+                super.onStart();
+                progressDialog.setMessage(getResources().getString(R.string.searching));
+                progressDialog.setIndeterminate(true);
+                progressDialog.setCancelable(false);
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.show();
+            }
+
+            @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                progressDialog.cancel(true);
+                progressDialog.dismiss();
             }
 
             @Override
@@ -123,10 +134,10 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                         adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
-                    progressDialog.cancel(true);
+                    progressDialog.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    progressDialog.cancel(true);
+                    progressDialog.dismiss();
                 }
             }
         });
@@ -157,7 +168,17 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
     }
 
     @Override
-    public void onFriendsChanges() {
+    public void onFriendsChanges(String friendEmail, boolean added) {
         ShowFriendsFragment.FRIENDS_CHANGE = true;
+        if(added){
+            friendsList.add(new User(friendEmail, null, null, null, null));
+        }
+        else {
+            for (int i = 0; i < friendsList.size(); i++) {
+                User user = friendsList.get(i);
+                if(user.getEmail().equals(friendEmail))
+                    friendsList.remove(i);
+            }
+        }
     }
 }

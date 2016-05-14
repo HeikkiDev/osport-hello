@@ -24,7 +24,6 @@ public class AnalyzeJSON {
         String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
         String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
         String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
-        String sex = jsonObject.getJSONObject(nombreObjeto).getString("User_sex");
         String age = jsonObject.getJSONObject(nombreObjeto).getString("User_age");
         String city = jsonObject.getJSONObject(nombreObjeto).getString("User_city");
         String weight = jsonObject.getJSONObject(nombreObjeto).getString("User_weight");
@@ -34,8 +33,6 @@ public class AnalyzeJSON {
             lastname = null;
         if(image.equals("null"))
             image = null;
-        if(sex.equals("null"))
-            sex = null;
         if(city.equals("null"))
             city = null;
         if(age.equals("null") || age.equals("0"))
@@ -45,7 +42,25 @@ public class AnalyzeJSON {
         if(height.equals("null") || height.equals("0"))
             height = null;
 
-        User user = new User(email,firstname,lastname, image ,apiKey,sex,age,city,weight,height);
+        User user = new User(email,firstname,lastname, image ,apiKey,age,city,weight,height);
+        return user;
+    }
+
+    public static User analyzeUserNameImage(JSONObject jsonObject) throws JSONException {
+        final String nombreObjeto = "data";
+        String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
+        String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
+        String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
+
+        if(lastname.equals("null"))
+            lastname = null;
+        if(image.equals("null"))
+            image = null;
+
+        User user = new User();
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setImage(image);
         return user;
     }
 
@@ -132,9 +147,9 @@ public class AnalyzeJSON {
             int calories = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_calories");
             long duration = jsonObject.getJSONArray("data").getJSONObject(i).getLong("Activity_duration");
             double distance = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("Activity_distance");
-            String sportType = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_sportType");
-            String distanceUnits = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_distanceUnits");
-            String speedUnits = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_speedUnits");
+            int sportType = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_sportType");
+            int distanceUnits = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_distanceUnits");
+            int speedUnits = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Activity_speedUnits");
             String geoPoints = jsonObject.getJSONArray("data").getJSONObject(i).getString("Activity_geoPoints");
 
             SportActivityInfo activity =

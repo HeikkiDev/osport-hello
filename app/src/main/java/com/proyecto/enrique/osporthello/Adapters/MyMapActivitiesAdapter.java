@@ -1,19 +1,18 @@
 package com.proyecto.enrique.osporthello.Adapters;
 
-import android.Manifest;
 import android.content.Context;
 import android.graphics.Color;
-import android.location.Location;
+import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,13 +24,23 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
+import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -41,10 +50,49 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
     Context context;
     private ArrayList<SportActivityInfo> items;
 
+    private boolean loading = true;
+    private int pastVisiblesItems, visibleItemCount, totalItemCount;
+    private OnLoadMoreListener onLoadMoreListener;
+
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
     // Constructor
-    public MyMapActivitiesAdapter(Context context, ArrayList<SportActivityInfo> activities) {
+    public MyMapActivitiesAdapter(Context context, RecyclerView recyclerView, OnLoadMoreListener interf, ArrayList<SportActivityInfo> activities) {
         this.context = context;
         this.items = activities;
+        onLoadMoreListener = interf;
+
+        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
+                    .getLayoutManager();
+
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            super.onScrolled(recyclerView, dx, dy);
+                            if(dy > 0) //check for scroll down
+                            {
+                                visibleItemCount = linearLayoutManager.getChildCount();
+                                totalItemCount = linearLayoutManager.getItemCount();
+                                pastVisiblesItems = linearLayoutManager.findFirstVisibleItemPosition();
+
+                                if (loading)
+                                {
+                                    if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                                    {
+                                        loading = false;
+                                        onLoadMoreListener.onLoadMore();
+                                        loading = true;
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
@@ -64,7 +112,8 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             viewHolder.infoUserLayout.setVisibility(View.GONE);
         }
         else{
-            //TODO: Descargar imagen y nombre de este usuario con una tarea asíncrona, poner visible el layout
+            new UserInfoDownload(items.get(i).getEmail() ,viewHolder.username, viewHolder.circleImageView).execute();
+            viewHolder.infoUserLayout.setVisibility(View.VISIBLE);
         }
 
         long millis = items.get(i).getDurationMillis();
@@ -72,18 +121,18 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         int minutes = (int) (millis % 3600000) / 60000;
         int seconds = (int) ((millis % 3600000) % 60000) / 1000 ;
         viewHolder.duration.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-        viewHolder.distance.setText(String.format("%.2f",items.get(i).getDistanceMetres()/1000));
+        viewHolder.distance.setText(String.format("%.2f",items.get(i).getDistanceKms()));
         viewHolder.speed.setText(String.format("%.1f",items.get(i).getAvgSpeed()));
         viewHolder.calories.setText(String.valueOf(items.get(i).getCalories()));
         viewHolder.name.setText(items.get(i).getName());
 
-        if(items.get(i).getSpeedUnits().equals(context.getResources().getString(R.string.km_h_units))) {
+        if(items.get(i).getSpeedUnits() == 0) {
             viewHolder.titleSpeed.setText(R.string.speed_km_h_oneline);
         }
         else {
             viewHolder.titleSpeed.setText(R.string.speed_miles_h_oneline);
         }
-        if(items.get(i).getDistanceUnits().equals(context.getResources().getString(R.string.km_units))) {
+        if(items.get(i).getDistanceUnits() == 0) {
             viewHolder.titleDistance.setText(R.string.distance_km_oneline);
         }
         else {
@@ -128,8 +177,8 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         LatLngBounds latLngBounds = builder.build();
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,5));
         map.addPolyline(new PolylineOptions().addAll(geoPoints).color(Color.GREEN).width(12).visible(true).zIndex(30));
-        map.addMarker(new MarkerOptions().position(geoPoints.get(0)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        map.addMarker(new MarkerOptions().position(geoPoints.get(geoPoints.size()-1)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        map.addMarker(new MarkerOptions().position(geoPoints.get(0)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(context.getString(R.string.start_route)));
+        map.addMarker(new MarkerOptions().position(geoPoints.get(geoPoints.size()-1)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)).title(context.getString(R.string.finish_route))).showInfoWindow();
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
@@ -187,6 +236,67 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
                 // Set the map ready callback to receive the GoogleMap object
                 mapView.getMapAsync(this);
             }
+        }
+    }
+
+    private class UserInfoDownload extends AsyncTask<Void, Void, Void> {
+
+        User userInfo;
+        String email;
+        TextView txtUsername;
+        CircleImageView circleImageView;
+
+        public UserInfoDownload(String email, TextView txt, CircleImageView img){
+            this.email = email;
+            this.txtUsername = txt;
+            this.circleImageView = img;
+        }
+
+        @Override
+        protected Void doInBackground(Void... aVoid) {
+            try {
+                final User user = MainActivity.USER_ME;
+                SyncHttpClient client = new SyncHttpClient(true, 80, 443);
+                client.setTimeout(10000);
+                client.get(MainActivity.HOST+"api/users/name-image/" + email + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                        Log.e("USER_INFO", "ERROR!!");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        Log.e("USER_INFO", "ERROR!!");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                        Log.e("USER_INFO", "ERROR!!");
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            if (!response.getString("data").equals("null")) {
+                                userInfo = AnalyzeJSON.analyzeUserNameImage(response);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Exception e){}
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            txtUsername.setText(userInfo.getFirstname()+ " "+userInfo.getLastname());
+            circleImageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
         }
     }
 }

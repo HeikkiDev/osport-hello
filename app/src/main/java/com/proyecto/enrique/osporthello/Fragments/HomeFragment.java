@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,12 +39,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Adapters.ChooseActivityAdapter;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Models.RowActivity;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.MyTimerTask;
@@ -482,13 +481,50 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         try {
             locationManager.removeUpdates(this);
         } catch (SecurityException e){Log.e("MAP_UPDATES", "Error!!: Al quitar el listener de updates");}
+        int sportType = -1;
+        int distanceUnits = -1;
+        int speedUnits = -1;
+
+        Resources resources = getResources();
+        String name = "";
+        if(resources.getStringArray(R.array.array_activities)[0].equals(txtChooseActivity.getText().toString())){
+            sportType = 0;
+            name = resources.getStringArray(R.array.array_activities)[0];
+        }
+        else if(resources.getStringArray(R.array.array_activities)[1].equals(txtChooseActivity.getText().toString())){
+            sportType = 1;
+            name = resources.getStringArray(R.array.array_activities)[1];
+        }
+        else if(resources.getStringArray(R.array.array_activities)[2].equals(txtChooseActivity.getText().toString())){
+            sportType = 2;
+            name = resources.getStringArray(R.array.array_activities)[2];
+        }
+        else if(resources.getStringArray(R.array.array_activities)[3].equals(txtChooseActivity.getText().toString())){
+            sportType = 3;
+            name = resources.getStringArray(R.array.array_activities)[3];
+        }
+        else if(resources.getStringArray(R.array.array_activities)[4].equals(txtChooseActivity.getText().toString())){
+            sportType = 4;
+            name = resources.getStringArray(R.array.array_activities)[4];
+        }
+
+        if(txtChooseSpeed.getText().toString().equals(getResources().getString(R.string.km_h_units)))
+            speedUnits = 0;
+        else
+            speedUnits = 1;
+
+        if(txtChooseDistance.getText().toString().equals(getResources().getString(R.string.km_units)))
+            distanceUnits = 0;
+        else
+            distanceUnits = 1;
 
         final SportActivityInfo activityInfo = new SportActivityInfo();
-        activityInfo.setSportType(txtChooseActivity.getText().toString());
-        activityInfo.setSpeedUnits(txtChooseSpeed.getText().toString());
-        activityInfo.setDistanceUnits(txtChooseDistance.getText().toString());
+        activityInfo.setSportType(sportType);
+        activityInfo.setName(name);
+        activityInfo.setSpeedUnits(speedUnits);
+        activityInfo.setDistanceUnits(distanceUnits);
         activityInfo.setAvgSpeed((this.countAvgSpeed > 0)?(this.avgSpeed/this.countAvgSpeed):0);
-        activityInfo.setDistanceMetres(this.distance*1000);
+        activityInfo.setDistanceKms(this.distance);
         activityInfo.setCalories(this.calories);
         activityInfo.setEncodedPointsList(PolyUtil.encode(polyline.getPoints()));
         activityInfo.setDurationMillis(myTimerTask.getFinalDuration());

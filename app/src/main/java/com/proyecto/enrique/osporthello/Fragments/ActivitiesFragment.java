@@ -33,7 +33,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by enrique on 16/03/16.
  */
-public class ActivitiesFragment extends Fragment {
+public class ActivitiesFragment extends Fragment implements MyMapActivitiesAdapter.OnLoadMoreListener{
 
     private Context context;
     private TextView txtNotToShow;
@@ -42,8 +42,9 @@ public class ActivitiesFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
 
-    private int totalPages = 0;
+    private int currentPage = 0, totalPages = 0;
     private ArrayList<SportActivityInfo> listActivites;
+    private MyMapActivitiesAdapter.OnLoadMoreListener myInterface;
 
     public ActivitiesFragment(){
         // Required empty constructor
@@ -57,6 +58,8 @@ public class ActivitiesFragment extends Fragment {
         progressBar = (ProgressBar)view.findViewById(R.id.progressActivities);
         txtNotToShow.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
+        context = getContext();
+        myInterface = this;
 
         // Obtain Recycler
         recycler = (RecyclerView) view.findViewById(R.id.recyclerViewActivities);
@@ -71,13 +74,21 @@ public class ActivitiesFragment extends Fragment {
             getMyActivities();
         }
         else{
+            currentPage = savedInstanceState.getInt("currentPage");
             totalPages = savedInstanceState.getInt("totalPages");
             listActivites = (ArrayList<SportActivityInfo>) savedInstanceState.getSerializable("activitiesList");
-            adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), listActivites);
-            recycler.setAdapter(adapter);
-            progressBar.setVisibility(View.GONE);
-            if(listActivites.isEmpty())
-                txtNotToShow.setVisibility(View.VISIBLE);
+
+            if(listActivites == null){
+                progressBar.setVisibility(View.VISIBLE);
+                getMyActivities();
+            }
+            else {
+                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, listActivites);
+                recycler.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
+                if (listActivites == null || listActivites.isEmpty())
+                    txtNotToShow.setVisibility(View.VISIBLE);
+            }
         }
 
         return view;
@@ -86,6 +97,7 @@ public class ActivitiesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt("currentPage", currentPage);
         outState.putInt("totalPages", totalPages);
         outState.putSerializable("activitiesList", listActivites);
     }
@@ -111,10 +123,10 @@ public class ActivitiesFragment extends Fragment {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
                         if (!response.getString("data").equals("null")) {
-                            totalPages = response.getJSONArray("data").getJSONObject(0).getInt("TotalPages");
+                            totalPages = response.getJSONObject("data_aux").getInt("TotalPages");
                             listActivites = AnalyzeJSON.analyzeListActivities(response);
                             // Instance adapter
-                            adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), listActivites);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, listActivites);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.GONE);
@@ -131,6 +143,52 @@ public class ActivitiesFragment extends Fragment {
         }
         catch (Exception e){
             Log.e("ACTIVITIES", "ERROR!!");
+        }
+    }
+
+    /**
+     * Obtains more activities
+     * @return
+     */
+    private void getMoreActivities(){
+        try {
+            User user = MainActivity.USER_ME;
+
+            // Page 0 first time
+            ApiClient.getMyActivities("api/activity/" + user.getEmail() + "/" + currentPage,  new JsonHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                    Log.e("ACTIVITIES", "ERROR!!");
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        if (!response.getString("data").equals("null")) {
+                            int itemsCount = listActivites.size();
+                            totalPages = response.getJSONObject("data_aux").getInt("TotalPages");
+                            ArrayList<SportActivityInfo> moreActivities = AnalyzeJSON.analyzeListActivities(response);
+                            listActivites.addAll(moreActivities);
+                            adapter.notifyDataSetChanged();
+                            recycler.setAdapter(adapter);
+                            recycler.scrollToPosition(itemsCount-1);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            Log.e("ACTIVITIES", "ERROR!!");
+        }
+    }
+
+    @Override
+    public void onLoadMore() {
+        if(totalPages > 1 && currentPage < totalPages-1) {
+            currentPage += 1;
+            getMoreActivities();
         }
     }
 }
