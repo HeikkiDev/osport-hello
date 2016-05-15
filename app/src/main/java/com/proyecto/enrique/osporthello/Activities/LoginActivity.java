@@ -185,6 +185,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
                                             }).show();
                                 }
+                                else{
+                                    Snackbar snackbar = Snackbar.make(coordinatorLayout, R.string.restore_password_failed, Snackbar.LENGTH_LONG);
+                                    View sbView = snackbar.getView();
+                                    TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                                    textView.setTextColor(Color.parseColor("#F44336"));
+                                    snackbar.show();
+                                }
                                 progressDialog.cancel(true);
                             } catch (JSONException e) {
                                 e.printStackTrace();

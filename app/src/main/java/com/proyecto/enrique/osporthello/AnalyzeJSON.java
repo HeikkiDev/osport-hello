@@ -71,19 +71,20 @@ public class AnalyzeJSON {
             String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_email");
             String firstname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_firstname");
             String lastname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_lastname");
-            String image = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_image");
             String city = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_city");
 
             if(email.equals(MainActivity.USER_ME.getEmail()))
                 break;
             if(lastname.equals("null"))
                 lastname = null;
-            if(image.equals("null"))
-                image = null;
             if(city.equals("null"))
                 city = null;
 
-            User user = new User(email,firstname,lastname,image,city);
+            User user = new User();
+            user.setEmail(email);
+            user.setFirstname(firstname);
+            user.setLastname(lastname);
+            user.setCity(city);
             usersList.add(user);
         }
 
@@ -95,21 +96,12 @@ public class AnalyzeJSON {
 
         for (int i = 0; i < jsonObject.getJSONArray("data_aux").length(); i++) {
             String email = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_email");
-            String firstname = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_firstname");
-            String lastname = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_lastname");
-            String image = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_image");
-            String city = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_city");
 
             if(email.equals(MainActivity.USER_ME.getEmail()))
                 break;
-            if(lastname.equals("null"))
-                lastname = null;
-            if(image.equals("null"))
-                image = null;
-            if(city.equals("null"))
-                city = null;
 
-            User user = new User(email,firstname,lastname,image,city);
+            User user = new User();
+            user.setEmail(email);
             usersList.add(user);
         }
 

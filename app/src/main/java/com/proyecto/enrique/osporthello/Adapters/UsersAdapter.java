@@ -20,6 +20,7 @@ import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
@@ -65,10 +66,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     @Override
     public void onBindViewHolder(UserViewHolder viewHolder, final int i) {
+        new NameAndImageTask(items.get(i).getEmail() , null, viewHolder.image).execute();
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
-        viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
+        //viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
         viewHolder.name.setText(items.get(i).getFirstname()+" "+lastname);
         viewHolder.city.setText(city);
 
@@ -83,7 +85,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         }
 
         if(contains){
-            viewHolder.btnFriend.setText(R.string.unfollow);
+            viewHolder.btnFriend.setText(context.getResources().getString(R.string.unfollow));
             viewHolder.btnFriend.setBackgroundResource(R.color.cancelColor);
             viewHolder.btnFriend.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
         }
@@ -93,7 +95,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             @Override
             public void onClick(View v) {
                 Button btn = (Button)v;
-                if(btn.getText().equals(context.getString(R.string.follow))){
+                String btnText = context.getResources().getString(R.string.follow);
+                if(btn.getText().equals(btnText)){
                     makeNewFriend(position, btn);
                 }
                 else{
@@ -124,7 +127,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true")) {
-                        btn.setText("Unfollow");
+                        btn.setText(context.getResources().getString(R.string.unfollow));
                         btn.setBackgroundResource(R.color.cancelColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
 
@@ -158,7 +161,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true")) {
-                        btn.setText("Follow");
+                        btn.setText(context.getResources().getString(R.string.follow));
                         btn.setBackgroundResource(R.color.primaryColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add_white_24dp, 0, 0, 0);
 

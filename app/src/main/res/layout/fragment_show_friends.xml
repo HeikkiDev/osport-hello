@@ -40,7 +40,7 @@
                 android:textSize="40dp"
                 android:layout_gravity="center" />
             <TextView
-                android:text="Followers"
+                android:text="@string/title_activity_followers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -72,7 +72,7 @@
                 android:textSize="40dp"
                 android:layout_gravity="center" />
             <TextView
-                android:text="Following"
+                android:text="@string/title_activity_following"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,10 +35,10 @@ public class ChatFragment extends Fragment {
 
     private Context context;
     private TextView txtNotToShow;
-    private ProgressBar progressBar;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<Chat> listChats;
 
@@ -49,10 +50,9 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.updateList);
         txtNotToShow = (TextView)view.findViewById(R.id.txtNotToShow);
-        progressBar = (ProgressBar)view.findViewById(R.id.progressChats);
         txtNotToShow.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
 
         context = getActivity().getApplicationContext();
 
@@ -67,7 +67,6 @@ public class ChatFragment extends Fragment {
         if(savedInstanceState != null) {
             listChats = (ArrayList<Chat>) savedInstanceState.getSerializable("chatsList");
             if(listChats == null){
-                progressBar.setVisibility(View.VISIBLE);
                 getMyChats();
             }
             else {
@@ -80,10 +79,17 @@ public class ChatFragment extends Fragment {
             }
         }
         else{
-            progressBar.setVisibility(View.VISIBLE);
+            updateFromLocalDB();
             getMyChats();
         }
 
+        swipeRefreshLayout.setColorSchemeResources(R.color.accentColor, R.color.primaryColor);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMyChats();
+            }
+        });
         return view;
     }
 
@@ -91,7 +97,10 @@ public class ChatFragment extends Fragment {
         LocalDataBase dataBase = new LocalDataBase(context);
         Cursor cursor = dataBase.getMyChats(MainActivity.USER_ME.getEmail());
 
-        listChats.clear();
+        if(listChats != null)
+            listChats.clear();
+        else
+            listChats = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 Chat chat = new Chat();
@@ -104,7 +113,6 @@ public class ChatFragment extends Fragment {
         }
         dataBase.Close();
 
-        progressBar.setVisibility(View.GONE);
         adapter = new ChatsAdapter(context, listChats);
         recycler.setAdapter(adapter);
 
@@ -127,6 +135,7 @@ public class ChatFragment extends Fragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("CHATS", "ERROR!!");
+                    txtNotToShow.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -148,6 +157,16 @@ public class ChatFragment extends Fragment {
                         updateFromLocalDB();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFinish() {
+                    super.onFinish();
+                    try {
+                        swipeRefreshLayout.setRefreshing(false);
+                    } catch (Exception e) {
+
                     }
                 }
             });

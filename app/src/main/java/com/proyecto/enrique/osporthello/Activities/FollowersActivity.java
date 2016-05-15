@@ -2,6 +2,7 @@ package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private static UsersAdapter.FriendsChanges myInterface;
     private ArrayList<User> followingList = null;
@@ -44,6 +46,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followers);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.updateList);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //
@@ -79,6 +82,14 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
             recycler.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
         }
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.accentColor, R.color.primaryColor);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMyFollowers();
+            }
+        });
     }
 
     @Override
@@ -132,6 +143,16 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                 } catch (JSONException e) {
                     e.printStackTrace();
                     progressBar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                try {
+                    swipeRefreshLayout.setRefreshing(false);
+                } catch (Exception e) {
+
                 }
             }
         });

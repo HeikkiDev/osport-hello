@@ -47,7 +47,7 @@ public class NotificationsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES arrancado!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES arrancado!", Toast.LENGTH_SHORT).show();
         //
         Firebase.setAndroidContext(this);
         listenersList = new ArrayList<>();
@@ -58,7 +58,7 @@ public class NotificationsService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES parado!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES parado!", Toast.LENGTH_SHORT).show();
         //
         for (ChildEventListener listener : listenersList) {
             this.refNotifications.removeEventListener(listener);
@@ -122,9 +122,23 @@ public class NotificationsService extends Service {
      *
      */
     private void notifyNewFriend(final String email, String apiKey){
-        ApiClient.getUserName("api/username/id/"+email,apiKey, new JsonHttpResponseHandler() {
+        ApiClient.getUserName("api/users/name/"+email,apiKey, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification(email,"");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification(email,"");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
                 buildNotification(email,"");
             }
@@ -154,22 +168,22 @@ public class NotificationsService extends Service {
                         .setContentText(name)
                         .setContentTitle("You have a new follower");
 
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        //Intent resultIntent = new Intent(context, MainActivity.class);
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        //TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 
-        stackBuilder.addParentStack(ChatActivity.class);
+        //stackBuilder.addParentStack(ChatActivity.class);
 
-        stackBuilder.addNextIntent(resultIntent);
+        //stackBuilder.addNextIntent(resultIntent);
 
-        PendingIntent resultPendingIntent =
+        /*PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
                         PendingIntent.FLAG_UPDATE_CURRENT
-                );
+                );*/
 
         mBuilder.setAutoCancel(true);
-        mBuilder.setContentIntent(resultPendingIntent);
+        //mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(email.hashCode(), mBuilder.build());

@@ -11,6 +11,10 @@
             android:id="@+id/nav_activities"
             android:title="@string/activities_item"
             android:icon="@drawable/ic_list_black_24dp"/>
+        <item
+            android:id="@+id/nav_statistics"
+            android:title="@string/statistics_item"
+            android:icon="@drawable/ic_timeline_black_24dp"/>
 
         <!-- Social section -->
         <item

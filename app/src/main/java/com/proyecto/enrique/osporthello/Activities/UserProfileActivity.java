@@ -1,5 +1,6 @@
 package com.proyecto.enrique.osporthello.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -33,7 +34,10 @@ import com.proyecto.enrique.osporthello.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -49,11 +53,14 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private EditText etxHeight;
     Button btnSave;
 
+    private Context context;
     private static Bitmap bitmapImage = null;
     private static final int PICK_IMAGE = 1;
     private static final int WIDTH = 350;
     private static final int HEIGHT = 300;
-    private static final String[] CITY = new String[] {"Málaga", "Madrid", "Marbella", "Barcelona", "Sevilla"};
+
+    ArrayAdapter<String> adapter;
+    private static ArrayList<String> CITY = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +80,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         btnSave.setOnClickListener(this);
         // Autocompete EditText Cities
         txtAutoCity = (AutoCompleteTextView) findViewById(R.id.input_city);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, CITY);
-        txtAutoCity.setAdapter(adapter);
+        new ReadCitiesTask().execute();
 
-        //
+        context = this;
 
         // Set Collapsing Toolbar layout to the screen
         CollapsingToolbarLayout collapsingToolbar =
@@ -198,7 +204,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
-        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(UserProfileActivity.this, "Saving changes...");
+        final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(UserProfileActivity.this, getString(R.string.saving_changes));
         progressDialog.execute();
 
         User user = MainActivity.USER_ME;
@@ -297,4 +303,39 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private class ReadCitiesTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(
+                        new InputStreamReader(getAssets().open("cities.txt"), "UTF-8"));
+
+                String oneLine;
+                while ((oneLine = reader.readLine()) != null) {
+                    //process line
+                    CITY.add(oneLine);
+                }
+            } catch (IOException e) {
+                //log the exception
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        //log the exception
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, CITY);
+            txtAutoCity.setAdapter(adapter);
+        }
+    }
 }

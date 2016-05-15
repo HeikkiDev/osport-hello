@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
@@ -35,6 +36,7 @@ import cz.msebera.android.httpclient.Header;
 public class SearchUsersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges {
 
     private Context context;
+    private LinearLayout layoutSearching;
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
@@ -50,14 +52,13 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_users);
+        layoutSearching = (LinearLayout)findViewById(R.id.layoutSearching);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //
         this.context = this;
         this.myInterface = this;
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
-        usersList = new ArrayList<>();
-        friendsList = new ArrayList<>();
 
         // Obtain Recycler
         recycler = (RecyclerView) findViewById(R.id.recyclerViewSearch);
@@ -68,12 +69,18 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         recycler.setLayoutManager(lManager);
 
         if(savedInstanceState != null){
+            etxSearchUsers.setText(savedInstanceState.getString("etxSearch"));
             usersList = (ArrayList<User>) savedInstanceState.getSerializable("userslist");
             friendsList = (ArrayList<User>) savedInstanceState.getSerializable("friendslist");
 
-            // Instance adapter
-            adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
-            recycler.setAdapter(adapter);
+            if(usersList == null || friendsList == null){
+                searchUsersByName();
+            }
+            else {
+                // Instance adapter
+                adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
+                recycler.setAdapter(adapter);
+            }
         }
 
         // To show back arrow
@@ -95,6 +102,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         super.onSaveInstanceState(outState);
         outState.putSerializable("userslist", usersList);
         outState.putSerializable("friendslist", friendsList);
+        outState.putString("etxSearch", etxSearchUsers.getText().toString());
     }
 
     /**
@@ -106,22 +114,15 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         if(name.isEmpty())
             return;
 
+        adapter = new UsersAdapter(context, myInterface, new ArrayList<User>(), new ArrayList<User>());
+        recycler.setAdapter(adapter);
+        layoutSearching.setVisibility(View.VISIBLE);
         User user = MainActivity.USER_ME;
-        final ProgressDialog progressDialog = new ProgressDialog(context);
         ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getEmail(), new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-                progressDialog.setMessage(getResources().getString(R.string.searching));
-                progressDialog.setIndeterminate(true);
-                progressDialog.setCancelable(false);
-                progressDialog.setCanceledOnTouchOutside(false);
-                progressDialog.show();
-            }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                progressDialog.dismiss();
+                layoutSearching.setVisibility(View.GONE);
             }
 
             @Override
@@ -134,10 +135,10 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                         adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
-                    progressDialog.dismiss();
+                    layoutSearching.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    layoutSearching.setVisibility(View.GONE);
                 }
             }
         });

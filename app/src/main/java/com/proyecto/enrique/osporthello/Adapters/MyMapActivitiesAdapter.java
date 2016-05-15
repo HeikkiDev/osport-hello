@@ -31,13 +31,17 @@ import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -112,7 +116,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             viewHolder.infoUserLayout.setVisibility(View.GONE);
         }
         else{
-            new UserInfoDownload(items.get(i).getEmail() ,viewHolder.username, viewHolder.circleImageView).execute();
+            new NameAndImageTask(items.get(i).getEmail() ,viewHolder.username, viewHolder.circleImageView).execute();
             viewHolder.infoUserLayout.setVisibility(View.VISIBLE);
         }
 
@@ -124,7 +128,15 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         viewHolder.distance.setText(String.format("%.2f",items.get(i).getDistanceKms()));
         viewHolder.speed.setText(String.format("%.1f",items.get(i).getAvgSpeed()));
         viewHolder.calories.setText(String.valueOf(items.get(i).getCalories()));
-        viewHolder.name.setText(items.get(i).getName());
+        String name = items.get(i).getName();
+        viewHolder.name.setText(name.split(";")[0] + context.getString(R.string.name_separator) + name.split(";")[1]);
+        try {
+            String sportDate = items.get(i).getDate();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date datetime = format.parse(sportDate);
+            format = new SimpleDateFormat("dd/MM/yyyy");
+            viewHolder.date.setText(format.format(datetime));
+        } catch (ParseException e) {e.printStackTrace();}
 
         if(items.get(i).getSpeedUnits() == 0) {
             viewHolder.titleSpeed.setText(R.string.speed_km_h_oneline);
@@ -151,6 +163,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         // Get the SportActivityInfo for this item and attach it to the MapView
         SportActivityInfo item = items.get(i);
         viewHolder.mapView.setTag(item);
+        viewHolder.mapView.setClickable(false);
 
         // Ensure the map has been initialised by the on map ready callback in ViewHolder.
         // If it is not ready yet, it will be initialised with the NamedLocation set as its tag
@@ -190,6 +203,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         public TextView username;
         public CardView cardView;
         public TextView name;
+        private TextView date;
         public MapView mapView;
         public TextView duration;
         public TextView distance;
@@ -206,6 +220,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             username = (TextView)v.findViewById(R.id.username);
             cardView = (CardView)v.findViewById(R.id.activityCardView);
             name = (TextView) v.findViewById(R.id.txtActivityName);
+            date = (TextView)v.findViewById(R.id.txtDate);
             mapView = (MapView)v.findViewById(R.id.mapActivity);
             duration = (TextView)v.findViewById(R.id.txtDuration);
             distance = (TextView)v.findViewById(R.id.txtDistance);
@@ -236,67 +251,6 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
                 // Set the map ready callback to receive the GoogleMap object
                 mapView.getMapAsync(this);
             }
-        }
-    }
-
-    private class UserInfoDownload extends AsyncTask<Void, Void, Void> {
-
-        User userInfo;
-        String email;
-        TextView txtUsername;
-        CircleImageView circleImageView;
-
-        public UserInfoDownload(String email, TextView txt, CircleImageView img){
-            this.email = email;
-            this.txtUsername = txt;
-            this.circleImageView = img;
-        }
-
-        @Override
-        protected Void doInBackground(Void... aVoid) {
-            try {
-                final User user = MainActivity.USER_ME;
-                SyncHttpClient client = new SyncHttpClient(true, 80, 443);
-                client.setTimeout(10000);
-                client.get(MainActivity.HOST+"api/users/name-image/" + email + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                        Log.e("USER_INFO", "ERROR!!");
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        super.onFailure(statusCode, headers, responseString, throwable);
-                        Log.e("USER_INFO", "ERROR!!");
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse);
-                        Log.e("USER_INFO", "ERROR!!");
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        try {
-                            if (!response.getString("data").equals("null")) {
-                                userInfo = AnalyzeJSON.analyzeUserNameImage(response);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            } catch (Exception e){}
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            txtUsername.setText(userInfo.getFirstname()+ " "+userInfo.getLastname());
-            circleImageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
         }
     }
 }

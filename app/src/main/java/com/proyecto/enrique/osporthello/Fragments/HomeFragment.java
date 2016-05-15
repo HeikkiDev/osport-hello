@@ -273,7 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     @Override
     public void onMapClick(LatLng latLng) {
         //
-        updateMapView(latLng);
+        //updateMapView(latLng); // For Testing
     }
 
     @Override
@@ -561,7 +561,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                     }
                 });
         final AlertDialog alert = builder.create();
-        alert.show();
+
+        if(polyline.getPoints() != null && polyline.getPoints().size() > 0)
+            alert.show();
+        else{
+            if(mMap != null){
+                mMap.clear();
+                polyline.getPoints().clear();
+                initializeGoogleMap();
+            }
+            layoutInfoWork.setVisibility(View.GONE);
+            layoutStopPause.setVisibility(View.GONE);
+            layoutStartWorkout.setVisibility(View.VISIBLE);
+        }
 
         if(timer != null){
             timer.cancel();
@@ -591,11 +603,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         ListView listViewActivities = (ListView) dialogView.findViewById(android.R.id.list);
         Resources resources = getResources();
         final ArrayList<RowActivity> listActivities = new ArrayList<>();
-        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.marker), resources.getStringArray(R.array.array_activities)[0]));
-        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.marker), resources.getStringArray(R.array.array_activities)[1]));
-        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.marker), resources.getStringArray(R.array.array_activities)[2]));
-        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.marker), resources.getStringArray(R.array.array_activities)[3]));
-        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.marker), resources.getStringArray(R.array.array_activities)[4]));
+        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.cycling), resources.getStringArray(R.array.array_activities)[0]));
+        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.runningmore), resources.getStringArray(R.array.array_activities)[1]));
+        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.running), resources.getStringArray(R.array.array_activities)[2]));
+        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.walking), resources.getStringArray(R.array.array_activities)[3]));
+        listActivities.add(new RowActivity(resources.getDrawable(R.drawable.walking), resources.getStringArray(R.array.array_activities)[4]));
         ChooseActivityAdapter activityAdapter = new ChooseActivityAdapter(getActivity(), R.layout.row_activities, listActivities);
         listViewActivities.setAdapter(activityAdapter);
 

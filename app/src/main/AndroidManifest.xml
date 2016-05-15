@@ -60,7 +60,6 @@
         <activity
             android:name=".Activities.SearchUsersActivity"
             android:label="@string/title_activity_search_users"
-            android:screenOrientation="portrait"
             android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme" />
         <activity
@@ -85,6 +84,10 @@
         <activity
             android:name=".Activities.FollowingActivity"
             android:label="@string/title_activity_following"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.ConfigurationActivity"
+            android:label="@string/title_activity_configuration"
             android:theme="@style/AppTheme"></activity>
     </application>
 

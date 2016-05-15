@@ -2,10 +2,12 @@
     <string name="app_name">OSport</string>
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">525799510935126</string>
+    <string name="google_app_id"> AIzaSyB8SjEn9p-wMVWrRCaiMMmaAPNbAspRGO4</string>
 
     <!-- Navigation Drawer Items -->
     <string name="home_item">Home</string>
     <string name="activities_item">Activities</string>
+    <string name="statistics_item">Statistics</string>
     <string name="friends_item">Friends</string>
     <string name="log_out_item">Log out</string>
     <string name="settings_item">Settings</string>
@@ -34,7 +36,6 @@
     <string name="error_creating_account">Error creating account</string>
     <string name="passwords_dont_match">Passwords don\'t match</string>
     <string name="recovery_email_empty">Indicate email for recovery password</string>
-    <string name="recovery_email_equal_email_id">Recovery email can\'t be the same as ID email</string>
     <string name="user_already_exists">This email is already registered</string>
     <string name="social_item">Social</string>
     <string name="geo_search_item">GeoSearch</string>
@@ -45,16 +46,13 @@
     <string name="hint_lastname">Lastname (to improve search)</string>
     <string name="save_changes">Save changes</string>
     <string name="input_city">City</string>
-    <string name="hint_sex">Sex</string>
     <string name="input_weight">Weigth (kg)</string>
     <string name="input_height">Height (cm)</string>
     <string name="input_age">Age</string>
-    <string name="title_activity_borrar">BorrarActivity</string>
     <string name="specify_username">You must specify a username</string>
 
     <!-- User Profile Activity -->
     <string name="title_activity_search_users">Search users</string>
-    <string name="title_activity_chat">ChatActivity</string>
     <string name="restore_password_email">Restore password in email</string>
     <string name="restore_password_failed">Restoring password failed</string>
 
@@ -72,13 +70,12 @@
     <string name="calories_oneline">Calories (kcal)</string>
     <string name="start_workout">Start workout</string>
     <string name="activity">Activity</string>
-    <string name="title_activity_maps">Map</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
     <string name="restart">Restart</string>
     <string name="km_units">Kms</string>
     <string name="miles_units">Miles</string>
-    <string name="choose_distance">Choose distanceKms units</string>
+    <string name="choose_distance">Choose distance units</string>
     <string name="choose_speed">Choose speed units</string>
     <string name="km_h_units">Km/h</string>
     <string name="miles_h_units">Miles/h</string>
@@ -116,4 +113,10 @@
     <string name="cycling">Cycling</string>
     <string name="start_route">Start</string>
     <string name="finish_route">Finish</string>
+    <string name="title_activity_configuration">Configuration</string>
+    <string name="name_separator">" at "</string>
+    <string name="sure_about_unfollow">Are you sure about unfollow this user?</string>
+    <string name="saving_changes">Saving changes...</string>
+    <string name="speed">Speed</string>
+    <string name="distance">Distance</string>
 </resources>

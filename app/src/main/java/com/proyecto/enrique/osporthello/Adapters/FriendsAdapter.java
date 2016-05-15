@@ -24,6 +24,7 @@ import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONException;
@@ -67,10 +68,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public void onBindViewHolder(final FriendViewHolder viewHolder, final int i) {
+        new NameAndImageTask(items.get(i).getEmail() , null, viewHolder.image).execute();
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         final String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
-        viewHolder.image.setImageBitmap(stringToBitMap(items.get(i).getImage()));
+        //viewHolder.image.setImageBitmap(stringToBitMap(items.get(i).getImage()));
         viewHolder.name.setText(items.get(i).getFirstname() + " " + lastname);
         viewHolder.city.setText(city);
 
@@ -87,9 +89,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             @Override
             public boolean onLongClick(View v) {
                 new AlertDialog.Builder(v.getContext())
-                        .setTitle("Unfollow")
-                        .setMessage("Are you sure about unfollow this user?")
-                        .setPositiveButton("Unfollow", new DialogInterface.OnClickListener() {
+                        .setTitle(context.getResources().getString(R.string.unfollow))
+                        .setMessage(R.string.sure_about_unfollow)
+                        .setPositiveButton(context.getResources().getString(R.string.unfollow), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteFriend(i);

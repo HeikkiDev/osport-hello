@@ -1,0 +1,122 @@
+<resources>
+    <string name="app_name">OSport</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="facebook_app_id">525799510935126</string>
+    <string name="google_app_id"> AIzaSyB8SjEn9p-wMVWrRCaiMMmaAPNbAspRGO4</string>
+
+    <!-- Navigation Drawer Items -->
+    <string name="home_item">Home</string>
+    <string name="activities_item">Actividades</string>
+    <string name="statistics_item">Estadísticas</string>
+    <string name="friends_item">Amigos</string>
+    <string name="log_out_item">Cerrar sesión</string>
+    <string name="settings_item">Ajustes</string>
+    <string name="configuracion_item">Configuración</string>
+
+    <!-- Login Activity strings -->
+    <string name="login_or_create">o</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="enter_valid_email">Indica una dirección de email válida</string>
+    <string name="enter_valid_password">Son necesarios más de 8 caracteres alfanuméricos</string>
+    <string name="login_failed">Inicio de sesión fallido</string>
+    <string name="title_activity_login">Inicio de sesión</string>
+    <string name="log_in">Iniciar sesión</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="confirm_registration">Confirma el registro en tu email</string>
+    <string name="go_to_email">Abrir email</string>
+    <string name="choose_email_app">Elige tu app de email</string>
+
+    <!-- Create Account Activity strings -->
+    <string name="title_activity_create_account">Crear nueva cuenta</string>
+    <string name="hint_username">Nombre (nombre público)</string>
+    <string name="repeat_password">Repite la contraseña</string>
+    <string name="emergency_email">Dirección de email de recuperación</string>
+    <string name="enter_username">Indica tu nombre de usuario</string>
+    <string name="error_creating_account">Error creando la cuenta</string>
+    <string name="passwords_dont_match">Las contraseñas no coincinden</string>
+    <string name="recovery_email_empty">Indica el email de recuperación de contraseña</string>
+    <string name="user_already_exists">Este email ya está registrado</string>
+    <string name="social_item">Social</string>
+    <string name="geo_search_item">GeoBúsqueda</string>
+
+    <!-- User Profile Activity -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_user_profile">Perfil</string>
+    <string name="hint_lastname">Apellidos (mejora las búsquedas)</string>
+    <string name="save_changes">Guardar cambios</string>
+    <string name="input_city">Ciudad</string>
+    <string name="input_weight">Peso (kg)</string>
+    <string name="input_height">Altura (cm)</string>
+    <string name="input_age">Edad</string>
+    <string name="specify_username">Debes especificar un nombre de usuario</string>
+
+    <!-- User Profile Activity -->
+    <string name="title_activity_search_users">Buscar usuarios</string>
+    <string name="restore_password_email">Restaura la contraseña en tu email</string>
+    <string name="restore_password_failed">Recuperación de contraseña fallida</string>
+
+    <!-- Maps -->
+    <string name="duration">Duración</string>
+    <string name="speed_km_h">Velocidad\n(km/h)</string>
+    <string name="speed_miles_h">Velocidad\n(millas/h)</string>
+    <string name="distance_km">Distancia\n(km)</string>
+    <string name="distance_miles">Distancia\n(millas)</string>
+    <string name="calories">Calorias\n(kcal)</string>
+    <string name="speed_km_h_oneline">Velocidad (km/h)</string>
+    <string name="speed_miles_h_oneline">Velocidad (millas/h)</string>
+    <string name="distance_km_oneline">Distancia (km)</string>
+    <string name="distance_miles_oneline">Distancia (millas)</string>
+    <string name="calories_oneline">Calorias (kcal)</string>
+    <string name="start_workout">Comenzar entrenamiento</string>
+    <string name="activity">Actividad</string>
+    <string name="pause">Pausar</string>
+    <string name="stop">Parar</string>
+    <string name="restart">Reanudar</string>
+    <string name="km_units">Kms</string>
+    <string name="miles_units">Millas</string>
+    <string name="choose_distance">Elige unidades de distancia</string>
+    <string name="choose_speed">Elige unidades de velocidad</string>
+    <string name="km_h_units">Km/h</string>
+    <string name="miles_h_units">Millas/h</string>
+    <string name="choose_your_activity">Elige tu actividad</string>
+    <string name="gps_disabled">Tu GPS parece estar deshabilitado, ¿quieres habilitarlo?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="wait_a_moment">Espere un momento...</string>
+    <string name="forgot_your_password"><![CDATA[<u>¿Olvidaste tu contraseña?</u>]]></string>
+    <string name="logging_in">Iniciando sesión...</string>
+    <string name="stop_workout">Parar entrenamiento</string>
+    <string name="want_stop_worktout">¿Seguro que quieres finalizar este entrenamiento?</string>
+    <string name="saving_work_data">Guardando datos del entrenamiento...</string>
+    <string name="save_activity">Guardar</string>
+    <string name="discard_activity">Descartar</string>
+    <string name="save_workout_data">Datos del entrenamiento</string>
+    <string name="want_save_wokout">¿Quieres guardar y publicar los datos de este entrenamiento?</string>
+    <string name="not_activities_to_show">No hay actividades que mostrar</string>
+    <string name="not_chats_to_show">No hay chats que mostrar</string>
+
+    <string-array name="array_activities">
+        <item>Ciclismo</item>
+        <item>Running</item>
+        <item>Jogging</item>
+        <item>Caminar (moderado)</item>
+        <item>Caminar (ritmo alto)</item>
+    </string-array>
+
+    <string name="title_activity_followers">Seguidores</string>
+    <string name="title_activity_following">Siguiendo</string>
+    <string name="searching">Buscando...</string>
+    <string name="follow">Seguir</string>
+    <string name="unfollow">No seguir</string>
+    <string name="workout_saved">Entrenamiento guardado correctamente</string>
+    <string name="cycling">Ciclismo</string>
+    <string name="start_route">Comienzo</string>
+    <string name="finish_route">Final</string>
+    <string name="title_activity_configuration">Configuración</string>
+    <string name="name_separator">" a las "</string>
+    <string name="sure_about_unfollow">¿Seguro que quieres dejar de seguirle?</string>
+    <string name="saving_changes">Guardando cambios...</string>
+    <string name="speed">Velocidad</string>
+    <string name="distance">Distancia</string>
+</resources>

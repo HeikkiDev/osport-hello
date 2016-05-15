@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private int currentPage = 0, totalPages = 0;
     private ArrayList<SportActivityInfo> activitiesList;
@@ -56,6 +58,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activities_friends, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.updateList);
         txtNotToShow = (TextView)view.findViewById(R.id.txtNotToShow);
         progressBar = (ProgressBar)view.findViewById(R.id.progressFriendsActivities);
         txtNotToShow.setVisibility(View.GONE);
@@ -92,6 +95,14 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                     txtNotToShow.setVisibility(View.VISIBLE);
             }
         }
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.accentColor, R.color.primaryColor);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getFriendsActivities();
+            }
+        });
         return view;
     }
 
@@ -133,11 +144,24 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                             txtNotToShow.setVisibility(View.GONE);
                         }
                         else{
+                            activitiesList = new ArrayList<SportActivityInfo>();
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, activitiesList);
+                            recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.VISIBLE);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFinish() {
+                    super.onFinish();
+                    try {
+                        swipeRefreshLayout.setRefreshing(false);
+                    } catch (Exception e) {
+
                     }
                 }
             });

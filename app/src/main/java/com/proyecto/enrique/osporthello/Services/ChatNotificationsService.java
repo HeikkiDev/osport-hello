@@ -31,6 +31,7 @@ import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.Message;
 import com.proyecto.enrique.osporthello.Models.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,7 +63,7 @@ public class ChatNotificationsService extends Service {
     public void onCreate() {
         super.onCreate();
         Firebase.setAndroidContext(this);
-        Toast.makeText(getApplicationContext(), "Servicio CHAT arrancado!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Servicio CHAT arrancado!", Toast.LENGTH_SHORT).show();
 
         if(listFirebaseListeners == null)
             listFirebaseListeners = new ArrayList<>();
@@ -102,7 +103,7 @@ public class ChatNotificationsService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(getApplicationContext(), "Servicio CHAT parado!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Servicio CHAT parado!", Toast.LENGTH_SHORT).show();
 
         for (ChildEventListener listener : listFirebaseListeners) {
             this.refChats.removeEventListener(listener);
@@ -121,6 +122,18 @@ public class ChatNotificationsService extends Service {
             ApiClient.getUserChats("api/chats/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                    Log.e("CHAT_NOTIFICATIONS", "ERROR 1!!");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.e("CHAT_NOTIFICATIONS", "ERROR 1!!");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
                     Log.e("CHAT_NOTIFICATIONS", "ERROR 1!!");
                 }
 
@@ -234,9 +247,23 @@ public class ChatNotificationsService extends Service {
      */
     private void notifyNewMessage(final Chat chat){
 
-        ApiClient.getUserName("api/username/id/"+chat.getReceiver_email(),this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
+        ApiClient.getUserName("api/users/name/"+chat.getReceiver_email(),this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification("", chat);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
+                buildNotification("", chat);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.e("CHAT_NOTIFICATIONS", "ERROR USERNAME!!");
                 buildNotification("", chat);
             }

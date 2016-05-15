@@ -29,6 +29,7 @@ import com.proyecto.enrique.osporthello.Fragments.ChatFragment;
 import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
 import com.proyecto.enrique.osporthello.Fragments.GeoSearchFragment;
 import com.proyecto.enrique.osporthello.Fragments.HomeFragment;
+import com.proyecto.enrique.osporthello.Fragments.StatisticsFragment;
 import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
@@ -111,6 +112,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Default selection HOME, or currentSelected
             showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try{
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0); // 0 private mode
+            String userSesion = sharedPreferences.getString("email", null);
+            if(userSesion != null){
+                startService(new Intent(MainActivity.this, ChatNotificationsService.class));
+                startService(new Intent(MainActivity.this, NotificationsService.class));
+            }
+        }
+        catch (Exception e){}
     }
 
     @Override
@@ -209,12 +224,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 itemMenu = navigationView.getMenu().findItem(R.id.nav_activities);
                 break;
             case 2:
-                itemMenu = navigationView.getMenu().findItem(R.id.nav_friends);
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_statistics);
                 break;
             case 3:
-                itemMenu = navigationView.getMenu().findItem(R.id.nav_chat);
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_friends);
                 break;
             case 4:
+                itemMenu = navigationView.getMenu().findItem(R.id.nav_chat);
+                break;
+            case 5:
                 itemMenu = navigationView.getMenu().findItem(R.id.nav_geosearch);
                 break;
         }
@@ -327,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showFragment(currentSelected, menuItem);
                                 }
                                 break;
-                            case R.id.nav_friends:
+                            case R.id.nav_statistics:
                                 if (currentSelected == 2) {
                                     drawerLayout.closeDrawers();
                                 } else {
@@ -335,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showFragment(currentSelected, menuItem);
                                 }
                                 break;
-                            case R.id.nav_chat:
+                            case R.id.nav_friends:
                                 if (currentSelected == 3) {
                                     drawerLayout.closeDrawers();
                                 } else {
@@ -343,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showFragment(currentSelected, menuItem);
                                 }
                                 break;
-                            case R.id.nav_geosearch:
+                            case R.id.nav_chat:
                                 if (currentSelected == 4) {
                                     drawerLayout.closeDrawers();
                                 } else {
@@ -351,12 +369,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showFragment(currentSelected, menuItem);
                                 }
                                 break;
+                            case R.id.nav_geosearch:
+                                if (currentSelected == 5) {
+                                    drawerLayout.closeDrawers();
+                                } else {
+                                    currentSelected = 5;
+                                    showFragment(currentSelected, menuItem);
+                                }
+                                break;
                             case R.id.nav_settings:
-                                Snackbar.make(getCurrentFocus(), "Item Settings", Snackbar.LENGTH_SHORT).show();
-                                //
-                                //TODO: LANZAR ACTIVITY DE SETTINGS CON FLECHITA ARRIBA PARA VOLVER ATRÁS AQUÍ
-                                // Un fragment aquí no tiene mucho sentido
-                                drawerLayout.closeDrawers();
+                                Intent intent = new Intent(MainActivity.this, ConfigurationActivity.class);
+                                startActivity(intent);
                                 break;
                             case R.id.nav_log_out:
                                 closeSession(); // Log Out
@@ -385,12 +408,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fragment = new ActivitiesFragment();
                 break;
             case 2:
-                fragment = new FriendsFragment();
+                fragment = new StatisticsFragment();
                 break;
             case 3:
-                fragment = new ChatFragment();
+                fragment = new FriendsFragment();
                 break;
             case 4:
+                fragment = new ChatFragment();
+                break;
+            case 5:
                 fragment = new GeoSearchFragment();
                 break;
         }
