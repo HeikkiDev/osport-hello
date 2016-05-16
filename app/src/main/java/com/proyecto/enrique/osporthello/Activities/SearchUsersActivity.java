@@ -26,6 +26,7 @@ import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -118,10 +119,23 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         recycler.setAdapter(adapter);
         layoutSearching.setVisibility(View.VISIBLE);
         User user = MainActivity.USER_ME;
-        ApiClient.getUsersByName("api/users/search/" + user.getCity() + "/" + name + "/" + user.getEmail(), new JsonHttpResponseHandler() {
+        String city = (user.getCity()==null || user.getCity().equals(""))?"null":user.getCity();
+        ApiClient.getUsersByName("api/users/search/" + city + "/" + name + "/" + user.getEmail(), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                layoutSearching.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                layoutSearching.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 layoutSearching.setVisibility(View.GONE);
             }
 

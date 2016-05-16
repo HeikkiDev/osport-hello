@@ -27,6 +27,7 @@ import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,9 +80,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         viewHolder.btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewHolder.btnChat.setEnabled(false);
                 User user = items.get(i);
                 // Create and/or open a Chat with a User
-                newChat(user);
+                newChat(user, viewHolder.btnChat);
             }
         });
 
@@ -89,9 +91,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             @Override
             public boolean onLongClick(View v) {
                 new AlertDialog.Builder(v.getContext())
-                        .setTitle(context.getResources().getString(R.string.unfollow))
+                        .setTitle(context.getResources().getString(R.string.unfollow_dialog))
                         .setMessage(R.string.sure_about_unfollow)
-                        .setPositiveButton(context.getResources().getString(R.string.unfollow), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(context.getResources().getString(R.string.unfollow_dialog), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteFriend(i);
@@ -104,13 +106,26 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         });
     }
 
-    private void newChat(final User user) {
+    private void newChat(final User user, final Button btn) {
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
         client.setTimeout(6000);
         client.post(MainActivity.HOST + "api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 Log.e("NEW_CHAT", "ERROR!!");
+                btn.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                btn.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                btn.setEnabled(true);
             }
 
             @Override
@@ -124,8 +139,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + user.getLastname(), user.getImage()));
                         context.startActivity(intent);
                     }
+                    btn.setEnabled(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    btn.setEnabled(true);
                 }
             }
         });

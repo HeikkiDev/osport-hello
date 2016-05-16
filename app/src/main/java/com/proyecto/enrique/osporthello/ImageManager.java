@@ -60,7 +60,8 @@ public class ImageManager {
         try {
             FileInputStream fis = context.openFileInput(name);
             Bitmap b = BitmapFactory.decodeStream(fis);
-            imageView.setImageBitmap(b);
+            if(b != null)
+                imageView.setImageBitmap(b);
         }
         catch (FileNotFoundException e)
         {

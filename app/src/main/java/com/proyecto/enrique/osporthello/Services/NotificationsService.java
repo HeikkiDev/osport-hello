@@ -22,6 +22,7 @@ import com.proyecto.enrique.osporthello.Activities.ChatActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -166,7 +167,7 @@ public class NotificationsService extends Service {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
                         .setContentText(name)
-                        .setContentTitle("You have a new follower");
+                        .setContentTitle(getString(R.string.new_follower));
 
         //Intent resultIntent = new Intent(context, MainActivity.class);
 

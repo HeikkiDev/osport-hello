@@ -175,13 +175,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             } else
-                Snackbar.make(getCurrentFocus(), "Error retrieving user data", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(getCurrentFocus(), R.string.error_retrieving_userdata, Snackbar.LENGTH_SHORT).show();
         }
         else if(requestCode == EDIT_CODE){
             if(resultCode == RESULT_OK) {
                 saveUserSession();
                 retrieveUserData();
-                Snackbar.make(getCurrentFocus(), "Datos actualizados", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(getCurrentFocus(), R.string.data_updated, Snackbar.LENGTH_SHORT).show();
                 View headerLayout = navigationView.getHeaderView(0);
                 CircleImageView circleImage = (CircleImageView) headerLayout.findViewById(R.id.header_circle_image);
                 try {

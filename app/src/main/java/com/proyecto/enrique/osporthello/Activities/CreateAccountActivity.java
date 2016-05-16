@@ -73,7 +73,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         if(validate()){
             btnCreateAccount.setEnabled(false);
 
-            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(CreateAccountActivity.this, "Creating account...");
+            final IndeterminateDialogTask progressDialog = new IndeterminateDialogTask(CreateAccountActivity.this, getString(R.string.creating_account));
             progressDialog.execute();
 
             String username = etxUser.getText().toString();

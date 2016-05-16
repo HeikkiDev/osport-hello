@@ -53,19 +53,21 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
             public void onItemClick(View v, ChatViewHolder viewHolder) {
                 // Se cogen los datos sobre el chat con:
                 //items.get(viewHolder.getAdapterPosition()).getReceiver_name();
+                viewGroup.setEnabled(false);
                 Chat chat = items.get(viewHolder.getAdapterPosition());
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("myChat", chat);
                 context.startActivity(intent);
+                viewGroup.setEnabled(true);
             }
 
             @Override
             public void onLongItemClick(final View v, final ChatViewHolder viewHolder) {
                 new AlertDialog.Builder(v.getContext())
-                        .setTitle("Delete chat")
-                        .setMessage("Are you sure about delete this chat?")
-                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        .setTitle(context.getResources().getString(R.string.delete_chat))
+                        .setMessage(context.getResources().getString(R.string.sure_delete_chat))
+                        .setPositiveButton(context.getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Chat chat = items.get(viewHolder.getAdapterPosition());

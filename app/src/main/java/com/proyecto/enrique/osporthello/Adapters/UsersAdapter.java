@@ -23,6 +23,7 @@ import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,7 +66,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     }
 
     @Override
-    public void onBindViewHolder(UserViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(final UserViewHolder viewHolder, final int i) {
         new NameAndImageTask(items.get(i).getEmail() , null, viewHolder.image).execute();
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
@@ -108,9 +109,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         viewHolder.btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewHolder.btnChat.setEnabled(false);
                 User user = items.get(i);
                 // Create and/or open a Chat with a User
-                newChat(user);
+                newChat(user, viewHolder.btnChat);
             }
         });
     }
@@ -180,11 +182,23 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         });
     }
 
-    private void newChat(final User user) {
+    private void newChat(final User user, final Button btn) {
         ApiClient.postNewChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                //
+                btn.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                btn.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                btn.setEnabled(true);
             }
 
             @Override
@@ -205,8 +219,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage());
                         dataBase.Close();
                     }
+                    btn.setEnabled(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    btn.setEnabled(true);
                 }
             }
         });

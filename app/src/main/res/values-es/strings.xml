@@ -18,7 +18,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_password">Contraseña</string>
     <string name="enter_valid_email">Indica una dirección de email válida</string>
-    <string name="enter_valid_password">Son necesarios más de 8 caracteres alfanuméricos</string>
+    <string name="enter_valid_password">Son necesarios 8 o más caracteres alfanuméricos</string>
     <string name="login_failed">Inicio de sesión fallido</string>
     <string name="title_activity_login">Inicio de sesión</string>
     <string name="log_in">Iniciar sesión</string>
@@ -109,6 +109,7 @@
     <string name="searching">Buscando...</string>
     <string name="follow">Seguir</string>
     <string name="unfollow">No seguir</string>
+    <string name="unfollow_dialog">Dejar de seguir</string>
     <string name="workout_saved">Entrenamiento guardado correctamente</string>
     <string name="cycling">Ciclismo</string>
     <string name="start_route">Comienzo</string>
@@ -119,4 +120,12 @@
     <string name="saving_changes">Guardando cambios...</string>
     <string name="speed">Velocidad</string>
     <string name="distance">Distancia</string>
+    <string name="data_updated">Datos actualizados</string>
+    <string name="error_retrieving_userdata">Error recuperando la información</string>
+    <string name="new_follower">Tienes un nuevo seguidor</string>
+    <string name="new_message_from">Nuevo mensaje de</string>
+    <string name="delete_chat">Borrar chat</string>
+    <string name="sure_delete_chat">¿Seguro que quieres borrar este chat?</string>
+    <string name="delete">Borrar</string>
+    <string name="creating_account">Creando cuenta...</string>
 </resources>

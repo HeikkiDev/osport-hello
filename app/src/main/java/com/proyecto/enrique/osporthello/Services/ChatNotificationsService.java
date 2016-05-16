@@ -30,6 +30,7 @@ import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.Message;
 import com.proyecto.enrique.osporthello.Models.User;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -291,7 +292,7 @@ public class ChatNotificationsService extends Service {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
                         .setContentText(name)
-                        .setContentTitle("New message from");
+                        .setContentTitle(getString(R.string.new_message_from));
 
         Intent resultIntent = new Intent(context, ChatActivity.class);
         resultIntent.putExtra("myChat", chat);

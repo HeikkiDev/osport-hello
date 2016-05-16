@@ -74,7 +74,7 @@ public class AnalyzeJSON {
             String city = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_city");
 
             if(email.equals(MainActivity.USER_ME.getEmail()))
-                break;
+                continue;
             if(lastname.equals("null"))
                 lastname = null;
             if(city.equals("null"))
@@ -98,7 +98,7 @@ public class AnalyzeJSON {
             String email = jsonObject.getJSONArray("data_aux").getJSONObject(i).getString("User_email");
 
             if(email.equals(MainActivity.USER_ME.getEmail()))
-                break;
+                continue;
 
             User user = new User();
             user.setEmail(email);
