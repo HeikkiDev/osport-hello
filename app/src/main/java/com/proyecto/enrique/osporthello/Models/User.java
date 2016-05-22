@@ -1,5 +1,8 @@
 package com.proyecto.enrique.osporthello.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -41,8 +44,6 @@ public class User implements Serializable {
     public void setImage(String image) {this.image = image;}
 
     public String getApiKey() {return apiKey;}
-
-    public void setApiKey(String apiKey) {this.apiKey = apiKey;}
 
     public String getAge() {return age;}
 

@@ -18,6 +18,7 @@ import com.proyecto.enrique.osporthello.Adapters.FriendsAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class FollowingActivity extends AppCompatActivity implements FriendsAdapter.FriendsChanges {
+public class FollowingActivity extends AppCompatActivity implements FriendsAdapter.FriendsChanges, UserInfoInterface {
 
     private ProgressBar progressBar;
     private RecyclerView recycler;
@@ -36,6 +37,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
     private RecyclerView.LayoutManager lManager;
 
     private static FriendsAdapter.FriendsChanges myInterface;
+    private static UserInfoInterface infoInterface;
     private ArrayList<User> friendsList;
 
     @Override
@@ -46,6 +48,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
         setSupportActionBar(toolbar);
         //
         this.myInterface = this;
+        this.infoInterface = this;
         progressBar = (ProgressBar)findViewById(R.id.progressFollowing);
         progressBar.setVisibility(View.GONE);
 
@@ -71,7 +74,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
                 getMyFriends();
                 return;
             }
-            adapter = new FriendsAdapter(getApplicationContext(), myInterface, friendsList);
+            adapter = new FriendsAdapter(getApplicationContext(), myInterface, infoInterface, friendsList);
             recycler.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
         }
@@ -121,7 +124,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
                     try {
                         if (!response.getString("data").equals("null")) {
                             friendsList = AnalyzeJSON.analyzeAllUsers(response);
-                            adapter = new FriendsAdapter(getApplicationContext(), myInterface, friendsList);
+                            adapter = new FriendsAdapter(getApplicationContext(), myInterface, infoInterface, friendsList);
                             recycler.setAdapter(adapter);
                         }
                         progressBar.setVisibility(View.GONE);
@@ -140,5 +143,12 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
     @Override
     public void onFriendsChanges() {
         ShowFriendsFragment.FRIENDS_CHANGE = true;
+    }
+
+    @Override
+    public void onInfoUserChanges(User userInfo, int index) {
+        friendsList.get(index).setFirstname(userInfo.getFirstname());
+        friendsList.get(index).setLastname(userInfo.getLastname());
+        friendsList.get(index).setImage(userInfo.getImage());
     }
 }

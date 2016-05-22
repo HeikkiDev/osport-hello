@@ -23,6 +23,7 @@ import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class SearchUsersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges {
+public class SearchUsersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges, UserInfoInterface {
 
     private Context context;
     private LinearLayout layoutSearching;
@@ -45,6 +46,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
     private ArrayList<User> friendsList = null;
 
     private static UsersAdapter.FriendsChanges myInterface;
+    private static UserInfoInterface infoInterface;
     public static boolean FRIENDS_CHANGE = false;
 
     EditText etxSearchUsers;
@@ -59,6 +61,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         //
         this.context = this;
         this.myInterface = this;
+        this.infoInterface = this;
         etxSearchUsers = (EditText)findViewById(R.id.etxSearchUsers);
 
         // Obtain Recycler
@@ -79,7 +82,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
             }
             else {
                 // Instance adapter
-                adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
+                adapter = new UsersAdapter(context, myInterface, infoInterface, usersList, friendsList);
                 recycler.setAdapter(adapter);
             }
         }
@@ -115,7 +118,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         if(name.isEmpty())
             return;
 
-        adapter = new UsersAdapter(context, myInterface, new ArrayList<User>(), new ArrayList<User>());
+        adapter = new UsersAdapter(context, myInterface, infoInterface, new ArrayList<User>(), new ArrayList<User>());
         recycler.setAdapter(adapter);
         layoutSearching.setVisibility(View.VISIBLE);
         User user = MainActivity.USER_ME;
@@ -146,7 +149,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                         usersList = AnalyzeJSON.analyzeAllUsers(response);
                         friendsList = AnalyzeJSON.analyzeMyFriends(response);
                         // Instance adapter
-                        adapter = new UsersAdapter(context, myInterface, usersList, friendsList);
+                        adapter = new UsersAdapter(context, myInterface, infoInterface, usersList, friendsList);
                         recycler.setAdapter(adapter);
                     }
                     layoutSearching.setVisibility(View.GONE);
@@ -195,5 +198,12 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                     friendsList.remove(i);
             }
         }
+    }
+
+    @Override
+    public void onInfoUserChanges(User userInfo, int index) {
+        usersList.get(index).setFirstname(userInfo.getFirstname());
+        usersList.get(index).setLastname(userInfo.getLastname());
+        usersList.get(index).setImage(userInfo.getImage());
     }
 }

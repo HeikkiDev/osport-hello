@@ -1,13 +1,15 @@
 package com.proyecto.enrique.osporthello.Models;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.Serializable;
 
 /**
  * Created by enrique on 7/05/16.
  */
-public class SportActivityInfo implements Serializable{
+public class SportActivityInfo implements Serializable, Parcelable{
 
     private int _id;
     private String email;
@@ -154,5 +156,15 @@ public class SportActivityInfo implements Serializable{
         this.distanceUnits = distanceU;
         this.speedUnits = speedU;
         this.encodedPointsList = geoPoints;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        //
     }
 }

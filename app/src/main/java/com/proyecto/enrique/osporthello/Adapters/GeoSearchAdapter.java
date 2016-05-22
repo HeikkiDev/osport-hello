@@ -12,16 +12,17 @@ import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
-import com.proyecto.enrique.osporthello.ImageManager;
-import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
+import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.GeoSearch;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
-import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,25 +34,26 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 20/03/16.
+ * Created by enrique on 22/05/16.
  */
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
+public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.UserViewHolder> {
     private Context context;
-    private ArrayList<User> items;
+    private int units;
+    private ArrayList<GeoSearch> items;
     private ArrayList<User> myFriends;
     private FriendsChanges myInterface;
     private UserInfoInterface infoInterface;
 
-    public interface FriendsChanges
-    {
+    public interface FriendsChanges {
         void onFriendsChanges(String friendEmail, boolean added);
     }
 
     // Constructor
-    public UsersAdapter(Context context, FriendsChanges inter, UserInfoInterface info, ArrayList<User> items, ArrayList<User> friends) {
+    public GeoSearchAdapter(Context context, FriendsChanges inter, UserInfoInterface info, int units, ArrayList<GeoSearch> items, ArrayList<User> friends) {
         this.context = context;
         this.myInterface = inter;
         this.infoInterface = info;
+        this.units = units;
         this.items = items;
         this.myFriends = friends;
     }
@@ -63,27 +65,33 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     @Override
     public UserViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_cardview, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.geosearch_cardview, viewGroup, false);
         return new UserViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final UserViewHolder viewHolder, final int i) {
-        if(items.get(i).getImage() == null || items.get(i).getImage().equals(""))
+        if (items.get(i).getImage() == null || items.get(i).getImage().equals(""))
             new NameAndImageTask(items.get(i).getEmail(), viewHolder.name, viewHolder.image, i, infoInterface).execute();
-        else{
-            viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
+        else {
+            viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
             viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
         }
         String email = items.get(i).getEmail();
-        String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
-        String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
-        //viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
-        viewHolder.name.setText(items.get(i).getFirstname()+" "+lastname);
+        String firstname = (items.get(i).getFirstname() != null)?items.get(i).getFirstname():"";
+        String lastname = (items.get(i).getLastname() != null) ? items.get(i).getLastname() : "";
+        String city = (items.get(i).getCity() != null) ? items.get(i).getCity() : "";
+        double distance = items.get(i).getDistance();
+
+        viewHolder.name.setText(firstname + " " + lastname);
+        if(units == 0)
+            viewHolder.distance.setText(context.getString(R.string.approximately)+" "+String.format("%.2f", distance)+" "+context.getResources().getString(R.string.km_units));
+        else
+            viewHolder.distance.setText(context.getString(R.string.approximately)+" "+String.format("%.2f", distance)+" "+context.getResources().getString(R.string.miles_units));
         viewHolder.city.setText(city);
 
         boolean contains = false;
-        if(myFriends != null) {
+        if (myFriends != null) {
             for (User user : myFriends) {
                 if (user.getEmail().equals(email)) {
                     contains = true;
@@ -92,7 +100,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             }
         }
 
-        if(contains){
+        if (contains) {
             viewHolder.btnFriend.setText(context.getResources().getString(R.string.unfollow));
             viewHolder.btnFriend.setBackgroundResource(R.color.cancelColor);
             viewHolder.btnFriend.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
@@ -102,12 +110,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         viewHolder.btnFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button btn = (Button)v;
+                Button btn = (Button) v;
                 String btnText = context.getResources().getString(R.string.follow);
-                if(btn.getText().equals(btnText)){
+                if (btn.getText().equals(btnText)) {
                     makeNewFriend(position, btn);
-                }
-                else{
+                } else {
                     deleteFriend(position, btn);
                 }
             }
@@ -117,7 +124,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             @Override
             public void onClick(View v) {
                 viewHolder.btnChat.setEnabled(false);
-                User user = items.get(i);
+                GeoSearch user = items.get(i);
                 // Create and/or open a Chat with a User
                 newChat(user, viewHolder.btnChat);
             }
@@ -140,7 +147,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setBackgroundResource(R.color.cancelColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
 
-                        myFriends.add(items.get(i));
+                        GeoSearch geoUser = items.get(i);
+                        User user = new User(geoUser.getEmail(), geoUser.getFirstname(), geoUser.getLastname(), geoUser.getImage(), geoUser.getCity());
+                        myFriends.add(user);
                         myInterface.onFriendsChanges(items.get(i).getEmail(), true);
 
                         // Notify new friend
@@ -174,9 +183,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         btn.setBackgroundResource(R.color.primaryColor);
                         btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add_white_24dp, 0, 0, 0);
 
-                        User user = items.get(i);
+                        GeoSearch user = items.get(i);
                         for (int i = 0; i < myFriends.size(); i++) {
-                            if(myFriends.get(i).getEmail().equals(user.getEmail())) {
+                            if (myFriends.get(i).getEmail().equals(user.getEmail())) {
                                 myFriends.remove(i);
                                 myInterface.onFriendsChanges(user.getEmail(), false);
                             }
@@ -189,7 +198,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         });
     }
 
-    private void newChat(final User user, final Button btn) {
+    private void newChat(final GeoSearch user, final Button btn) {
         ApiClient.postNewChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
@@ -216,11 +225,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        String lastname = (user.getLastname() != null)?user.getLastname():"";
+                        String lastname = (user.getLastname() != null) ? user.getLastname() : "";
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + lastname, user.getImage()));
                         context.startActivity(intent);
 
-                        //if(!response.getString("message").equals("ALREADY EXISTS")){
                         // Insert in local database
                         LocalDataBase dataBase = new LocalDataBase(context);
                         long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage());
@@ -239,6 +247,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         public CircleImageView image;
         public TextView name;
         public TextView city;
+        public TextView distance;
         public Button btnFriend;
         public Button btnChat;
 
@@ -247,8 +256,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             image = (CircleImageView) v.findViewById(R.id.user_image);
             name = (TextView) v.findViewById(R.id.name);
             city = (TextView) v.findViewById(R.id.city);
-            btnFriend = (Button)v.findViewById(R.id.btnMakeFriend);
-            btnChat = (Button)v.findViewById(R.id.btnChat);
+            distance = (TextView)v.findViewById(R.id.distance);
+            btnFriend = (Button) v.findViewById(R.id.btnMakeFriend);
+            btnChat = (Button) v.findViewById(R.id.btnChat);
         }
     }
 }

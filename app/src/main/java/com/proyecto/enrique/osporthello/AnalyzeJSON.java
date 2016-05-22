@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
+import com.proyecto.enrique.osporthello.Models.GeoSearch;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.Models.User;
 
@@ -85,6 +86,30 @@ public class AnalyzeJSON {
             user.setFirstname(firstname);
             user.setLastname(lastname);
             user.setCity(city);
+            usersList.add(user);
+        }
+
+        return usersList;
+    }
+
+    public static ArrayList<GeoSearch> analyzeGeoSearchUsers(JSONObject jsonObject) throws JSONException {
+        ArrayList<GeoSearch> usersList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_email");
+            String firstname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_firstname");
+            String lastname = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_lastname");
+            String city = jsonObject.getJSONArray("data").getJSONObject(i).getString("User_city");
+            double distance = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("Distance");
+
+            if(email.equals(MainActivity.USER_ME.getEmail()))
+                continue;
+            if(lastname.equals("null"))
+                lastname = null;
+            if(city.equals("null"))
+                city = null;
+
+            GeoSearch user = new GeoSearch(email, firstname, lastname, city, distance);
             usersList.add(user);
         }
 

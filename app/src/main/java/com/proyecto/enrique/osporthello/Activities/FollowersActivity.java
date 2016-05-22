@@ -19,6 +19,7 @@ import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class FollowersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges {
+public class FollowersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges, UserInfoInterface {
 
     private Context context;
     private ProgressBar progressBar;
@@ -39,6 +40,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private static UsersAdapter.FriendsChanges myInterface;
+    private static UserInfoInterface infoInterface;
     private ArrayList<User> followingList = null;
     private ArrayList<User> followersList = null;
 
@@ -52,6 +54,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
         //
         this.context = this;
         this.myInterface = this;
+        this.infoInterface = this;
         progressBar = (ProgressBar)findViewById(R.id.progressFollowers);
         progressBar.setVisibility(View.GONE);
 
@@ -78,7 +81,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                 getMyFollowers();
                 return;
             }
-            adapter = new UsersAdapter(context, myInterface, followersList, followingList);
+            adapter = new UsersAdapter(context, myInterface, infoInterface, followersList, followingList);
             recycler.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
         }
@@ -136,7 +139,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                         followersList = AnalyzeJSON.analyzeAllUsers(response);
                         followingList = AnalyzeJSON.analyzeMyFriends(response);
                         // Instance adapter
-                        adapter = new UsersAdapter(context, myInterface, followersList, followingList);
+                        adapter = new UsersAdapter(context, myInterface, infoInterface, followersList, followingList);
                         recycler.setAdapter(adapter);
                     }
                     progressBar.setVisibility(View.GONE);
@@ -171,5 +174,12 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                     followingList.remove(i);
             }
         }
+    }
+
+    @Override
+    public void onInfoUserChanges(User userInfo, int index) {
+        followersList.get(index).setFirstname(userInfo.getFirstname());
+        followersList.get(index).setLastname(userInfo.getLastname());
+        followersList.get(index).setImage(userInfo.getImage());
     }
 }

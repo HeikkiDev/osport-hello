@@ -2,11 +2,13 @@ package com.proyecto.enrique.osporthello;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 
 import org.json.JSONArray;
@@ -14,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by enrique on 15/05/16.
@@ -24,12 +25,16 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
     User userInfo;
     String email;
     TextView txtUsername;
-    CircleImageView circleImageView;
+    ImageView imageView;
+    int index;
+    UserInfoInterface infoInterface;
 
-    public NameAndImageTask(String email, TextView txt, CircleImageView img){
+    public NameAndImageTask(String email, TextView txt, ImageView image, int i, UserInfoInterface info){
         this.email = email;
         this.txtUsername = txt;
-        this.circleImageView = img;
+        this.imageView = image;
+        this.index = i;
+        this.infoInterface = info;
     }
 
     @Override
@@ -76,7 +81,10 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         if(txtUsername != null)
-            txtUsername.setText(userInfo.getFirstname()+ " "+userInfo.getLastname());
-        circleImageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
+            txtUsername.setText(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
+        if(imageView != null)
+            imageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
+        if(infoInterface != null)
+            infoInterface.onInfoUserChanges(userInfo, index);
     }
 }

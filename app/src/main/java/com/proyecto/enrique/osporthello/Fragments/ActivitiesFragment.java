@@ -86,7 +86,7 @@ public class ActivitiesFragment extends Fragment implements MyMapActivitiesAdapt
                 getMyActivities();
             }
             else {
-                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, listActivites);
+                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, null, listActivites);
                 recycler.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);
                 if (listActivites == null || listActivites.isEmpty())
@@ -136,7 +136,7 @@ public class ActivitiesFragment extends Fragment implements MyMapActivitiesAdapt
                             totalPages = response.getJSONObject("data_aux").getInt("TotalPages");
                             listActivites = AnalyzeJSON.analyzeListActivities(response);
                             // Instance adapter
-                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, listActivites);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, null, listActivites);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.GONE);

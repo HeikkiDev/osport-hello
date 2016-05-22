@@ -22,6 +22,7 @@ import com.proyecto.enrique.osporthello.Adapters.MyMapActivitiesAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ActivitiesFriendsFragment extends Fragment implements MyMapActivitiesAdapter.OnLoadMoreListener{
+public class ActivitiesFriendsFragment extends Fragment implements MyMapActivitiesAdapter.OnLoadMoreListener, UserInfoInterface{
 
     private Context context;
     private TextView txtNotToShow;
@@ -49,6 +50,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
     private ArrayList<SportActivityInfo> activitiesList;
 
     private static MyMapActivitiesAdapter.OnLoadMoreListener myInterface;
+    private static UserInfoInterface infoInterface;
 
     public ActivitiesFriendsFragment(){
         // Required empty constructor
@@ -65,6 +67,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
         progressBar.setVisibility(View.GONE);
         context = getContext();
         myInterface = this;
+        infoInterface = this;
 
         // Obtain Recycler
         recycler = (RecyclerView) view.findViewById(R.id.recyclerViewFriendsActivities);
@@ -88,7 +91,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                 getFriendsActivities();
             }
             else {
-                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, activitiesList);
+                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
                 recycler.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);
                 if (activitiesList == null || activitiesList.isEmpty())
@@ -138,14 +141,14 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                             totalPages = response.getJSONObject("data_aux").getInt("TotalPages");
                             activitiesList = AnalyzeJSON.analyzeListActivities(response);
                             // Instance adapter
-                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, activitiesList);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.GONE);
                         }
                         else{
                             activitiesList = new ArrayList<SportActivityInfo>();
-                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, activitiesList);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.VISIBLE);
@@ -215,5 +218,11 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
             currentPage += 1;
             getMoreFriendsActivities();
         }
+    }
+
+    @Override
+    public void onInfoUserChanges(User userInfo, int index) {
+        activitiesList.get(index).setUserName(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
+        activitiesList.get(index).setUserImage(ImageManager.stringToBitMap(userInfo.getImage()));
     }
 }

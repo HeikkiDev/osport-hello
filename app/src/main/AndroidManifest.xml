@@ -44,6 +44,7 @@
         <activity
             android:name=".Activities.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activities.LoginActivity"
             android:theme="@style/AppTheme">
 
@@ -88,6 +89,7 @@
         <activity
             android:name=".Activities.ConfigurationActivity"
             android:label="@string/title_activity_configuration"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"></activity>
     </application>
 

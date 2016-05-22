@@ -21,6 +21,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -43,6 +45,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private Context context;
     private ArrayList<User> items;
     private FriendsChanges myInterface;
+    private UserInfoInterface infoInterface;
 
     public interface FriendsChanges
     {
@@ -50,9 +53,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     }
 
     // Constructor
-    public FriendsAdapter(Context context, FriendsChanges interf, ArrayList<User> friends) {
+    public FriendsAdapter(Context context, FriendsChanges interf, UserInfoInterface info, ArrayList<User> friends) {
         this.context = context;
         this.myInterface = interf;
+        this.infoInterface = info;
         this.items = friends;
     }
 
@@ -69,7 +73,12 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public void onBindViewHolder(final FriendViewHolder viewHolder, final int i) {
-        new NameAndImageTask(items.get(i).getEmail() , null, viewHolder.image).execute();
+        if(items.get(i).getImage() == null || items.get(i).getImage().equals(""))
+            new NameAndImageTask(items.get(i).getEmail(), viewHolder.name, viewHolder.image, i, infoInterface).execute();
+        else{
+            viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
+            viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
+        }
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         final String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";

@@ -29,6 +29,7 @@ import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.NameAndImageTask;
@@ -57,16 +58,18 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
     private boolean loading = true;
     private int pastVisiblesItems, visibleItemCount, totalItemCount;
     private OnLoadMoreListener onLoadMoreListener;
+    private UserInfoInterface infoInterface;
 
     public interface OnLoadMoreListener {
         void onLoadMore();
     }
 
     // Constructor
-    public MyMapActivitiesAdapter(Context context, RecyclerView recyclerView, OnLoadMoreListener interf, ArrayList<SportActivityInfo> activities) {
+    public MyMapActivitiesAdapter(Context context, RecyclerView recyclerView, OnLoadMoreListener interf, UserInfoInterface info, ArrayList<SportActivityInfo> activities) {
         this.context = context;
         this.items = activities;
-        onLoadMoreListener = interf;
+        this.onLoadMoreListener = interf;
+        this.infoInterface = info;
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
 
@@ -116,7 +119,12 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             viewHolder.infoUserLayout.setVisibility(View.GONE);
         }
         else{
-            new NameAndImageTask(items.get(i).getEmail() ,viewHolder.username, viewHolder.circleImageView).execute();
+            if(items.get(i).getUserImage() == null || items.get(i).getUserName().equals(""))
+                new NameAndImageTask(items.get(i).getEmail(), viewHolder.username, viewHolder.circleImageView, i, infoInterface).execute();
+            else{
+                viewHolder.username.setText(items.get(i).getUserName());
+                viewHolder.circleImageView.setImageBitmap(items.get(i).getUserImage());
+            }
             viewHolder.infoUserLayout.setVisibility(View.VISIBLE);
         }
 

@@ -44,6 +44,11 @@ public class ApiClient {
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 
+    public static void getGeoSearch(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
     /**
      * CHATS
      */
@@ -109,5 +114,18 @@ public class ApiClient {
     public static void getFriendsActivities(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
+    /**
+     * CONFIGURATION
+     */
+    public static void getMyConfiguration(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
+    public static void postMyConfiguration(String url, RequestParams params, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), params, responseHandler);
     }
 }

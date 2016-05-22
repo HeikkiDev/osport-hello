@@ -128,4 +128,10 @@
     <string name="sure_delete_chat">Are you sure about delete this chat?</string>
     <string name="delete">Delete</string>
     <string name="creating_account">Creating account...</string>
+    <string name="others">Others</string>
+    <string name="runner">Runner</string>
+    <string name="cyclist">Cyclist</string>
+    <string name="saving_configuration">Saving configuration...</string>
+    <string name="approximately">Approximately</string>
+    <string name="not_users_to_show">There aren\'t users to show</string>
 </resources>
