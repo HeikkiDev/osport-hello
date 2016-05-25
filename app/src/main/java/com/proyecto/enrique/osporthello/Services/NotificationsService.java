@@ -81,8 +81,13 @@ public class NotificationsService extends Service {
                 sharedPreferences.getString("weight", null),
                 sharedPreferences.getString("height", null));
 
-        String[] arrEmail = user.getEmail().split("\\.");
-        String myEmail = arrEmail[0] + arrEmail[1];
+        String myEmail = user.getEmail();
+        myEmail = myEmail.replace('.','0');
+        myEmail = myEmail.replace('$','1');
+        myEmail = myEmail.replace('#','2');
+        myEmail = myEmail.replace('[','3');
+        myEmail = myEmail.replace(']','4');
+        myEmail = myEmail.replace('/','5');
 
         Firebase firebase = new Firebase("https://osporthello.firebaseio.com/");
         refNotifications = firebase.child("friends").child(myEmail);
@@ -150,6 +155,10 @@ public class NotificationsService extends Service {
                     final String objectName = "data";
                     String firstname = response.getJSONObject(objectName).getString("User_firstname");
                     String lastname = response.getJSONObject(objectName).getString("User_lastname");
+                    if(firstname == null)
+                        firstname = "";
+                    if(lastname == null)
+                        lastname = "";
 
                     // Notification
                     buildNotification(email, firstname+" "+lastname);

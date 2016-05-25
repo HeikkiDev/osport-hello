@@ -144,8 +144,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         myInterface.onFriendsChanges(items.get(i).getEmail(), true);
 
                         // Notify new friend
-                        String[] arrEmail = items.get(i).getEmail().split("\\.");
-                        String email = arrEmail[0] + arrEmail[1];
+                        String email = items.get(i).getEmail();
+                        email = email.replace('.','0');
+                        email = email.replace('$','1');
+                        email = email.replace('#','2');
+                        email = email.replace('[','3');
+                        email = email.replace(']','4');
+                        email = email.replace('/','5');
                         Firebase.setAndroidContext(context);
                         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
                         Firebase refChat = firebaseRoot.child("friends").child(email);

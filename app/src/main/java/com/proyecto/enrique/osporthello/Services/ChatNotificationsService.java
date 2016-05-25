@@ -206,8 +206,13 @@ public class ChatNotificationsService extends Service {
     private void addFirebaseListener(final Chat chat){
         final String id = String.valueOf(chat.getId());
 
-        String[] arrEmail = chat.getReceiver_email().split("\\.");
-        String receiverEmail = arrEmail[0] + arrEmail[1];
+        String receiverEmail = chat.getReceiver_email();
+        receiverEmail = receiverEmail.replace('.','0');
+        receiverEmail = receiverEmail.replace('$','1');
+        receiverEmail = receiverEmail.replace('#','2');
+        receiverEmail = receiverEmail.replace('[','3');
+        receiverEmail = receiverEmail.replace(']','4');
+        receiverEmail = receiverEmail.replace('/','5');
         // Leo de mi zona del chat, que es mi buffer de lectura y el de escritura de mi interlocutor
         Firebase firebase = new Firebase("https://osporthello.firebaseio.com/");
         refChats = firebase.child("messages").child(id).child(receiverEmail);
@@ -275,6 +280,10 @@ public class ChatNotificationsService extends Service {
                     final String objectName = "data";
                     String firstname = response.getJSONObject(objectName).getString("User_firstname");
                     String lastname = response.getJSONObject(objectName).getString("User_lastname");
+                    if(firstname == null)
+                        firstname = "";
+                    if(lastname == null)
+                        lastname = "";
 
                     // Notification
                     buildNotification(firstname+" "+lastname, chat);

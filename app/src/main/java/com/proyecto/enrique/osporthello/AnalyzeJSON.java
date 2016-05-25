@@ -1,6 +1,8 @@
 package com.proyecto.enrique.osporthello;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
@@ -17,6 +19,68 @@ import java.util.ArrayList;
  * Created by enrique on 22/02/16.
  */
 public class AnalyzeJSON {
+
+    private static final String PREFERENCES_FILE = "osporthello_settings";
+
+    public static User analyzeUserLogin(JSONObject jsonObject, Context context) throws JSONException {
+        final String nombreObjeto = "data";
+        String email = jsonObject.getJSONObject(nombreObjeto).getString("User_email");
+        String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
+        String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
+        String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
+        String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
+        String age = jsonObject.getJSONObject(nombreObjeto).getString("User_age");
+        String city = jsonObject.getJSONObject(nombreObjeto).getString("User_city");
+        String weight = jsonObject.getJSONObject(nombreObjeto).getString("User_weight");
+        String height = jsonObject.getJSONObject(nombreObjeto).getString("User_height");
+
+        // Se ajusta la Configuración del usuario
+        if(!jsonObject.isNull("data_aux") && !jsonObject.getString("data_aux").equals("false")) {
+            int geosearch = jsonObject.getJSONObject("data_aux").getInt("Configuration_geosearch");
+            float geoLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLat");
+            float geoLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLon");
+            int sportType = jsonObject.getJSONObject("data_aux").getInt("Configuration_sportType");
+            int privacity = jsonObject.getJSONObject("data_aux").getInt("Configuration_privacity");
+            float privLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLat");
+            float privLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLon");
+            int chatNotifications = jsonObject.getJSONObject("data_aux").getInt("Configuration_chatNotifications");
+            int friendsNotifications = jsonObject.getJSONObject("data_aux").getInt("Configuration_friendsNotifications");
+
+            SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt("geosearch", geosearch);
+            editor.putInt("privacity", privacity);
+            if (geoLatitude != 0 && geoLongitude != 0) {
+                editor.putFloat("geolat", geoLatitude);
+                editor.putFloat("geolon", geoLongitude);
+            }
+            editor.putInt("sporttype", sportType);
+            if (privLatitude != 0 && privLongitude != 0) {
+                editor.putFloat("privacitylat", privLatitude);
+                editor.putFloat("privacitylon", privLongitude);
+            }
+            editor.putInt("chatnotifications", chatNotifications);
+            editor.putInt("friendsnotification", friendsNotifications);
+            editor.apply();
+        }
+
+        if(lastname.equals("null"))
+            lastname = null;
+        if(image.equals("null"))
+            image = null;
+        if(city.equals("null"))
+            city = null;
+        if(age.equals("null") || age.equals("0"))
+            age = null;
+        if(weight.equals("null") || weight.equals("0"))
+            weight = null;
+        if(height.equals("null") || height.equals("0"))
+            height = null;
+
+        // Se devuelven los datos del Usuario
+        User user = new User(email,firstname,lastname, image ,apiKey,age,city,weight,height);
+        return user;
+    }
 
     public static User analyzeUser(JSONObject jsonObject) throws JSONException {
         final String nombreObjeto = "data";

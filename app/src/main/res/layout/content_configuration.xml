@@ -179,7 +179,8 @@
             android:textColor="@android:color/white"
             android:textAllCaps="false"
             android:textSize="18dp"
-            android:background="@color/primaryDarkColor" />
+            android:background="@color/primaryDarkColor"
+            android:layout_marginBottom="5dp" />
 
     </LinearLayout>
 

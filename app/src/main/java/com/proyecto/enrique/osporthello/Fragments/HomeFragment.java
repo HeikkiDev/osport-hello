@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -37,10 +38,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Adapters.ChooseActivityAdapter;
 import com.proyecto.enrique.osporthello.Models.RowActivity;
@@ -87,6 +90,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private Location previousLocation;
     private LocationManager locationManager;
     private PolylineOptions polyline;
+    private LatLngBounds radiusBounds;
 
     private long timeStart = 0;
     private long timePause = 0;
@@ -104,6 +108,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private final int LOCATION_CODE = 1;
     private final double KMS_TO_MILES = 0.621371;
     private final int ZOOM = 16;
+    private final int RADIUS_METERS = 250;
+    private static final String PREFERENCES_FILE = "osporthello_settings";
 
     public HomeFragment(){
         // Required empty constructor
@@ -195,6 +201,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        if(sharedPref.getInt("privacity", 0) == 1) {
+            float lat = sharedPref.getFloat("privacitylat", 0);
+            float lon = sharedPref.getFloat("privacitylon", 0);
+            if(lat != 0 && lon != 0){
+                radiusBounds = getRadiusBounds(new LatLng(lat, lon), RADIUS_METERS);
+            }
+        }
+        else
+            radiusBounds = null;
 
         return view;
     }
@@ -334,7 +351,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             if(marker != null)
                 marker.remove();
             marker = mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
             if(polyline == null)
                 polyline = new PolylineOptions().color(Color.GREEN).width(12).visible(true).zIndex(30);
             else {
@@ -342,7 +359,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                 int index = polyline.getPoints().size() - 1;
                 if(index >= 0) {
                     marker.setPosition(polyline.getPoints().get(index));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(index), ZOOM));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polyline.getPoints().get(index), ZOOM));
                 }
             }
         }
@@ -356,8 +373,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private void updateMapView(LatLng latLng) {
         marker.setPosition(latLng);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
-        polyline.add(latLng);
-        mMap.addPolyline(polyline);
+        if(radiusBounds != null){
+            if(!radiusBounds.contains(latLng)){
+                polyline.add(latLng);
+                mMap.addPolyline(polyline);
+            }
+        }
+        else {
+            polyline.add(latLng);
+            mMap.addPolyline(polyline);
+        }
     }
 
     /**
@@ -588,6 +613,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             this.isTimerRunning = false;
             this.previousLocation = null;
         }
+    }
+
+    /**
+     *
+     * @param center
+     * @param radius
+     * @return
+     */
+    public LatLngBounds getRadiusBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
     }
 
     /**

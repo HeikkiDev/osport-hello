@@ -1,5 +1,6 @@
 package com.proyecto.enrique.osporthello.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -61,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private CoordinatorLayout coordinatorLayout;
 
+    Context context;
     CallbackManager callbackManager;
 
     private static final int CREATE_ACCOUNT = 2;
@@ -85,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        context = this;
 
         txtForgotPassword.setClickable(true);
         txtForgotPassword.setMovementMethod(LinkMovementMethod.getInstance());
@@ -321,7 +324,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true") && response.getString("message").equals("Login completed")) {
-                        User user = AnalyzeJSON.analyzeUser(response);
+                        User user = AnalyzeJSON.analyzeUserLogin(response, context);
                         onLoginSuccess(user);
                     } else
                         onLoginFailed();
@@ -364,7 +367,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true") && response.getString("message").equals("Login completed")) {
-                        User user = AnalyzeJSON.analyzeUser(response);
+                        User user = AnalyzeJSON.analyzeUserLogin(response,context);
                         onLoginSuccess(user);
                     } else
                         onLoginFailed();

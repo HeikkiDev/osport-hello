@@ -134,4 +134,6 @@
     <string name="saving_configuration">Saving configuration...</string>
     <string name="approximately">Approximately</string>
     <string name="not_users_to_show">There aren\'t users to show</string>
+    <string name="exit">Exit</string>
+    <string name="want_exit_osport">Do you want to leave OSport?</string>
 </resources>

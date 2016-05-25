@@ -1,6 +1,7 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.CustomMapFragment;
 import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.R;
+import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
+import com.proyecto.enrique.osporthello.Services.NotificationsService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -184,7 +187,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
      * @param latLng
      */
     private Marker updateMapView(LatLng latLng, GoogleMap map, boolean addMarker, Marker marker) {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
         if(addMarker)
             marker = map.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         return marker;
@@ -301,6 +304,16 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                         }
                         editor.putInt("chatnotifications", (switchChat.isChecked())?1:0);
                         editor.putInt("friendsnotification", (switchFriends.isChecked()?1:0));
+
+                        if(switchChat.isChecked())
+                            startService(new Intent(ConfigurationActivity.this, ChatNotificationsService.class));
+                        else
+                            stopService(new Intent(ConfigurationActivity.this, ChatNotificationsService.class));
+
+                        if(switchFriends.isChecked())
+                            startService(new Intent(ConfigurationActivity.this, NotificationsService.class));
+                        else
+                            stopService(new Intent(ConfigurationActivity.this, NotificationsService.class));
 
                         if(!switchGeoSearch.isChecked()) {
                             editor.remove("geolat");

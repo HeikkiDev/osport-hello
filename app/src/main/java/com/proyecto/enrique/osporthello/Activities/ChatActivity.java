@@ -1,7 +1,9 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -54,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     CircleImageView toolbarImage;
     TextView toolbarUsername;
     EditText etxMessage;
+    private static final String PREFERENCES_FILE = "osporthello_settings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +121,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        startService(new Intent(ChatActivity.this, ChatNotificationsService.class));
+        SharedPreferences sharedPref = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        if(sharedPref.getInt("chatnotifications", 0) != 0)
+            startService(new Intent(ChatActivity.this, ChatNotificationsService.class));
         this.refChild.removeEventListener(childEventListener);
     }
 
@@ -150,8 +155,13 @@ public class ChatActivity extends AppCompatActivity {
         String date = dateFormatter.format(now);
         String time = timeFormatter.format(now);
 
-        String[] arrEmail = MainActivity.USER_ME.getEmail().split("\\.");
-        String myEmail = arrEmail[0] + arrEmail[1];
+        String myEmail = MainActivity.USER_ME.getEmail();
+        myEmail = myEmail.replace('.','0');
+        myEmail = myEmail.replace('$','1');
+        myEmail = myEmail.replace('#','2');
+        myEmail = myEmail.replace('[','3');
+        myEmail = myEmail.replace(']','4');
+        myEmail = myEmail.replace('/','5');
         // Escribo mis mensajes en mi buffer de escritura, que se identifica con mi email
         Firebase.setAndroidContext(this);
         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
@@ -173,8 +183,13 @@ public class ChatActivity extends AppCompatActivity {
     private Firebase getChatMessages() {
         final String id = String.valueOf(this.CHAT.getId());
 
-        String[] arrEmail = this.CHAT.getReceiver_email().split("\\.");
-        String receiverEmail = arrEmail[0] + arrEmail[1];
+        String receiverEmail = this.CHAT.getReceiver_email();
+        receiverEmail = receiverEmail.replace('.','0');
+        receiverEmail = receiverEmail.replace('$','1');
+        receiverEmail = receiverEmail.replace('#','2');
+        receiverEmail = receiverEmail.replace('[','3');
+        receiverEmail = receiverEmail.replace(']','4');
+        receiverEmail = receiverEmail.replace('/','5');
         // Leo de mi zona del chat, que es mi buffer de lectura y el de escritura de mi interlocutor
         Firebase.setAndroidContext(this);
         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");

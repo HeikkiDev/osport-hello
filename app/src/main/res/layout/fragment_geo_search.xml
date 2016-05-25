@@ -1,8 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.GeoSearchFragment">
+    tools:context=".Fragments.GeoSearchFragment"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -11,6 +13,47 @@
         android:weightSum="10">
 
         <RelativeLayout
+            android:id="@+id/layoutNoGeosearhc"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7.5"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:background="#73000000"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:visibility="gone"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/txtNoGeoSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Debes activar la GeoBúsqueda para poder buscar usuarios por proximidad, y para que otros puedan buscarte a ti"
+                android:typeface="monospace"
+                android:layout_margin="15dp"
+                android:gravity="center_horizontal"
+                android:textSize="18dp"
+                android:textColor="#000000" />
+
+            <Button
+                android:id="@+id/btnGoConfguration"
+                android:layout_weight="1.2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Go to Configuration"
+                android:layout_marginTop="20dp"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18dp"
+                android:background="@color/primaryDarkColor"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_below="@+id/txtNoGeoSearch" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutGeoSearch"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="7.5">
@@ -94,4 +137,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

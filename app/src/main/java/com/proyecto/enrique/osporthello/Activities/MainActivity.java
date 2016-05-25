@@ -1,6 +1,7 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -121,8 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0); // 0 private mode
             String userSesion = sharedPreferences.getString("email", null);
             if(userSesion != null){
-                startService(new Intent(MainActivity.this, ChatNotificationsService.class));
-                startService(new Intent(MainActivity.this, NotificationsService.class));
+                SharedPreferences sharedPref = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+                if(sharedPref.getInt("chatnotifications", 0) != 0)
+                    startService(new Intent(MainActivity.this, ChatNotificationsService.class));
+                if(sharedPref.getInt("friendsnotification", 0) != 0)
+                    startService(new Intent(MainActivity.this, NotificationsService.class));
             }
         }
         catch (Exception e){}
@@ -168,10 +173,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 saveUserSession();
                 retrieveUserData();
 
+                SharedPreferences sharedPref = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
                 // Service for listen new chats and messages
-                startService(new Intent(MainActivity.this, ChatNotificationsService.class));
+                if(sharedPref.getInt("chatnotifications", 0) != 0)
+                    startService(new Intent(MainActivity.this, ChatNotificationsService.class));
                 // Service for listen new friends
-                startService(new Intent(MainActivity.this, NotificationsService.class));
+                if(sharedPref.getInt("friendsnotification", 0) != 0)
+                    startService(new Intent(MainActivity.this, NotificationsService.class));
 
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             } else
@@ -246,6 +254,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemMenu.setChecked(true);
         // Set fragment title
         setTitle(itemMenu.getTitle().toString());
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(getResources().getString(R.string.exit));
+        alertDialogBuilder.setMessage(getString(R.string.want_exit_osport))
+                .setPositiveButton(getResources().getString(R.string.exit), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     /**
@@ -495,6 +524,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit(); // commit changes
+
+        // Delete saved user configuration
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorConfig = sharedPref.edit();
+        editorConfig.clear();
+        editorConfig.commit(); // commit changes
 
         // Launch Main Activity -> Login Activity
         Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());

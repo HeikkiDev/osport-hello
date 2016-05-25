@@ -35,6 +35,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
         this.imageView = image;
         this.index = i;
         this.infoInterface = info;
+        userInfo = new User();
     }
 
     @Override
