@@ -24,6 +24,7 @@ import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -135,7 +136,18 @@ public class ChatFragment extends Fragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("CHATS", "ERROR!!");
-                    txtNotToShow.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.e("CHATS", "ERROR!!");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    Log.e("CHATS", "ERROR!!");
                 }
 
                 @Override

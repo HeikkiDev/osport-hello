@@ -3,7 +3,6 @@ package com.proyecto.enrique.osporthello.Activities;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -14,9 +13,10 @@ import android.widget.EditText;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.AsyncTask.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -93,6 +93,22 @@ public class CreateAccountActivity extends AppCompatActivity {
             client.post(MainActivity.HOST + "api/registration", params, new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                    progressDialog.cancel(true);
+                    btnCreateAccount.setEnabled(true);
+                    Snackbar.make(getCurrentFocus(), R.string.error_creating_account, Snackbar.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    progressDialog.cancel(true);
+                    btnCreateAccount.setEnabled(true);
+                    Snackbar.make(getCurrentFocus(), R.string.error_creating_account, Snackbar.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
                     progressDialog.cancel(true);
                     btnCreateAccount.setEnabled(true);
                     Snackbar.make(getCurrentFocus(), R.string.error_creating_account, Snackbar.LENGTH_LONG).show();

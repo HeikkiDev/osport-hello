@@ -1,9 +1,7 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,14 +13,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
-import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
@@ -115,6 +112,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
      */
     private void searchUsersByName() {
         String name = etxSearchUsers.getText().toString();
+        name = name.trim();
         if(name.isEmpty())
             return;
 
@@ -128,18 +126,21 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 layoutSearching.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 layoutSearching.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 layoutSearching.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -156,6 +157,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                 } catch (JSONException e) {
                     e.printStackTrace();
                     layoutSearching.setVisibility(View.GONE);
+                    Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
                 }
             }
         });

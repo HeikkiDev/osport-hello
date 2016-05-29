@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.FriendsAdapter;
@@ -22,6 +23,7 @@ import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -117,6 +119,21 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("FRIENDS", "ERROR!!");
                     progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -131,6 +148,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                         progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
                     }
                 }
             });

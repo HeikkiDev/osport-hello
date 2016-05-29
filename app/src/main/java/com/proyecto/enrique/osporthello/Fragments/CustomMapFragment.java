@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;

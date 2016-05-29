@@ -8,6 +8,8 @@ import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.GeoSearch;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
+import com.proyecto.enrique.osporthello.Models.SportPercentage;
+import com.proyecto.enrique.osporthello.Models.Statistic;
 import com.proyecto.enrique.osporthello.Models.User;
 
 import org.json.JSONException;
@@ -37,12 +39,20 @@ public class AnalyzeJSON {
         // Se ajusta la Configuración del usuario
         if(!jsonObject.isNull("data_aux") && !jsonObject.getString("data_aux").equals("false")) {
             int geosearch = jsonObject.getJSONObject("data_aux").getInt("Configuration_geosearch");
-            float geoLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLat");
-            float geoLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLon");
+            float geoLatitude = 0;
+            if(!jsonObject.getJSONObject("data_aux").isNull("Configuration_geoLat"))
+                geoLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLat");
+            float geoLongitude = 0;
+            if(!jsonObject.getJSONObject("data_aux").isNull("Configuration_geoLon"))
+                geoLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_geoLon");
             int sportType = jsonObject.getJSONObject("data_aux").getInt("Configuration_sportType");
             int privacity = jsonObject.getJSONObject("data_aux").getInt("Configuration_privacity");
-            float privLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLat");
-            float privLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLon");
+            float privLatitude = 0;
+            if(!jsonObject.getJSONObject("data_aux").isNull("Configuration_privacityLat"))
+                privLatitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLat");
+            float privLongitude = 0;
+            if(!jsonObject.getJSONObject("data_aux").isNull("Configuration_privacityLon"))
+                privLongitude = (float) jsonObject.getJSONObject("data_aux").getDouble("Configuration_privacityLon");
             int chatNotifications = jsonObject.getJSONObject("data_aux").getInt("Configuration_chatNotifications");
             int friendsNotifications = jsonObject.getJSONObject("data_aux").getInt("Configuration_friendsNotifications");
 
@@ -216,6 +226,21 @@ public class AnalyzeJSON {
         return chatsList;
     }
 
+    public static ArrayList<Chat> analyzeCheckChats(JSONObject jsonObject) throws JSONException{
+        ArrayList<Chat> chatsList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            int id = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Chat_id");
+            String email = jsonObject.getJSONArray("data").getJSONObject(i).getString("Chat_receiver");
+            String username = jsonObject.getJSONArray("data").getJSONObject(i).getString("Username");
+
+            Chat chat = new Chat(id, email, username, null);
+            chatsList.add(chat);
+        }
+
+        return chatsList;
+    }
+
     public static ArrayList<SportActivityInfo> analyzeListActivities(JSONObject jsonObject) throws JSONException {
         ArrayList<SportActivityInfo> activitiesList = new ArrayList<>();
 
@@ -239,5 +264,32 @@ public class AnalyzeJSON {
         }
 
         return activitiesList;
+    }
+
+    public static ArrayList<Statistic> analyzeStatistics(JSONObject jsonObject) throws JSONException {
+        ArrayList<Statistic> statisticsList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            int dayOrMonth = jsonObject.getJSONArray("data").getJSONObject(i).getInt("Date");
+            double kms = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("DistanceKms");
+            double miles = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("DistanceMiles");
+
+            statisticsList.add(new Statistic(dayOrMonth, kms, miles));
+        }
+
+        return statisticsList;
+    }
+
+    public static ArrayList<SportPercentage> analyzeSportsPercentage(JSONObject jsonObject) throws JSONException {
+        ArrayList<SportPercentage> percentageList = new ArrayList<>();
+
+        for (int i = 0; i < jsonObject.getJSONArray("data").length(); i++) {
+            int type = jsonObject.getJSONArray("data").getJSONObject(i).getInt("SportType");
+            double percentage = jsonObject.getJSONArray("data").getJSONObject(i).getDouble("Percentage");
+
+            percentageList.add(new SportPercentage(type, percentage));
+        }
+
+        return percentageList;
     }
 }

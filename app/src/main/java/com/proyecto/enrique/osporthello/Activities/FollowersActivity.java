@@ -7,22 +7,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.proyecto.enrique.osporthello.Adapters.FriendsAdapter;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -130,6 +129,21 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 progressBar.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -146,6 +160,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                 } catch (JSONException e) {
                     e.printStackTrace();
                     progressBar.setVisibility(View.GONE);
+                    Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
                 }
             }
 

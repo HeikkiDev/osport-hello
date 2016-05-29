@@ -92,7 +92,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
         String image = items.get(i).getReceiver_image();
 
         viewHolder.name.setText(name);
-        viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(image));
+        if(image != null && !image.equals(""))
+            viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(image));
         //viewHolder.notification.setVisibility(View.VISIBLE);
     }
 

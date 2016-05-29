@@ -120,7 +120,7 @@ public class ChatNotificationsService extends Service {
     private void checkUserChats() {
         try {
             final User user = this.USER_ME;
-            ApiClient.getUserChats("api/chats/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
+            ApiClient.getUserChats("api/chats/check/" + user.getEmail() + "/" + user.getApiKey(), new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("CHAT_NOTIFICATIONS", "ERROR 1!!");
@@ -143,11 +143,11 @@ public class ChatNotificationsService extends Service {
                     try {
                         LocalDataBase dataBase = new LocalDataBase(getApplicationContext());
                         if (!response.getString("data").equals("null")) {
-                            listChats = AnalyzeJSON.analyzeChats(response);
-                            dataBase.insertChatList(listChats, user.getEmail());
+                            listChats = AnalyzeJSON.analyzeCheckChats(response);
+                            dataBase.insertChatsInService(listChats, user.getEmail());
                         } else {
                             listChats.clear();
-                            dataBase.insertChatList(listChats, user.getEmail());
+                            dataBase.insertChatsInService(listChats, user.getEmail());
                         }
 
                         addChatsListener();

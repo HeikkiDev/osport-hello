@@ -19,7 +19,7 @@ import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.User;
-import com.proyecto.enrique.osporthello.NameAndImageTask;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 

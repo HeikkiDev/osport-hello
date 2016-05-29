@@ -49,6 +49,11 @@ public class ApiClient {
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 
+    public static void deleteUserAccount(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.delete(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
     /**
      * CHATS
      */
@@ -116,6 +121,11 @@ public class ApiClient {
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 
+    public static void deleteMapActivity(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.delete(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
     /**
      * CONFIGURATION
      */
@@ -127,5 +137,18 @@ public class ApiClient {
     public static void postMyConfiguration(String url, RequestParams params, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
         client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), params, responseHandler);
+    }
+
+    /**
+     * STATISTICS
+     */
+    public static void getMyStatistics(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+    }
+
+    public static void getSportsPercentage(String url, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(10000);
+        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 }

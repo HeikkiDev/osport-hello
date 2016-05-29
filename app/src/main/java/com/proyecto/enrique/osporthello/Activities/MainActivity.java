@@ -18,14 +18,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.ActivitiesFragment;
 import com.proyecto.enrique.osporthello.Fragments.ChatFragment;
 import com.proyecto.enrique.osporthello.Fragments.FriendsFragment;
@@ -38,8 +42,13 @@ import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.R;
 import com.proyecto.enrique.osporthello.Services.NotificationsService;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 
+import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -56,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Firebase FIREBASE;
     private static final int LOGIN_CODE = 1;
     private static final int EDIT_CODE = 2;
+    private static final int CONFIGURATION = 3;
+    private static final int CUSTOM_RESULT = 17;
     public static final String HOST = "https://enriqueramos.info/osporthello/";
     private static final String USER_FIRST_TIME = "first_time";
     private static final String PREFERENCES_FILE = "osporthello_settings";
@@ -196,6 +207,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ImageManager storage = new ImageManager(getApplicationContext());
                     storage.loadImageFromStorage(this.USER_ME.getEmail() + ".png", circleImage);
                 } catch (Exception e) {e.printStackTrace();}
+            }
+        }
+        else if(requestCode == CONFIGURATION) {
+            if (resultCode == CUSTOM_RESULT) {
+                ApiClient.deleteUserAccount("api/users/" + USER_ME.getEmail(), new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                        Log.e("DELETE_ACCOUNT", "ERROR!!");
+                        Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        Log.e("DELETE_ACCOUNT", "ERROR!!");
+                        Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                        Log.e("DELETE_ACCOUNT", "ERROR!!");
+                        Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            if (response.getString("code").equals("true")) {
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.see_you), Toast.LENGTH_LONG).show();
+                                closeSession();
+                                finish();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e("DELETE_ACCOUNT", "ERROR!!");
+                            Toast.makeText(getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         }
     }
@@ -408,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 break;
                             case R.id.nav_settings:
                                 Intent intent = new Intent(MainActivity.this, ConfigurationActivity.class);
-                                startActivity(intent);
+                                startActivityForResult(intent, CONFIGURATION);
                                 break;
                             case R.id.nav_log_out:
                                 closeSession(); // Log Out

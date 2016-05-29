@@ -102,6 +102,7 @@
         <item>Jogging</item>
         <item>Caminar (moderado)</item>
         <item>Caminar (ritmo alto)</item>
+        <item>Caminar</item>
     </string-array>
 
     <string name="title_activity_followers">Seguidores</string>
@@ -128,4 +129,53 @@
     <string name="sure_delete_chat">¿Seguro que quieres borrar este chat?</string>
     <string name="delete">Borrar</string>
     <string name="creating_account">Creando cuenta...</string>
+    <string name="others">Otros</string>
+    <string name="runner">Corredor</string>
+    <string name="cyclist">Ciclista</string>
+    <string name="saving_configuration">Guardando configuración...</string>
+    <string name="approximately">Aproximadamente</string>
+    <string name="not_users_to_show">No hay resultados</string>
+    <string name="exit">Salir</string>
+    <string name="want_exit_osport">¿Quieres salir de OSport?</string>
+    <string name="distance_mi_oneline">Distancia (mi)</string>
+    <string name="delete_activity">Borrar actividad</string>
+    <string name="sure_delete_activity">¿Seguro que quieres borrar esta actividad?</string>
+    <string name="delete_account">Borrar mi cuenta</string>
+    <string name="deleting_account">Borrando tu cuenta en OSport...</string>
+    <string name="must_check">Debes poner a On el interruptor</string>
+    <string name="see_you">Esperamos verte de nuevo en OSport</string>
+    <string name="are_you_sure_about_delete">¿Seguro que quieres eliminar tu cuenta en OSport?\n\nPor seguridad, pon a On el interruptor</string>
+    <string name="delete_my_account">Eliminar mi cuenta</string>
+    <string name="connection_error">Error de conexión</string>
+
+    <string-array name="array_month">
+        <item>Todos</item>
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+
+    <string-array name="array_month_short">
+        <item>Ene</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Abr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Ago</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dic</item>
+    </string-array>
 </resources>

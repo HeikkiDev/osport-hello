@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.AsyncTask;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,6 +11,7 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
+import com.proyecto.enrique.osporthello.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +38,7 @@ public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void
         runOnUiThread(new Runnable(){
             @Override
             public void run(){
-                Toast.makeText(context.getApplicationContext(),R.string.saving_work_data,Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), R.string.saving_work_data,Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -68,18 +69,36 @@ public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                     Log.e("SPORT_DATA", "Error");
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run(){
+                            Toast.makeText(context.getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     super.onFailure(statusCode, headers, responseString, throwable);
                     Log.e("SPORT_DATA", "Error");
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run(){
+                            Toast.makeText(context.getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
                     Log.e("SPORT_DATA", "Error");
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run(){
+                            Toast.makeText(context.getApplicationContext(), R.string.connection_error,Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override

@@ -31,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,9 +47,9 @@ import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Adapters.ChooseActivityAdapter;
 import com.proyecto.enrique.osporthello.Models.RowActivity;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
-import com.proyecto.enrique.osporthello.MyTimerTask;
+import com.proyecto.enrique.osporthello.AsyncTask.MyTimerTask;
 import com.proyecto.enrique.osporthello.R;
-import com.proyecto.enrique.osporthello.UploadSportDataTask;
+import com.proyecto.enrique.osporthello.AsyncTask.UploadSportDataTask;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -552,7 +551,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         activityInfo.setDistanceKms(this.distance);
         activityInfo.setCalories(this.calories);
         activityInfo.setEncodedPointsList(PolyUtil.encode(polyline.getPoints()));
-        activityInfo.setDurationMillis(myTimerTask.getFinalDuration());
+        if(myTimerTask != null)
+            activityInfo.setDurationMillis(myTimerTask.getFinalDuration());
+        else{
+            this.timeStart += (SystemClock.uptimeMillis() - timePause);
+            activityInfo.setDurationMillis(SystemClock.uptimeMillis() - this.timeStart);
+        }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(context.getString(R.string.want_save_wokout))

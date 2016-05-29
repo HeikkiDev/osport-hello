@@ -1,13 +1,16 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,8 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.proyecto.enrique.osporthello.ApiClient;
-import com.proyecto.enrique.osporthello.CustomMapFragment;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.Fragments.CustomMapFragment;
+import com.proyecto.enrique.osporthello.AsyncTask.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.R;
 import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.Services.NotificationsService;
@@ -67,6 +70,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private boolean privacityMarkerAdded = false;
     private int sportType = 0;
     private static final int ZOOM = 6;
+    private static final int CUSTOM_RESULT = 17;
     private static final String PREFERENCES_FILE = "osporthello_settings";
 
     @Override
@@ -187,7 +191,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
      * @param latLng
      */
     private Marker updateMapView(LatLng latLng, GoogleMap map, boolean addMarker, Marker marker) {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM));
         if(addMarker)
             marker = map.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         return marker;
@@ -268,6 +272,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 btnSave.setEnabled(true);
                 progressDialog.cancel(true);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -275,6 +280,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                 super.onFailure(statusCode, headers, responseString, throwable);
                 btnSave.setEnabled(true);
                 progressDialog.cancel(true);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -282,6 +288,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 btnSave.setEnabled(true);
                 progressDialog.cancel(true);
+                Toast.makeText(context, R.string.connection_error,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -363,12 +370,50 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.delete_account:
+                LayoutInflater inflater = getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.delete_account_dialog, null);
+                final Switch switchDelete = (Switch) dialogView.findViewById(R.id.switchDelete);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(getResources().getString(R.string.delete_account));
+                alertDialogBuilder
+                        .setPositiveButton(getResources().getString(R.string.delete_account), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(switchDelete != null && switchDelete.isChecked()) {
+                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.deleting_account), Toast.LENGTH_LONG).show();
+                                    setResult(CUSTOM_RESULT);
+                                    finish();
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.must_check), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertDialogBuilder.setView(dialogView);
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

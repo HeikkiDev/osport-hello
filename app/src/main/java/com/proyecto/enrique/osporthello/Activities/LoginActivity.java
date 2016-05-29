@@ -35,10 +35,11 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.ImageManager;
-import com.proyecto.enrique.osporthello.IndeterminateDialogTask;
+import com.proyecto.enrique.osporthello.AsyncTask.IndeterminateDialogTask;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -166,6 +167,28 @@ public class LoginActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            progressDialog.cancel(true);
+                            Snackbar snackbar = Snackbar.make(coordinatorLayout, R.string.restore_password_failed, Snackbar.LENGTH_LONG);
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                            textView.setTextColor(Color.parseColor("#F44336"));
+                            snackbar.show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            super.onFailure(statusCode, headers, throwable, errorResponse);
+                            progressDialog.cancel(true);
+                            Snackbar snackbar = Snackbar.make(coordinatorLayout, R.string.restore_password_failed, Snackbar.LENGTH_LONG);
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                            textView.setTextColor(Color.parseColor("#F44336"));
+                            snackbar.show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            super.onFailure(statusCode, headers, throwable, errorResponse);
                             progressDialog.cancel(true);
                             Snackbar snackbar = Snackbar.make(coordinatorLayout, R.string.restore_password_failed, Snackbar.LENGTH_LONG);
                             View sbView = snackbar.getView();
@@ -321,6 +344,13 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progressDialog.cancel(true);
+                onLoginFailed();
+            }
+
+            @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true") && response.getString("message").equals("Login completed")) {
@@ -359,6 +389,20 @@ public class LoginActivity extends AppCompatActivity {
         ApiClient.getUserLogin("api/users/login", params, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                progressDialog.cancel(true);
+                onLoginFailed();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                progressDialog.cancel(true);
+                onLoginFailed();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 progressDialog.cancel(true);
                 onLoginFailed();
             }

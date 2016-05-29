@@ -1,8 +1,9 @@
 package com.proyecto.enrique.osporthello.Adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,17 +26,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
-import com.proyecto.enrique.osporthello.AnalyzeJSON;
-import com.proyecto.enrique.osporthello.ImageManager;
+import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
-import com.proyecto.enrique.osporthello.Models.User;
-import com.proyecto.enrique.osporthello.NameAndImageTask;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +53,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
     private ArrayList<SportActivityInfo> items;
 
     private boolean loading = true;
+    private boolean delete = false;
     private int pastVisiblesItems, visibleItemCount, totalItemCount;
     private OnLoadMoreListener onLoadMoreListener;
     private UserInfoInterface infoInterface;
@@ -65,11 +63,12 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
     }
 
     // Constructor
-    public MyMapActivitiesAdapter(Context context, RecyclerView recyclerView, OnLoadMoreListener interf, UserInfoInterface info, ArrayList<SportActivityInfo> activities) {
+    public MyMapActivitiesAdapter(Context context, RecyclerView recyclerView, OnLoadMoreListener interf, UserInfoInterface info, ArrayList<SportActivityInfo> activities, boolean delete) {
         this.context = context;
         this.items = activities;
         this.onLoadMoreListener = interf;
         this.infoInterface = info;
+        this.delete = delete;
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
 
@@ -159,12 +158,25 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             viewHolder.titleDistance.setText(R.string.distance_miles_oneline);
         }
 
-        viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: ABRIR ACTIVITY CON DETALLES DEL ENTRENAMIENTO...
-            }
-        });
+        if(delete) {
+            viewHolder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    new AlertDialog.Builder(v.getContext())
+                            .setTitle(context.getResources().getString(R.string.delete_activity))
+                            .setMessage(R.string.sure_delete_activity)
+                            .setPositiveButton(context.getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deleteActivity(i);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                    return true;
+                }
+            });
+        }
 
         viewHolder.initializeMapView();
 
@@ -172,14 +184,33 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         SportActivityInfo item = items.get(i);
         viewHolder.mapView.setTag(item);
         viewHolder.mapView.setClickable(false);
+    }
 
-        // Ensure the map has been initialised by the on map ready callback in ViewHolder.
-        // If it is not ready yet, it will be initialised with the NamedLocation set as its tag
-        // when the callback is received.
-        /*if (viewHolder.map != null) {
-            // The map is already ready to be used
-            setMapLocation(viewHolder.map, item);
-        }*/
+    /**
+     *
+     * @param i
+     */
+    private void deleteActivity(final int i) {
+        final MyMapActivitiesAdapter mapsAdapter = this;
+
+        ApiClient.deleteMapActivity("api/activity/"+items.get(i).get_id(), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                Log.e("DELETE_FRIEND", "ERROR!!");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.getString("code").equals("true")) {
+                        items.remove(i);
+                        mapsAdapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**

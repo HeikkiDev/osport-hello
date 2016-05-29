@@ -99,6 +99,45 @@ public class LocalDataBase {
         }
     }
 
+    // Insert chat list in services
+    public void insertChatsInService(ArrayList<Chat> chatList, String userEmail){
+        ArrayList<Chat> listChats = new ArrayList<>();
+        Cursor cursor = getMyChats(userEmail);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Chat chat = new Chat();
+                chat.setId(cursor.getInt(cursor.getColumnIndex(LocalDataBase.CHAT_ID)));
+                chat.setReceiver_email(cursor.getString(cursor.getColumnIndex(LocalDataBase.CHAT_RECEIVER)));
+                chat.setReceiver_name(cursor.getString(cursor.getColumnIndex(LocalDataBase.CHAT_NAME)));
+                chat.setReceiver_image(cursor.getString(cursor.getColumnIndex(LocalDataBase.CHAT_IMAGE)));
+                listChats.add(chat);
+            } while (cursor.moveToNext());
+        }
+
+        // Delete all table
+        long deleted = miDB.delete(TABLE_CHAT, null, new String[]{});
+
+        // Populate table
+        for (Chat chat:chatList) {
+            ContentValues values = new ContentValues();
+            values.put(CHAT_ID, chat.getId());
+            values.put(CHAT_MYEMAIL, userEmail);
+            values.put(CHAT_RECEIVER, chat.getReceiver_email());
+            values.put(CHAT_NAME, chat.getReceiver_name());
+            values.put(CHAT_IMAGE, searchImage(listChats, chat.getId()));
+            miDB.insert(TABLE_CHAT, null, values);
+        }
+    }
+
+    private String searchImage(ArrayList<Chat> list, int chatId) {
+        for (Chat chat:list) {
+            if(chat.getId() == chatId)
+                return chat.getReceiver_image();
+        }
+        return null;
+    }
+
     // Delete chat
     public int deleteChat(String receiverEmail){
         return miDB.delete(TABLE_CHAT,

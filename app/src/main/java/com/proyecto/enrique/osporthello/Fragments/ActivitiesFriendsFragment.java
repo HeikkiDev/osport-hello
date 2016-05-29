@@ -29,6 +29,7 @@ import com.proyecto.enrique.osporthello.Models.SportActivityInfo;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -91,7 +92,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                 getFriendsActivities();
             }
             else {
-                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
+                adapter = new MyMapActivitiesAdapter(getActivity().getApplicationContext(), recycler, myInterface, infoInterface, activitiesList, false);
                 recycler.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);
                 if (activitiesList == null || activitiesList.isEmpty())
@@ -135,26 +136,42 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                 }
 
                 @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    progressBar.setVisibility(View.GONE);
+                    txtNotToShow.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    progressBar.setVisibility(View.GONE);
+                    txtNotToShow.setVisibility(View.VISIBLE);
+                }
+
+                @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
                         if (!response.getString("data").equals("null")) {
                             totalPages = response.getJSONObject("data_aux").getInt("TotalPages");
                             activitiesList = AnalyzeJSON.analyzeListActivities(response);
                             // Instance adapter
-                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList, false);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.GONE);
                         }
                         else{
                             activitiesList = new ArrayList<SportActivityInfo>();
-                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList);
+                            adapter = new MyMapActivitiesAdapter(context.getApplicationContext(), recycler, myInterface, infoInterface, activitiesList, false);
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.VISIBLE);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
+                        txtNotToShow.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -186,6 +203,18 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
             ApiClient.getFriendsActivities("api/activity/friends/" + user.getEmail() + "/" + currentPage,  new JsonHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                    Log.e("ACTIVITIES", "ERROR!!");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.e("ACTIVITIES", "ERROR!!");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
                     Log.e("ACTIVITIES", "ERROR!!");
                 }
 

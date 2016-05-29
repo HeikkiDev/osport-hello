@@ -1,4 +1,4 @@
-package com.proyecto.enrique.osporthello;
+package com.proyecto.enrique.osporthello.AsyncTask;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
+import com.proyecto.enrique.osporthello.AnalyzeJSON;
+import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
 

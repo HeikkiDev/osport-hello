@@ -28,6 +28,7 @@ import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -140,6 +141,13 @@ public class ShowFriendsFragment extends Fragment {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String s,Throwable throwable) {
+                    Log.e("FOLLWING", "ERROR!!");
+                    progressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
                     Log.e("FOLLWING", "ERROR!!");
                     progressBar.setVisibility(View.GONE);
                 }
