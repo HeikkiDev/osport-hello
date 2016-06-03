@@ -26,10 +26,16 @@ import static com.google.android.gms.internal.zzir.runOnUiThread;
  */
 public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void> {
 
-    Context context;
+    public interface onFinishUpload{
+        void onFinish();
+    }
 
-    public UploadSportDataTask(Context context){
+    Context context;
+    onFinishUpload myInterface;
+
+    public UploadSportDataTask(Context context, onFinishUpload interf){
         this.context = context;
+        this.myInterface = interf;
     }
 
     @Override
@@ -115,5 +121,11 @@ public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void
         } catch (JSONException e) {Log.e("NEW_ACTIVITY", e.getMessage());}
 
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        myInterface.onFinish();
     }
 }

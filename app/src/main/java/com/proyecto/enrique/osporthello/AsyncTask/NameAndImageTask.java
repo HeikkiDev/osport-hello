@@ -29,6 +29,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
     TextView txtUsername;
     ImageView imageView;
     int index;
+    boolean success;
     UserInfoInterface infoInterface;
 
     public NameAndImageTask(String email, TextView txt, ImageView image, int i, UserInfoInterface info){
@@ -36,6 +37,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
         this.txtUsername = txt;
         this.imageView = image;
         this.index = i;
+        this.success = false;
         this.infoInterface = info;
         userInfo = new User();
     }
@@ -69,6 +71,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
                     try {
                         if (!response.getString("data").equals("null")) {
                             userInfo = AnalyzeJSON.analyzeUserNameImage(response);
+                            success = true;
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -87,7 +90,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
             txtUsername.setText(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
         if(imageView != null)
             imageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
-        if(infoInterface != null)
+        if(success && infoInterface != null)
             infoInterface.onInfoUserChanges(userInfo, index);
     }
 }

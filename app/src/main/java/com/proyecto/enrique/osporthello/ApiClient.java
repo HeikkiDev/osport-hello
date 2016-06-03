@@ -60,28 +60,27 @@ public class ApiClient {
 
     public static void getUserChats(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
-        // This method is called in a service, so can't access to MainActivity.USER_ME.getApiKey()
         client.get(HOST + url, responseHandler);
     }
 
     public static void postNewChat(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
-        client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+        client.post(HOST + url, responseHandler);
     }
 
     public static void postNewMessage(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
-        client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+        client.post(HOST + url, responseHandler);
     }
 
     public static void deleteChat(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
-        client.delete(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+        client.delete(HOST + url, responseHandler);
     }
 
     public static void deletePairChat(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
-        client.delete(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
+        client.delete(HOST + url, responseHandler);
     }
 
     /**

@@ -3,6 +3,8 @@ package com.proyecto.enrique.osporthello.Adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -118,8 +120,11 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
             viewHolder.infoUserLayout.setVisibility(View.GONE);
         }
         else{
-            if(items.get(i).getUserImage() == null || items.get(i).getUserName().equals(""))
-                new NameAndImageTask(items.get(i).getEmail(), viewHolder.username, viewHolder.circleImageView, i, infoInterface).execute();
+            if(items.get(i).getUserImage() == null || items.get(i).getUserName().equals("")) {
+                Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+                viewHolder.username.setText(items.get(i).getUserName());
+                viewHolder.circleImageView.setImageBitmap(bm);
+            }
             else{
                 viewHolder.username.setText(items.get(i).getUserName());
                 viewHolder.circleImageView.setImageBitmap(items.get(i).getUserImage());

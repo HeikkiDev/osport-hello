@@ -4,11 +4,14 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -38,6 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -118,10 +123,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                         }
                     }
                 }
-                Intent intent = new Intent();
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 // Show only images, no videos or anything else
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.putExtra("crop", "true");
                 intent.putExtra("aspectX", WIDTH);
                 intent.putExtra("aspectY", HEIGHT);
@@ -130,8 +133,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 intent.putExtra("scale", true);
                 intent.putExtra("scaleUpIfNeeded", true);
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-                // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                startActivityForResult(intent, PICK_IMAGE);
             }
         });
     }
@@ -141,10 +143,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         switch (requestCode) {
             case 2909: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent();
-                    // Show only images, no videos or anything else
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.putExtra("crop", "true");
                     intent.putExtra("aspectX", WIDTH);
                     intent.putExtra("aspectY", HEIGHT);
@@ -153,8 +152,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     intent.putExtra("scale", true);
                     intent.putExtra("scaleUpIfNeeded", true);
                     intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-                    // Always show the chooser (if there are multiple options available)
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                    startActivityForResult(intent, PICK_IMAGE);
                 }
                 return;
             }
@@ -170,7 +168,26 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            //Uri uri = data.getData();
+            Uri selectedImageUri = data.getData();
+            if (Build.VERSION.SDK_INT < 19) {
+                String selectedImagePath = getPath(selectedImageUri);
+                Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath);
+                imageView.setImageBitmap(bitmap);
+                this.bitmapImage = bitmap;
+            }
+            else {
+                try {
+                    Bitmap bitmap  = (Bitmap) data.getExtras().get("data");
+                    imageView.setImageBitmap(bitmap);
+                    this.bitmapImage = bitmap;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /*
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             try {
                 Bitmap bitmap = null;
                 int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -180,13 +197,31 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     Uri uri = data.getData();
                     bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 }
-                //bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 imageView.setImageBitmap(bitmap);
                 this.bitmapImage = bitmap;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        */
+    }
+
+    /**
+     * Helper to retrieve the path of an image URI
+     */
+    public String getPath(Uri uri) {
+        if( uri == null ) {
+            return null;
+        }
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if( cursor != null ){
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+        return uri.getPath();
     }
 
     @Override

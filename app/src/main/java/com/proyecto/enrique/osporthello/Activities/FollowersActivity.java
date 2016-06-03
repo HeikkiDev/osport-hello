@@ -16,6 +16,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -155,6 +156,12 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                         // Instance adapter
                         adapter = new UsersAdapter(context, myInterface, infoInterface, followersList, followingList);
                         recycler.setAdapter(adapter);
+
+                        if(followersList != null){
+                            for (int i = 0; i < followersList.size(); i++) {
+                                new NameAndImageTask(followersList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                            }
+                        }
                     }
                     progressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
@@ -170,7 +177,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
                 try {
                     swipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
-
+                    //
                 }
             }
         });
@@ -196,5 +203,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
         followersList.get(index).setFirstname(userInfo.getFirstname());
         followersList.get(index).setLastname(userInfo.getLastname());
         followersList.get(index).setImage(userInfo.getImage());
+        if(recycler != null && recycler.getAdapter() != null)
+            recycler.getAdapter().notifyItemChanged(index);
     }
 }

@@ -174,7 +174,7 @@ public class NotificationsService extends Service {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setSmallIcon(R.drawable.logo)
                         .setContentText(name)
                         .setContentTitle(getString(R.string.new_follower));
 

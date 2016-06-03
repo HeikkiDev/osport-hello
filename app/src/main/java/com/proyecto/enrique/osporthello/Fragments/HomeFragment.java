@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -57,7 +59,7 @@ import java.util.Timer;
 /**
  * Created by enrique on 16/03/16.
  */
-public class HomeFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMapClickListener, LocationListener  {
+public class HomeFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMapClickListener, LocationListener, UploadSportDataTask.onFinishUpload  {
 
     private LinearLayout rootLayoutHome;
     private LinearLayout layoutInfoWork;
@@ -76,10 +78,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private TextView txtSpeed;
     private TextView txtDistance;
     private TextView txtCalories;
+    private ImageView iconSpeed;
+    private ImageView iconDistance;
+    private ImageView iconCalories;
     private Button btnStartWorkout;
     private Button btnStop;
     private Button btnPause;
 
+    private UploadSportDataTask.onFinishUpload myInterface;
     private GoogleMap mMap;
     private Marker marker;
     private Context context;
@@ -137,6 +143,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         txtSpeed = (TextView)view.findViewById(R.id.txtSpeed);
         txtDistance = (TextView)view.findViewById(R.id.txtDistance);
         txtCalories = (TextView)view.findViewById(R.id.txtCalories);
+        iconSpeed = (ImageView)view.findViewById(R.id.iconSpeed);
+        iconDistance = (ImageView)view.findViewById(R.id.iconDistance);
+        iconCalories = (ImageView)view.findViewById(R.id.iconCalories);
         btnStartWorkout = (Button)view.findViewById(R.id.btnStartWorkout);
         btnStop = (Button)view.findViewById(R.id.btnStopWorkout);
         btnPause = (Button)view.findViewById(R.id.btnPauseWorkout);
@@ -146,6 +155,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         layoutChooseActivity.setOnClickListener(this);
         layoutChooseDistance.setOnClickListener(this);
         layoutChooseSpeed.setOnClickListener(this);
+        myInterface = this;
 
         // Check saved states
         if(savedInstanceState != null){
@@ -169,6 +179,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             factor = savedInstanceState.getDouble("factor");
             distance = savedInstanceState.getDouble("distance");
             calories = savedInstanceState.getInt("calories");
+            typeFactor = savedInstanceState.getDouble("typeFactor");
+            avgSpeed = savedInstanceState.getDouble("avgSpeed");
+            countAvgSpeed = savedInstanceState.getLong("countAvgSpeed");
+
+            txtCalories.setText(String.valueOf(calories));
 
             if(isTimerRunning){
                 if(timeStart > 0)
@@ -182,18 +197,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                 btnPause.setText(R.string.restart);
                 btnPause.setBackgroundColor(getResources().getColor(R.color.primaryDarkColor));
             }
+        }
 
-            // Change user interface if landscape orientation
-            if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                txtTitleSpeed.setTextSize(16);
-                txtTitleDistance.setTextSize(16);
-                txtTitleCalories.setTextSize(16);
-                DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-                rootLayoutHome.setOrientation(LinearLayout.HORIZONTAL);
-                layoutInfoWork.requestLayout();
-                layoutInfoWork.getLayoutParams().width = displayMetrics.widthPixels/2;
-                layoutInfoWork.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-            }
+        // Change user interface if landscape orientation
+        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            iconSpeed.setVisibility(View.GONE);
+            iconDistance.setVisibility(View.GONE);
+            iconCalories.setVisibility(View.GONE);
+            txtTitleSpeed.setTextSize(16);
+            txtTitleDistance.setTextSize(16);
+            txtTitleCalories.setTextSize(16);
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            rootLayoutHome.setOrientation(LinearLayout.HORIZONTAL);
+            layoutInfoWork.requestLayout();
+            layoutInfoWork.getLayoutParams().width = displayMetrics.widthPixels/2;
+            layoutInfoWork.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -231,14 +249,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         outState.putString("title_distance", txtTitleDistance.getText().toString());
         outState.putBoolean("is_running", isTimerRunning);
         outState.putBoolean("is_paused", isTimerPaused);
-        outState.getLong("previous_time");
-        outState.getParcelable("previous_location");
+        outState.putLong("previous_time", previousTime);
+        outState.putParcelable("previous_location", previousLocation);
         outState.putLong("time_start", timeStart);
         outState.putLong("time_pause", timePause);
         outState.putParcelable("polyline", polyline);
         outState.putDouble("factor",factor);
         outState.putDouble("distance",distance);
         outState.putInt("calories",calories);
+        outState.putDouble("typeFactor", typeFactor);
+        outState.putDouble("avgSpeed", avgSpeed);
+        outState.putLong("countAvgSpeed", countAvgSpeed);
     }
 
     @Override
@@ -406,6 +427,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             return;
         }
 
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE)
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        else
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
         if(txtChooseSpeed.getText().toString().equals(getResources().getString(R.string.km_h_units))) {
             txtTitleSpeed.setText(R.string.speed_km_h);
             this.factor = 1;
@@ -564,7 +591,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                 .setCancelable(false)
                 .setPositiveButton(context.getString(R.string.save_activity), new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                        UploadSportDataTask uploadData = new UploadSportDataTask(context);
+                        UploadSportDataTask uploadData = new UploadSportDataTask(context,myInterface);
                         uploadData.execute(activityInfo);
                         if(mMap != null){
                             mMap.clear();
@@ -602,6 +629,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             layoutInfoWork.setVisibility(View.GONE);
             layoutStopPause.setVisibility(View.GONE);
             layoutStartWorkout.setVisibility(View.VISIBLE);
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
         if(timer != null){
@@ -813,5 +841,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public void onFinish() {
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 }

@@ -21,6 +21,7 @@ import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.Adapters.MyMapActivitiesAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.LocalDataBase;
@@ -160,6 +161,12 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                             recycler.setAdapter(adapter);
                             progressBar.setVisibility(View.GONE);
                             txtNotToShow.setVisibility(View.GONE);
+
+                            if(activitiesList != null){
+                                for (int i = 0; i < activitiesList.size(); i++) {
+                                    new NameAndImageTask(activitiesList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                                }
+                            }
                         }
                         else{
                             activitiesList = new ArrayList<SportActivityInfo>();
@@ -229,6 +236,12 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
                             adapter.notifyDataSetChanged();
                             recycler.setAdapter(adapter);
                             recycler.scrollToPosition(itemsCount-1);
+
+                            if(activitiesList != null){
+                                for (int i = itemsCount-1; i < activitiesList.size(); i++) {
+                                    new NameAndImageTask(activitiesList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                                }
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -253,5 +266,7 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
     public void onInfoUserChanges(User userInfo, int index) {
         activitiesList.get(index).setUserName(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
         activitiesList.get(index).setUserImage(ImageManager.stringToBitMap(userInfo.getImage()));
+        if(recycler != null && recycler.getAdapter() != null)
+            recycler.getAdapter().notifyItemChanged(index);
     }
 }

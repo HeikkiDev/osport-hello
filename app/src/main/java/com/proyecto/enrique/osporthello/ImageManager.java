@@ -70,8 +70,9 @@ public class ImageManager {
     }
 
     public void uploadStringImageToRemote(Bitmap bitmap) {
+        Bitmap resizedImage = Bitmap.createScaledBitmap(bitmap,150,128, true);
         UploadImageTask imageTask = new UploadImageTask();
-        imageTask.execute(bitmap);
+        imageTask.execute(resizedImage);
     }
 
     /**

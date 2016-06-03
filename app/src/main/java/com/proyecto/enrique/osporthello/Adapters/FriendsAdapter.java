@@ -72,8 +72,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public void onBindViewHolder(final FriendViewHolder viewHolder, final int i) {
-        if(items.get(i).getImage() == null || items.get(i).getImage().equals(""))
-            new NameAndImageTask(items.get(i).getEmail(), viewHolder.name, viewHolder.image, i, infoInterface).execute();
+        if(items.get(i).getImage() == null || items.get(i).getImage().equals("")) {
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+            viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
+            viewHolder.image.setImageBitmap(bm);
+        }
         else{
             viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
             viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));

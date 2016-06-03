@@ -19,6 +19,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -152,6 +153,12 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                         // Instance adapter
                         adapter = new UsersAdapter(context, myInterface, infoInterface, usersList, friendsList);
                         recycler.setAdapter(adapter);
+
+                        if(usersList != null){
+                            for (int i = 0; i < usersList.size(); i++) {
+                                new NameAndImageTask(usersList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                            }
+                        }
                     }
                     layoutSearching.setVisibility(View.GONE);
                 } catch (JSONException e) {
@@ -207,5 +214,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         usersList.get(index).setFirstname(userInfo.getFirstname());
         usersList.get(index).setLastname(userInfo.getLastname());
         usersList.get(index).setImage(userInfo.getImage());
+        if(recycler != null && recycler.getAdapter() != null)
+            recycler.getAdapter().notifyItemChanged(index);
     }
 }

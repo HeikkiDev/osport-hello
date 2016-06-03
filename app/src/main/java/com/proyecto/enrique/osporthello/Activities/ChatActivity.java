@@ -29,6 +29,7 @@ import com.proyecto.enrique.osporthello.ImageManager;
 import com.proyecto.enrique.osporthello.LocalDataBase;
 import com.proyecto.enrique.osporthello.Models.Chat;
 import com.proyecto.enrique.osporthello.Models.Message;
+import com.proyecto.enrique.osporthello.Models.User;
 import com.proyecto.enrique.osporthello.Services.ChatNotificationsService;
 import com.proyecto.enrique.osporthello.R;
 
@@ -48,6 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager lManager;
+    private User USER_ME;
     private ArrayList<Message> messagesList = null;
     private LocalDataBase dataBase;
     private Firebase refChild;
@@ -57,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
     TextView toolbarUsername;
     EditText etxMessage;
     private static final String PREFERENCES_FILE = "osporthello_settings";
+    private static final String SESSION_FILE = "my_session";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,8 @@ public class ChatActivity extends AppCompatActivity {
 
         // Set user chat info
         toolbarUsername.setText(this.CHAT.getReceiver_name());
-        toolbarImage.setImageBitmap(ImageManager.stringToBitMap(this.CHAT.getReceiver_image()));
+        if(this.CHAT.getReceiver_image() != null && !this.CHAT.getReceiver_image().equals(""))
+            toolbarImage.setImageBitmap(ImageManager.stringToBitMap(this.CHAT.getReceiver_image()));
 
         // Obtain Recycler
         recycler = (RecyclerView) findViewById(R.id.recyclerViewMessages);
@@ -90,6 +94,17 @@ public class ChatActivity extends AppCompatActivity {
 
         // To show back arrow
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Get my user info
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        this.USER_ME = new User(sharedPreferences.getString("email", null),
+                sharedPreferences.getString("firstname", null),
+                sharedPreferences.getString("lastname", null), null,
+                sharedPreferences.getString("apikey", null),
+                sharedPreferences.getString("age", null),
+                sharedPreferences.getString("city", null),
+                sharedPreferences.getString("weight", null),
+                sharedPreferences.getString("height", null));
 
         updateMessages();
 
@@ -155,7 +170,7 @@ public class ChatActivity extends AppCompatActivity {
         String date = dateFormatter.format(now);
         String time = timeFormatter.format(now);
 
-        String myEmail = MainActivity.USER_ME.getEmail();
+        String myEmail = this.USER_ME.getEmail();
         myEmail = myEmail.replace('.','0');
         myEmail = myEmail.replace('$','1');
         myEmail = myEmail.replace('#','2');
@@ -167,7 +182,7 @@ public class ChatActivity extends AppCompatActivity {
         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
         Firebase refChat = firebaseRoot.child("messages").child(id).child(myEmail);
         Message message = new Message();
-        message.setAuthor(MainActivity.USER_ME.getEmail());
+        message.setAuthor(this.USER_ME.getEmail());
         message.setDate(date);
         message.setHour(time);
         message.setText(etxMessage.getText().toString());
@@ -176,7 +191,7 @@ public class ChatActivity extends AppCompatActivity {
         dataBase.insertNewMessage(message, Integer.valueOf(id));
         updateMessages();
 
-        ApiClient.postNewMessage("api/chats/newmessage/" + this.CHAT.getId() + "/" + MainActivity.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email(),
+        ApiClient.postNewMessage("api/chats/newmessage/" + this.CHAT.getId() + "/" + this.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email() + "/" + this.USER_ME.getApiKey(),
                 new JsonHttpResponseHandler());
     }
 
@@ -259,7 +274,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void deletePairChat() {
-        ApiClient.deletePairChat("api/chats/pair/" + MainActivity.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email(), new JsonHttpResponseHandler() {
+        ApiClient.deletePairChat("api/chats/pair/" + this.USER_ME.getEmail() + "/" + this.CHAT.getReceiver_email() + "/" + this.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {

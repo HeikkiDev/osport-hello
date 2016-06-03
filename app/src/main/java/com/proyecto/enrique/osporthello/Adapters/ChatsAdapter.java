@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -94,6 +96,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
         viewHolder.name.setText(name);
         if(image != null && !image.equals(""))
             viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(image));
+        else {
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+            viewHolder.image.setImageBitmap(bm);
+        }
         //viewHolder.notification.setVisibility(View.VISIBLE);
     }
 
@@ -103,7 +109,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
     }
 
     private void deleteChat(final View v, final Chat chat) {
-        ApiClient.deleteChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + chat.getReceiver_email(), new JsonHttpResponseHandler() {
+        ApiClient.deleteChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + chat.getReceiver_email() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {

@@ -27,6 +27,7 @@ import com.proyecto.enrique.osporthello.Adapters.GeoSearchAdapter;
 import com.proyecto.enrique.osporthello.Adapters.UsersAdapter;
 import com.proyecto.enrique.osporthello.AnalyzeJSON;
 import com.proyecto.enrique.osporthello.ApiClient;
+import com.proyecto.enrique.osporthello.AsyncTask.NameAndImageTask;
 import com.proyecto.enrique.osporthello.Interfaces.UserInfoInterface;
 import com.proyecto.enrique.osporthello.Models.GeoSearch;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -213,6 +214,12 @@ public class GeoSearchFragment extends Fragment implements UserInfoInterface, Ge
                         // Instance adapter
                         adapter = new GeoSearchAdapter(context, friendInterface, infoInterface, spinnerUnits.getSelectedItemPosition(), usersList, friendsList);
                         recycler.setAdapter(adapter);
+
+                        if(usersList != null){
+                            for (int i = 0; i < usersList.size(); i++) {
+                                new NameAndImageTask(usersList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                            }
+                        }
                     }
                     if(usersList != null && usersList.isEmpty())
                         txtNotToShow.setVisibility(View.VISIBLE);
@@ -232,7 +239,7 @@ public class GeoSearchFragment extends Fragment implements UserInfoInterface, Ge
                     isDownloading = false;
                     swipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
-
+                    //
                 }
             }
         });
@@ -280,5 +287,7 @@ public class GeoSearchFragment extends Fragment implements UserInfoInterface, Ge
         usersList.get(index).setFirstname(userInfo.getFirstname());
         usersList.get(index).setLastname(userInfo.getLastname());
         usersList.get(index).setImage(userInfo.getImage());
+        if(recycler != null && recycler.getAdapter() != null)
+            recycler.getAdapter().notifyItemChanged(index);
     }
 }

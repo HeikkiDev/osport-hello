@@ -2,6 +2,8 @@ package com.proyecto.enrique.osporthello.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,8 +73,11 @@ public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.User
 
     @Override
     public void onBindViewHolder(final UserViewHolder viewHolder, final int i) {
-        if (items.get(i).getImage() == null || items.get(i).getImage().equals(""))
-            new NameAndImageTask(items.get(i).getEmail(), viewHolder.name, viewHolder.image, i, infoInterface).execute();
+        if (items.get(i).getImage() == null || items.get(i).getImage().equals("")) {
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+            viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
+            viewHolder.image.setImageBitmap(bm);
+        }
         else {
             viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
             viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(items.get(i).getImage()));
@@ -204,7 +209,7 @@ public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.User
     }
 
     private void newChat(final GeoSearch user, final Button btn) {
-        ApiClient.postNewChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail(), new JsonHttpResponseHandler() {
+        ApiClient.postNewChat("api/chats/" + MainActivity.USER_ME.getEmail() + "/" + user.getEmail() + "/" + MainActivity.USER_ME.getApiKey(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                 btn.setEnabled(true);
