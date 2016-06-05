@@ -234,6 +234,7 @@ public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.User
                         int chat_id = Integer.valueOf(response.getString("data"));
 
                         Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("deletePair", "deletePairChats");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         String lastname = (user.getLastname() != null) ? user.getLastname() : "";
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + lastname, user.getImage()));

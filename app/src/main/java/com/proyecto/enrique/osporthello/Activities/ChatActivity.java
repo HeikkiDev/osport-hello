@@ -54,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
     private LocalDataBase dataBase;
     private Firebase refChild;
     private ChildEventListener childEventListener;
+    private boolean deletePair = false;
 
     CircleImageView toolbarImage;
     TextView toolbarUsername;
@@ -76,6 +77,8 @@ public class ChatActivity extends AppCompatActivity {
 
         // Obtain info about this chat
         this.CHAT = (Chat) getIntent().getSerializableExtra("myChat");
+        if(getIntent().getExtras().containsKey("deletePair"))
+            deletePair = true;
 
         // Set user chat info
         toolbarUsername.setText(this.CHAT.getReceiver_name());
@@ -297,12 +300,14 @@ public class ChatActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("chatslist", messagesList);
+        outState.putBoolean("deletePair", deletePair);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         messagesList = (ArrayList<Message>) savedInstanceState.getSerializable("chatslist");
+        deletePair = savedInstanceState.getBoolean("deletePair");
         updateMessages();
     }
 
@@ -311,7 +316,7 @@ public class ChatActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(messagesList.isEmpty())
+                if(deletePair && messagesList.isEmpty())
                     deletePairChat();
                 finish();
                 return true;
@@ -322,7 +327,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(messagesList.isEmpty())
+        if(deletePair && messagesList.isEmpty())
             deletePairChat();
     }
 }

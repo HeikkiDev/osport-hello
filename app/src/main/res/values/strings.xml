@@ -147,6 +147,22 @@
     <string name="are_you_sure_about_delete">Are you sure about delete your OSport account?\n\nFor safety, put On the switch</string>
     <string name="delete_my_account">Delete my account</string>
     <string name="connection_error">Connection error</string>
+    <string name="error_report">Send error report</string>
+    <string name="want_send_error">Sorry, OSport has stopped. Do yo want to send an error report?</string>
+    <string name="send">Send mail</string>
+    <string name="if_geosearch">You must pick a point on the map if active GeoSearch</string>
+    <string name="if_privacity">You must pick a point on the map if active Privacity Zone</string>
+    <string name="configuration_updated">Configuration updated</string>
+    <string name="select_sport_type">Select your sport type so others users can find you</string>
+    <string name="active_for_search">Enables GeoSearch to search other users, and can be found</string>
+    <string name="geosearch_point">Select the point where other users will find you in GeoSearch</string>
+    <string name="privacity_info">Your workouts routes will not be registered in the Privacity Zone</string>
+    <string name="privacity_point">Select the point that generates the Privacity Zone</string>
+    <string name="choose_notifications">Choose which notifications you want to receive</string>
+    <string name="privacity_zone">Privacity Zone</string>
+    <string name="search">Search</string>
+    <string name="go_to_configuration">Go to Configuration</string>
+    <string name="must_active_geosearch">You must activate GeoSearch to search for users by proximity, and to be found by other users</string>
 
     <string-array name="array_month">
         <item>All</item>

@@ -225,11 +225,11 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     @Override
     public void onClick(View v) {
         if(switchGeoSearch.isChecked() && markerGeoSearch == null){
-            Toast.makeText(context, "Si activas la GeoBúsqueda, debes elegir un punto en el mapa", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.if_geosearch, Toast.LENGTH_LONG).show();
             return;
         }
         if(switchPrivacity.isChecked() && markerPrivacity == null){
-            Toast.makeText(context, "Si activas la Zona de Privacidad, debes elegir un punto en el mapa", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.if_privacity, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -295,7 +295,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     if (response.getString("code").equals("true")) {
-                        Toast.makeText(context, "Configuración actualizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.configuration_updated, Toast.LENGTH_SHORT).show();
                         SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putInt("geosearch", (switchGeoSearch.isChecked())?1:0);

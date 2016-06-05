@@ -102,6 +102,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             viewHolder.btnFriend.setBackgroundResource(R.color.cancelColor);
             viewHolder.btnFriend.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_outline_white_24dp, 0, 0, 0);
         }
+        else{
+            viewHolder.btnFriend.setText(context.getResources().getString(R.string.follow));
+            viewHolder.btnFriend.setBackgroundResource(R.color.primaryColor);
+            viewHolder.btnFriend.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person_add_white_24dp, 0, 0, 0);
+        }
 
         final int position = i;
         viewHolder.btnFriend.setOnClickListener(new View.OnClickListener() {
@@ -225,6 +230,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         int chat_id = Integer.valueOf(response.getString("data"));
 
                         Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("deletePair", "deletePairChats");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         String lastname = (user.getLastname() != null)?user.getLastname():"";
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + lastname, user.getImage()));

@@ -146,6 +146,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                         int chat_id = response.getInt("data");
 
                         Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("deletePair", "deletePairChats");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + user.getLastname(), user.getImage()));
                         context.startActivity(intent);

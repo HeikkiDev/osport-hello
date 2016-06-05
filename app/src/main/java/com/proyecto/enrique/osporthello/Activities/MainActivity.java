@@ -1,5 +1,7 @@
 package com.proyecto.enrique.osporthello.Activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,7 +9,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -19,8 +23,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -87,6 +94,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        // Restart App if crash
+        Intent restartIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName() );
+        final PendingIntent restart = PendingIntent.getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_ONE_SHOT);
+        restartIntent.putExtra("error_restart","ERROR");
+        restartIntent.setAction("com.proyecto.enrique.osporthello.ErrorRestart");
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable ex) {
+                Log.e("", "restarting app");
+                AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restart);
+                System.exit(2);
+            }
+        });
+
         // Is the user's first time?
         isFirstTime = Boolean.valueOf(readSharedSetting(this, USER_FIRST_TIME, "true"));
         if (isFirstTime) {
@@ -124,6 +146,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (savedInstanceState == null) {
             // Default selection HOME, or currentSelected
             showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
+        }
+
+        if(getIntent() != null && getIntent().getExtras() != null){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.error_report));
+            alertDialogBuilder.setMessage(getResources().getString(R.string.want_send_error));
+            alertDialogBuilder
+                    .setPositiveButton(getResources().getString(R.string.send), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SendLogcatMail();
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 
@@ -587,5 +631,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Send Logcat in Mail
+     */
+    private void SendLogcatMail(){
+        File outputFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"logcat.txt");
+        try{
+            Runtime.getRuntime().exec("logcat-f"+outputFile.getAbsolutePath());
+        }
+        catch (IOException e){e.printStackTrace();}
+
+        // Send file using email
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("vnd.android.cursor.dir/email");
+        String to[] = {"osporthello@gmail.com"};
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+        // the attachment
+        Uri path = Uri.fromFile(outputFile);
+        emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+        // the email subject
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Error log");
+        startActivity(Intent.createChooser(emailIntent, "Send error log"));
     }
 }

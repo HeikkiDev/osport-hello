@@ -147,6 +147,22 @@
     <string name="are_you_sure_about_delete">¿Seguro que quieres eliminar tu cuenta en OSport?\n\nPor seguridad, pon a On el interruptor</string>
     <string name="delete_my_account">Eliminar mi cuenta</string>
     <string name="connection_error">Error de conexión</string>
+    <string name="error_report">Enviar informe de errores</string>
+    <string name="want_send_error">Lo sentimos, OSport se ha detenido. ¿Quieres enviar un informe de errores?</string>
+    <string name="send">Enviar mail</string>
+    <string name="if_geosearch">Si activas la GeoBúsqueda, debes elegir un punto en el mapa</string>
+    <string name="if_privacity">Si activas la Zona de Privacidad, debes elegir un punto en el mapa</string>
+    <string name="configuration_updated">Configuración actualizada</string>
+    <string name="select_sport_type">Seleccione su tipo de deporte para que puedan encontrarle otros aficionados</string>
+    <string name="active_for_search">Para buscar a otros usuarios y poder ser encontrado debes activar la GeoBúsqueda</string>
+    <string name="geosearch_point">Selecciona el punto por el que te encontrarán en la GeoBúsqueda</string>
+    <string name="privacity_info">En la zona de privacidad la ruta de tu entrenamiento no quedará registrada</string>
+    <string name="privacity_point">Selecciona el punto a partir del cual se generará la Zona de Privacidad</string>
+    <string name="choose_notifications">Elige qué notificaciones quieres recibir</string>
+    <string name="privacity_zone">Zona de Privacidad</string>
+    <string name="search">Buscar</string>
+    <string name="go_to_configuration">Ir a Configuración</string>
+    <string name="must_active_geosearch">Debes activar la GeoBúsqueda para poder buscar usuarios por proximidad, y para que otros puedan buscarte a ti</string>
 
     <string-array name="array_month">
         <item>Todos</item>
