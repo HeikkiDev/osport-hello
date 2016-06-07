@@ -73,9 +73,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     @Override
     public void onBindViewHolder(final FriendViewHolder viewHolder, final int i) {
         if(items.get(i).getImage() == null || items.get(i).getImage().equals("")) {
-            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
-            viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
-            viewHolder.image.setImageBitmap(bm);
+            try {
+                Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+                viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
+                viewHolder.image.setImageBitmap(bm);
+            } catch (OutOfMemoryError error){}
         }
         else{
             viewHolder.name.setText(items.get(i).getFirstname()+" "+((items.get(i).getLastname()!=null)?items.get(i).getLastname():""));
@@ -195,7 +197,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
             Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
             return bitmap;
-        }catch(Exception e){
+        }catch(OutOfMemoryError|Exception e){
             e.getMessage();
             return null;
         }

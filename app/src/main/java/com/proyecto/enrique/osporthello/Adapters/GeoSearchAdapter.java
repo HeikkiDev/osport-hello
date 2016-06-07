@@ -74,9 +74,11 @@ public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.User
     @Override
     public void onBindViewHolder(final UserViewHolder viewHolder, final int i) {
         if (items.get(i).getImage() == null || items.get(i).getImage().equals("")) {
-            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
-            viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
-            viewHolder.image.setImageBitmap(bm);
+            try {
+                Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+                viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));
+                viewHolder.image.setImageBitmap(bm);
+            } catch (OutOfMemoryError error){}
         }
         else {
             viewHolder.name.setText(items.get(i).getFirstname() + " " + ((items.get(i).getLastname() != null) ? items.get(i).getLastname() : ""));

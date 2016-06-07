@@ -121,9 +121,11 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
         }
         else{
             if(items.get(i).getUserImage() == null || items.get(i).getUserName().equals("")) {
-                Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
-                viewHolder.username.setText(items.get(i).getUserName());
-                viewHolder.circleImageView.setImageBitmap(bm);
+                try {
+                    Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+                    viewHolder.username.setText(items.get(i).getUserName());
+                    viewHolder.circleImageView.setImageBitmap(bm);
+                } catch (OutOfMemoryError error){}
             }
             else{
                 viewHolder.username.setText(items.get(i).getUserName());

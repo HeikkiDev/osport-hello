@@ -20,6 +20,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -432,6 +433,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         else
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         if(txtChooseSpeed.getText().toString().equals(getResources().getString(R.string.km_h_units))) {
             txtTitleSpeed.setText(R.string.speed_km_h);
@@ -593,6 +595,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                     public void onClick(final DialogInterface dialog, final int id) {
                         UploadSportDataTask uploadData = new UploadSportDataTask(context,myInterface);
                         uploadData.execute(activityInfo);
+                        MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                         if(mMap != null){
                             mMap.clear();
                             polyline.getPoints().clear();
@@ -601,11 +604,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                         layoutInfoWork.setVisibility(View.GONE);
                         layoutStopPause.setVisibility(View.GONE);
                         layoutStartWorkout.setVisibility(View.VISIBLE);
+                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     }
                 })
                 .setNegativeButton(context.getString(R.string.discard_activity), new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
+                        MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                         if(mMap != null){
                             mMap.clear();
                             polyline.getPoints().clear();
@@ -614,6 +619,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
                         layoutInfoWork.setVisibility(View.GONE);
                         layoutStopPause.setVisibility(View.GONE);
                         layoutStartWorkout.setVisibility(View.VISIBLE);
+                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -621,6 +627,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         if(polyline.getPoints() != null && polyline.getPoints().size() > 0)
             alert.show();
         else{
+            MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             if(mMap != null){
                 mMap.clear();
                 polyline.getPoints().clear();
@@ -846,5 +853,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     @Override
     public void onFinish() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 }

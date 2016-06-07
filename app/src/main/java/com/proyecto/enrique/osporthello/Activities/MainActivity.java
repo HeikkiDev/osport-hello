@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,8 +53,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Fragment fragment;
 
     private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
+    public static DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
     public static User USER_ME;
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("", "restarting app");
                 AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                 manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restart);
+                finish();
                 System.exit(2);
             }
         });
@@ -145,29 +149,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (savedInstanceState == null) {
             // Default selection HOME, or currentSelected
-            showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
-        }
+            if(userSesion == null)
+                showFragment(-1, navigationView.getMenu().findItem(R.id.nav_home));
+            else
+                showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
 
-        if(getIntent() != null && getIntent().getExtras() != null){
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle(getResources().getString(R.string.error_report));
-            alertDialogBuilder.setMessage(getResources().getString(R.string.want_send_error));
-            alertDialogBuilder
-                    .setPositiveButton(getResources().getString(R.string.send), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SendLogcatMail();
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+            if(getIntent() != null && getIntent().getExtras() != null){
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(getResources().getString(R.string.error_report));
+                alertDialogBuilder.setMessage(getResources().getString(R.string.want_send_error));
+                alertDialogBuilder
+                        .setPositiveButton(getResources().getString(R.string.send), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SendLogcatMail();
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
 
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
         }
     }
 
@@ -206,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == LOGIN_CODE) {
             if (resultCode == RESULT_OK && data != null) {
+                showFragment(currentSelected, navigationView.getMenu().findItem(R.id.nav_home));
                 Bundle bundle = data.getExtras();
                 User user = (User) bundle.getSerializable("user");
                 this.USER_ME = user;
@@ -221,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     File file = getBaseContext().getFileStreamPath(user.getEmail()+".png");
                     if(!file.exists()){
                         ImageManager storage = new ImageManager(getApplicationContext());
-                        storage.saveToInternalStorage(stringToBitMap(user.getImage()), user.getEmail() + ".png");
+                        storage.saveToInternalStorage(storage.stringToBitMap(user.getImage()), user.getEmail() + ".png");
                     }
                 } catch (Exception e){}
 
@@ -435,7 +443,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
+                if(drawerLayout.getDrawerLockMode(Gravity.LEFT) != DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                    drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
@@ -525,6 +534,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showFragment(int position, MenuItem item) {
 
         switch (position){
+            case -1:
+                fragment = new Fragment();
+                break;
             case 0:
                 fragment = new HomeFragment();
                 break;
@@ -556,22 +568,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setTitle(item.getTitle().toString());
         // Close drawer
         drawerLayout.closeDrawers();
-    }
-
-    /**
-     * String 64 base enconded to Bitmap
-     * @param encodedString
-     * @return bitmap (from given string)
-     */
-    public Bitmap stringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }catch(Exception e){
-            e.getMessage();
-            return null;
-        }
     }
 
     /**
@@ -637,22 +633,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Send Logcat in Mail
      */
     private void SendLogcatMail(){
-        File outputFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"logcat.txt");
+        //File outputFile = new File(Environment.getExternalStorageState(),"logcat.txt");
+        StringBuilder builder = new StringBuilder();
         try{
-            Runtime.getRuntime().exec("logcat-f"+outputFile.getAbsolutePath());
+            String processId = Integer.toString(android.os.Process.myPid());
+            String[] command = new String[] { "logcat", "-d", "-v", "threadtime" };
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains(processId)) {
+                    builder.append(line);
+                }
+            }
         }
         catch (IOException e){e.printStackTrace();}
 
-        // Send file using email
+        // Send email
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("vnd.android.cursor.dir/email");
         String to[] = {"osporthello@gmail.com"};
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-        // the attachment
-        Uri path = Uri.fromFile(outputFile);
-        emailIntent.putExtra(Intent.EXTRA_STREAM, path);
-        // the email subject
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Error log");
-        startActivity(Intent.createChooser(emailIntent, "Send error log"));
+        emailIntent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_error_report));
+        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_error_report)));
     }
 }

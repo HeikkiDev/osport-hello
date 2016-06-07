@@ -97,8 +97,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
         if(image != null && !image.equals(""))
             viewHolder.image.setImageBitmap(ImageManager.stringToBitMap(image));
         else {
-            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
-            viewHolder.image.setImageBitmap(bm);
+            try {
+                Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+                viewHolder.image.setImageBitmap(bm);
+            } catch (OutOfMemoryError error){}
         }
         //viewHolder.notification.setVisibility(View.VISIBLE);
     }
