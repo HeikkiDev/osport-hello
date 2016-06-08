@@ -55,8 +55,11 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -106,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void uncaughtException(Thread thread, Throwable ex) {
                 Log.e("", "restarting app");
+                try {
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(getApplicationContext().openFileOutput("errorlog.txt", Context.MODE_PRIVATE));
+                    outputStreamWriter.write(ex.getMessage());
+                    outputStreamWriter.close();
+                }
+                catch (IOException e) {Log.e("Exception", "File write failed: " + e.toString());}
                 AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                 manager.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restart);
                 finish();
@@ -633,30 +642,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Send Logcat in Mail
      */
     private void SendLogcatMail(){
-        //File outputFile = new File(Environment.getExternalStorageState(),"logcat.txt");
-        StringBuilder builder = new StringBuilder();
-        try{
-            String processId = Integer.toString(android.os.Process.myPid());
-            String[] command = new String[] { "logcat", "-d", "-v", "threadtime" };
-            Process process = Runtime.getRuntime().exec(command);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        //Read error log
+        try {
+            InputStream inputStream = openFileInput("errorlog.txt");
 
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.contains(processId)) {
-                    builder.append(line);
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
                 }
+                inputStream.close();
+
+                // Send email
+                String body = getString(R.string.body_email);
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("vnd.android.cursor.dir/email");
+                String to[] = {"osporthello@gmail.com"};
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body + stringBuilder.toString());
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_error_report));
+                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_error_report)));
             }
         }
-        catch (IOException e){e.printStackTrace();}
-
-        // Send email
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("vnd.android.cursor.dir/email");
-        String to[] = {"osporthello@gmail.com"};
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-        emailIntent.putExtra(Intent.EXTRA_TEXT, builder.toString());
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_error_report));
-        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_error_report)));
+        catch (FileNotFoundException e) {
+            Log.e("Main activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("Main activity", "Can not read file: " + e.toString());
+        }
     }
 }

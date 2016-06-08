@@ -164,6 +164,7 @@
     <string name="go_to_configuration">Ir a Configuración</string>
     <string name="must_active_geosearch">Debes activar la GeoBúsqueda para poder buscar usuarios por proximidad, y para que otros puedan buscarte a ti</string>
     <string name="send_error_report">Enviar informe de errores</string>
+    <string name="body_email">Escribe aquí si quieres.\n-----------------------------------\nLog de errores autogenerado. No lo borres, por favor.\n-----------------------------------\n</string>
 
     <string-array name="array_month">
         <item>Todos</item>
