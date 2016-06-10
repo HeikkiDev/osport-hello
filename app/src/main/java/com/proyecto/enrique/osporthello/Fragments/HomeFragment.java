@@ -103,7 +103,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private double distance = 0d;
     private double avgSpeed = 0d;
     private int calories = 0;
-    private double factor = 1;
+    private double factorSpeed = 1;
+    private double factorDistance = 1;
     private long countAvgSpeed = 0;
     private long previousTime = 0;
     private double typeFactor = 0.048; // Cycling default
@@ -177,7 +178,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
             previousLocation = savedInstanceState.getParcelable("previous_location");
             timeStart = savedInstanceState.getLong("time_start");
             polyline = savedInstanceState.getParcelable("polyline");
-            factor = savedInstanceState.getDouble("factor");
+            factorSpeed = savedInstanceState.getDouble("factorSpeed");
+            factorDistance = savedInstanceState.getDouble("factorDistance");
             distance = savedInstanceState.getDouble("distance");
             calories = savedInstanceState.getInt("calories");
             typeFactor = savedInstanceState.getDouble("typeFactor");
@@ -255,7 +257,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         outState.putLong("time_start", timeStart);
         outState.putLong("time_pause", timePause);
         outState.putParcelable("polyline", polyline);
-        outState.putDouble("factor",factor);
+        outState.putDouble("factorSpeed", factorSpeed);
+        outState.putDouble("factorDistance", factorDistance);
         outState.putDouble("distance",distance);
         outState.putInt("calories",calories);
         outState.putDouble("typeFactor", typeFactor);
@@ -437,19 +440,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
 
         if(txtChooseSpeed.getText().toString().equals(getResources().getString(R.string.km_h_units))) {
             txtTitleSpeed.setText(R.string.speed_km_h);
-            this.factor = 1;
+            this.factorSpeed = 1;
         }
         else {
             txtTitleSpeed.setText(R.string.speed_miles_h);
-            this.factor = KMS_TO_MILES;
+            this.factorSpeed = KMS_TO_MILES;
         }
         if(txtChooseDistance.getText().toString().equals(getResources().getString(R.string.km_units))) {
             txtTitleDistance.setText(R.string.distance_km);
-            this.factor = 1;
+            this.factorDistance = 1;
         }
         else {
             txtTitleDistance.setText(R.string.distance_miles);
-            this.factor = KMS_TO_MILES;
+            this.factorDistance = KMS_TO_MILES;
         }
 
         Resources resources = getResources();
@@ -806,7 +809,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         if(this.previousLocation != null)
             distanceSegment = location.distanceTo(this.previousLocation);
         this.distance += distanceSegment/1000;
-        txtDistance.setText(String.format("%.2f", this.distance * this.factor));
+        txtDistance.setText(String.format("%.2f", this.distance * this.factorDistance));
 
         double timeSegment = 0;
         if(this.previousTime > 0){
@@ -820,8 +823,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         }
 
         double kmsPerHour = (metresPerSeconds * 18) / 5;
-        this.avgSpeed += (kmsPerHour * this.factor);
-        txtSpeed.setText(String.format("%.1f", kmsPerHour * this.factor));
+        this.avgSpeed += (kmsPerHour * this.factorSpeed);
+        txtSpeed.setText(String.format("%.1f", kmsPerHour * this.factorSpeed));
 
         String userWeight = MainActivity.USER_ME.getWeight();
         int weight = Integer.parseInt((userWeight != null && !userWeight.equals("") && !userWeight.equals("null")?userWeight:"0"));
