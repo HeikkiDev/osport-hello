@@ -9,6 +9,12 @@ import com.proyecto.enrique.osporthello.Fragments.ShowFriendsFragment;
 
 import java.io.Serializable;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el ViewPager del Fragment de Amigos, para cambiar entre las dos Tabs que hay.
+ */
+
 public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter implements Serializable{
     final int PAGE_COUNT = 2;
     private String tabTitles[] = null;

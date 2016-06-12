@@ -33,8 +33,11 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by enrique on 16/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que contien dos Tabs en los que se muestran los Fragment de ActivitiesFriends y ShowFriends.
  */
+
 public class FriendsFragment extends Fragment {
 
     ViewPager viewPager;
@@ -93,15 +96,5 @@ public class FriendsFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SEARCH_CODE){
-            if(resultCode == Activity.RESULT_OK){
-                // Update friends list
-            }
-        }
     }
 }

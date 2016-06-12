@@ -36,8 +36,11 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 22/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el RecyclerView que muestra la lista de usuarios en la GeoBúsqueda.
  */
+
 public class GeoSearchAdapter extends RecyclerView.Adapter<GeoSearchAdapter.UserViewHolder> {
     private Context context;
     private int units;

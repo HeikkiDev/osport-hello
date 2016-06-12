@@ -5,8 +5,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 /**
- * Created by enrique on 17/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: AsyncTask que muestra un diálogo con texto personalizable.
  */
+
 public class IndeterminateDialogTask extends AsyncTask<Void, Void, Void> {
 
     String message;

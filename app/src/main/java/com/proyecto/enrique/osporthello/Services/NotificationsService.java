@@ -19,6 +19,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.proyecto.enrique.osporthello.Activities.ChatActivity;
+import com.proyecto.enrique.osporthello.Activities.FollowersActivity;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Models.User;
@@ -33,8 +34,11 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by enrique on 12/04/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Servicio que comprueba y notifica nuevos seguidores.
  */
+
 public class NotificationsService extends Service {
 
     private static final String SESSION_FILE = "my_session";
@@ -48,8 +52,6 @@ public class NotificationsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES arrancado!", Toast.LENGTH_SHORT).show();
-        //
         Firebase.setAndroidContext(this);
         listenersList = new ArrayList<>();
 
@@ -59,8 +61,6 @@ public class NotificationsService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(getApplicationContext(), "Servicio NOTIFICACIONES parado!", Toast.LENGTH_SHORT).show();
-        //
         for (ChildEventListener listener : listenersList) {
             this.refNotifications.removeEventListener(listener);
         }
@@ -68,7 +68,7 @@ public class NotificationsService extends Service {
     }
 
     /**
-     *
+     * Add listener for new followers
      */
     private void addFirebaseListener(){
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
@@ -125,7 +125,7 @@ public class NotificationsService extends Service {
     }
 
     /**
-     *
+     * Notify new follower
      */
     private void notifyNewFriend(final String email, String apiKey){
         ApiClient.getUserName("api/users/name/"+email,apiKey, new JsonHttpResponseHandler() {
@@ -178,22 +178,22 @@ public class NotificationsService extends Service {
                         .setContentText(name)
                         .setContentTitle(getString(R.string.new_follower));
 
-        //Intent resultIntent = new Intent(context, MainActivity.class);
+        Intent resultIntent = new Intent(context, FollowersActivity.class);
 
-        //TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 
-        //stackBuilder.addParentStack(ChatActivity.class);
+        stackBuilder.addParentStack(FollowersActivity.class);
 
-        //stackBuilder.addNextIntent(resultIntent);
+        stackBuilder.addNextIntent(resultIntent);
 
-        /*PendingIntent resultPendingIntent =
+        PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
                         PendingIntent.FLAG_UPDATE_CURRENT
-                );*/
+                );
 
         mBuilder.setAutoCancel(true);
-        //mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(email.hashCode(), mBuilder.build());

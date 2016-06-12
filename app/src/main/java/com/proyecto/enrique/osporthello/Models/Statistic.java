@@ -3,8 +3,11 @@ package com.proyecto.enrique.osporthello.Models;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 28/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo de datos de estadísticas que se muestran en el gráfico de barras.
  */
+
 public class Statistic implements Serializable{
 
     private int date;

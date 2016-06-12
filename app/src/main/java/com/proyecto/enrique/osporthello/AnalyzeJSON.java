@@ -18,8 +18,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by enrique on 22/02/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Clase de apoyo para analizar los diferentes datos que se descargan del
+ * servidor en formato JSON para montar los objetos necesarios en cada análisis.
  */
+
 public class AnalyzeJSON {
 
     private static final String PREFERENCES_FILE = "osporthello_settings";
@@ -36,7 +40,7 @@ public class AnalyzeJSON {
         String weight = jsonObject.getJSONObject(nombreObjeto).getString("User_weight");
         String height = jsonObject.getJSONObject(nombreObjeto).getString("User_height");
 
-        // Se ajusta la Configuración del usuario
+        // User configuration
         if(!jsonObject.isNull("data_aux") && !jsonObject.getString("data_aux").equals("false")) {
             int geosearch = jsonObject.getJSONObject("data_aux").getInt("Configuration_geosearch");
             float geoLatitude = 0;
@@ -73,36 +77,6 @@ public class AnalyzeJSON {
             editor.putInt("friendsnotification", friendsNotifications);
             editor.apply();
         }
-
-        if(lastname.equals("null"))
-            lastname = null;
-        if(image.equals("null"))
-            image = null;
-        if(city.equals("null"))
-            city = null;
-        if(age.equals("null") || age.equals("0"))
-            age = null;
-        if(weight.equals("null") || weight.equals("0"))
-            weight = null;
-        if(height.equals("null") || height.equals("0"))
-            height = null;
-
-        // Se devuelven los datos del Usuario
-        User user = new User(email,firstname,lastname, image ,apiKey,age,city,weight,height);
-        return user;
-    }
-
-    public static User analyzeUser(JSONObject jsonObject) throws JSONException {
-        final String nombreObjeto = "data";
-        String email = jsonObject.getJSONObject(nombreObjeto).getString("User_email");
-        String firstname = jsonObject.getJSONObject(nombreObjeto).getString("User_firstname");
-        String lastname = jsonObject.getJSONObject(nombreObjeto).getString("User_lastname");
-        String image = jsonObject.getJSONObject(nombreObjeto).getString("User_image");
-        String apiKey = jsonObject.getJSONObject(nombreObjeto).getString("User_apiKey");
-        String age = jsonObject.getJSONObject(nombreObjeto).getString("User_age");
-        String city = jsonObject.getJSONObject(nombreObjeto).getString("User_city");
-        String weight = jsonObject.getJSONObject(nombreObjeto).getString("User_weight");
-        String height = jsonObject.getJSONObject(nombreObjeto).getString("User_height");
 
         if(lastname.equals("null"))
             lastname = null;

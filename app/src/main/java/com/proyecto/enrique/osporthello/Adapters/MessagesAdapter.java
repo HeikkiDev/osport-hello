@@ -21,8 +21,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by enrique on 25/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el RecyclerView que muestra los mensajes de una conversación dentro de un Chat,
+ * dentro de cajas de diferente color y posición según de qué usuario sea.
  */
+
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MessageViewHolder> {
     private ArrayList<Message> items;
     private static User USER_ME;

@@ -5,8 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 22/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo de usuario que aparece en la lista de GeoBúsqueda.
  */
+
 public class GeoSearch implements Serializable{
 
     @SerializedName("User_email")

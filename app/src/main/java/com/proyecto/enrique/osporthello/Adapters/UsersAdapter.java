@@ -35,8 +35,11 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 20/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el RecyclerView que muestra la lista de usuarios en Seguidores, GeoBúsqueda y Búsqueda por nombre.
  */
+
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
     private Context context;
     private ArrayList<User> items;
@@ -238,7 +241,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                         intent.putExtra("myChat", new Chat(chat_id, user.getEmail(), user.getFirstname() + " " + lastname, user.getImage()));
                         context.startActivity(intent);
 
-                        //if(!response.getString("message").equals("ALREADY EXISTS")){
                         // Insert in local database
                         LocalDataBase dataBase = new LocalDataBase(context);
                         long i = dataBase.insertNewChat(chat_id, user.getEmail(), user.getFirstname() + " " + user.getLastname(), user.getImage());

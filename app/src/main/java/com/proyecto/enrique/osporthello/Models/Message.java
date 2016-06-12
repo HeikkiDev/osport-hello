@@ -3,8 +3,11 @@ package com.proyecto.enrique.osporthello.Models;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 10/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo que representa un mensaje de una conversación de Chat.
  */
+
 public class Message implements Serializable{
 
     public String getAuthor() {

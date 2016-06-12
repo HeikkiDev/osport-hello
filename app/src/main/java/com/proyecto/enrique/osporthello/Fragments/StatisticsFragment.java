@@ -46,8 +46,12 @@ import java.util.GregorianCalendar;
 import cz.msebera.android.httpclient.Header;
 
 /**
- *
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que muestra los datos de las estadísticas acumulativas del usuario, con
+ * información numérica y mediante dos gráficos.
  */
+
 public class StatisticsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private LinearLayout layoutContainer;
@@ -349,10 +353,10 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
                     pieChart.addPieSlice(new PieModel(resources.getStringArray(R.array.array_activities)[0], (float) sport.getSportPercentage(), Color.parseColor(cyclingColor)));
                     break;
                 case 1:
-                    pieChart.addPieSlice(new PieModel(resources.getStringArray(R.array.array_activities)[2], (float)sport.getSportPercentage(), Color.parseColor(joggingColor)));
+                    pieChart.addPieSlice(new PieModel(resources.getStringArray(R.array.array_activities)[1], (float)sport.getSportPercentage(), Color.parseColor(runningColor)));
                     break;
                 case 2:
-                    pieChart.addPieSlice(new PieModel(resources.getStringArray(R.array.array_activities)[1], (float)sport.getSportPercentage(), Color.parseColor(runningColor)));
+                    pieChart.addPieSlice(new PieModel(resources.getStringArray(R.array.array_activities)[2], (float)sport.getSportPercentage(), Color.parseColor(joggingColor)));
                     break;
                 case 3:
                     walkingPercentage += (float) sport.getSportPercentage();

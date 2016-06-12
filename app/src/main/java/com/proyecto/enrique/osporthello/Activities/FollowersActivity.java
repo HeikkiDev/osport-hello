@@ -1,6 +1,7 @@
 package com.proyecto.enrique.osporthello.Activities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde se muestran  la lista de Seguidores del usuario, donde el usuario puede
+ * iniciar conversaciones en el Chat y Seguir/Dejar de seguir.
+ */
+
 public class FollowersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges, UserInfoInterface {
 
     private Context context;
@@ -43,6 +51,7 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     private static UserInfoInterface infoInterface;
     private ArrayList<User> followingList = null;
     private ArrayList<User> followersList = null;
+    private static final String SESSION_FILE = "my_session";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,11 +130,20 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
     }
 
     /**
-     * Obtains list of my followers
+     * Obtains my followers list
      * @return
      */
     private void getMyFollowers() {
-        User user = MainActivity.USER_ME;
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SESSION_FILE, 0);
+        User user = new User(sharedPreferences.getString("email", null),
+                sharedPreferences.getString("firstname", null),
+                sharedPreferences.getString("lastname", null), null,
+                sharedPreferences.getString("apikey", null),
+                sharedPreferences.getString("age", null),
+                sharedPreferences.getString("city", null),
+                sharedPreferences.getString("weight", null),
+                sharedPreferences.getString("height", null));
+
         ApiClient.getUsersByName("api/friends/followers" + "/" + user.getEmail(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
@@ -200,6 +218,8 @@ public class FollowersActivity extends AppCompatActivity implements UsersAdapter
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
+        if(followersList == null || followersList.size() <= index)
+            return;
         followersList.get(index).setFirstname(userInfo.getFirstname());
         followersList.get(index).setLastname(userInfo.getLastname());
         followersList.get(index).setImage(userInfo.getImage());

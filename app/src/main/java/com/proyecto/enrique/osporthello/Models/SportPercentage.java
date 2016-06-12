@@ -3,8 +3,12 @@ package com.proyecto.enrique.osporthello.Models;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 28/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo para el porcentaje que se realiza de cada actividad deportiva
+ * que se muestra en el gráfico circular.
  */
+
 public class SportPercentage implements Serializable{
     private int sportType;
     private double sportPercentage;

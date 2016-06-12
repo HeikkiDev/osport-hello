@@ -48,8 +48,12 @@ import java.io.ByteArrayOutputStream;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by enrique on 14/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde el usuario puede hacer Login, ir a la Activity de crear cuenta,
+ * o recuperar la contraseña.
  */
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etxUser;

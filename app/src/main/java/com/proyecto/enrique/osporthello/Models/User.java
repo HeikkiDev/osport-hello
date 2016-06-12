@@ -8,8 +8,11 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 14/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo que representa un usuario.
  */
+
 public class User implements Serializable {
 
     @SerializedName("User_email")

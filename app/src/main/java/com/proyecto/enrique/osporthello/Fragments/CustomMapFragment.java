@@ -11,8 +11,11 @@ import android.widget.FrameLayout;
 import com.google.android.gms.maps.SupportMapFragment;
 
 /**
- * Created by enrique on 22/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: MapFragment personalizado para poder movernos por él cuando se coloca en una vista con Scroll.
  */
+
 public class CustomMapFragment extends SupportMapFragment {
     private OnTouchListener mListener;
 

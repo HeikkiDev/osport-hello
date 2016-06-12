@@ -42,6 +42,12 @@ import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Servicio que comprueba y notifica cuando hay nuevos chats y mensajes.
+ */
+
 public class ChatNotificationsService extends Service {
 
     private static final String SESSION_FILE = "my_session";
@@ -64,7 +70,6 @@ public class ChatNotificationsService extends Service {
     public void onCreate() {
         super.onCreate();
         Firebase.setAndroidContext(this);
-        //Toast.makeText(getApplicationContext(), "Servicio CHAT arrancado!", Toast.LENGTH_SHORT).show();
 
         if(listFirebaseListeners == null)
             listFirebaseListeners = new ArrayList<>();
@@ -104,8 +109,6 @@ public class ChatNotificationsService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(getApplicationContext(), "Servicio CHAT parado!", Toast.LENGTH_SHORT).show();
-
         for (ChildEventListener listener : listFirebaseListeners) {
             this.refChats.removeEventListener(listener);
         }
@@ -115,7 +118,7 @@ public class ChatNotificationsService extends Service {
     }
 
     /**
-     *
+     * Check for new chats
      */
     private void checkUserChats() {
         try {
@@ -149,7 +152,7 @@ public class ChatNotificationsService extends Service {
                             listChats.clear();
                             dataBase.insertChatsInService(listChats, user.getEmail());
                         }
-
+                        dataBase.Close();
                         addChatsListener();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -163,7 +166,7 @@ public class ChatNotificationsService extends Service {
     }
 
     /**
-     *
+     * Add listeners
      */
     private void addChatsListener() {
         LocalDataBase dataBase = new LocalDataBase(getApplicationContext());
@@ -200,7 +203,7 @@ public class ChatNotificationsService extends Service {
     }
 
     /**
-     *
+     * Add listener to specific chat
      * @param chat
      */
     private void addFirebaseListener(final Chat chat){
@@ -249,7 +252,7 @@ public class ChatNotificationsService extends Service {
     }
 
     /**
-     *
+     * Notify new message in chat
      */
     private void notifyNewMessage(final Chat chat){
 

@@ -46,6 +46,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity que muestra la vista de configuración de usuario, donde el usuario puede editar sus preferencias, y
+ * activar las funcionalidades de GeoBúsqueda y Zona de Privacidad
+ */
+
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private GoogleMap mapGeoSearch;

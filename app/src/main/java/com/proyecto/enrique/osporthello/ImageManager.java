@@ -26,8 +26,12 @@ import java.io.IOException;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by enrique on 18/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Clase de apoyo para la compresión/descompresión, almacenamiento, carga
+ * y subida al servidor de imágenes.
  */
+
 public class ImageManager {
 
     Context context;

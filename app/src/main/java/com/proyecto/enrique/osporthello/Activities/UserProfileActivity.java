@@ -49,6 +49,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde se muestra la información de usuario, y el usuario podrá modificarla
+ * y elegir imagen de perfil.
+ */
+
 public class UserProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView imageView;
@@ -185,25 +192,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         }
-
-        /*
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            try {
-                Bitmap bitmap = null;
-                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP){
-                    bitmap  = (Bitmap) data.getExtras().get("data");
-                } else{
-                    Uri uri = data.getData();
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                }
-                imageView.setImageBitmap(bitmap);
-                this.bitmapImage = bitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        */
     }
 
     /**

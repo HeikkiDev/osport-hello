@@ -22,8 +22,11 @@ import cz.msebera.android.httpclient.Header;
 import static com.google.android.gms.internal.zzir.runOnUiThread;
 
 /**
- * Created by enrique on 7/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: AsyncTask que crea un objeto JSON con los datos de un entrenamiento y lo sube al servidor externo.
  */
+
 public class UploadSportDataTask extends AsyncTask<SportActivityInfo, Void, Void> {
 
     public interface onFinishUpload{

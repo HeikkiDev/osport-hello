@@ -22,6 +22,12 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde el usuario creará su cuenta de usuario introduciendo los datos obligatorios.
+ */
+
 public class CreateAccountActivity extends AppCompatActivity {
 
     private EditText etxUser;

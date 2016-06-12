@@ -48,8 +48,11 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 8/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el RecylerView que muestra la lista de entrenamientos con datos y mapa.
  */
+
 public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivitiesAdapter.MapViewHolder>{
     Context context;
     private ArrayList<SportActivityInfo> items;
@@ -194,7 +197,7 @@ public class MyMapActivitiesAdapter extends RecyclerView.Adapter<MyMapActivities
     }
 
     /**
-     *
+     * Delete workout
      * @param i
      */
     private void deleteActivity(final int i) {

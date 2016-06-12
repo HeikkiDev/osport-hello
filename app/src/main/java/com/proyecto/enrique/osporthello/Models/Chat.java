@@ -3,8 +3,11 @@ package com.proyecto.enrique.osporthello.Models;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 25/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo de Chat.
  */
+
 public class Chat implements Serializable{
 
     private int id;

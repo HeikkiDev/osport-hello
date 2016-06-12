@@ -14,8 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by enrique on 27/04/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adaptador para mostrar la lista de actividades deportivas diferentes en un diálogo personalizado.
  */
+
 public class ChooseActivityAdapter extends ArrayAdapter<RowActivity> {
 
     private Activity context;

@@ -34,6 +34,12 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que muestra dos cajas con la cantidad de usuarios que te siguen y a los que sigues,
+ * que te permiten ir a las listas detalladas de los mismos.
+ */
 
 public class ShowFriendsFragment extends Fragment {
 

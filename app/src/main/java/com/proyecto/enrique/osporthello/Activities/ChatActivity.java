@@ -43,6 +43,12 @@ import java.util.Date;
 import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity que muestra una conversación de Chat con otro usuario.
+ */
+
 public class ChatActivity extends AppCompatActivity {
 
     public static Chat CHAT;
@@ -142,7 +148,15 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         if(sharedPref.getInt("chatnotifications", 0) != 0)
             startService(new Intent(ChatActivity.this, ChatNotificationsService.class));
-        this.refChild.removeEventListener(childEventListener);
+        if(this.refChild != null)
+            this.refChild.removeEventListener(childEventListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(dataBase != null)
+            dataBase.Close();
     }
 
     private void updateMessages(){
@@ -180,7 +194,7 @@ public class ChatActivity extends AppCompatActivity {
         myEmail = myEmail.replace('[','3');
         myEmail = myEmail.replace(']','4');
         myEmail = myEmail.replace('/','5');
-        // Escribo mis mensajes en mi buffer de escritura, que se identifica con mi email
+        // Write my messages in my write buffer, which is identified with my email
         Firebase.setAndroidContext(this);
         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
         Firebase refChat = firebaseRoot.child("messages").child(id).child(myEmail);
@@ -208,12 +222,12 @@ public class ChatActivity extends AppCompatActivity {
         receiverEmail = receiverEmail.replace('[','3');
         receiverEmail = receiverEmail.replace(']','4');
         receiverEmail = receiverEmail.replace('/','5');
-        // Leo de mi zona del chat, que es mi buffer de lectura y el de escritura de mi interlocutor
+        // Read my chat area, which is my read buffer and write buffer my interlocutor
         Firebase.setAndroidContext(this);
         Firebase firebaseRoot = new Firebase("https://osporthello.firebaseio.com/");
         final Firebase refChat = firebaseRoot.child("messages").child(id).child(receiverEmail);
 
-        // Descarga UNA VEZ la lista completa de mensajes del chat
+        // Download all messages once
         refChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

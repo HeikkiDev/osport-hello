@@ -3,8 +3,11 @@ package com.proyecto.enrique.osporthello.Models;
 import android.graphics.drawable.Drawable;
 
 /**
- * Created by enrique on 28/04/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo de fila en el diálogo de elección de actividad deportiva.
  */
+
 public class RowActivity {
     private Drawable image;
     private String name;

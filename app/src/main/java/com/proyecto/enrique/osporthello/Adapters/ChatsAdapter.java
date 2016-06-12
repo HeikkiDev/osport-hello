@@ -33,8 +33,11 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 25/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adaptador para el RecyclerView que muestra los Chats abiertos del usuario.
  */
+
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHolder> {
     private Context context;
     private ArrayList<Chat> items;
@@ -53,8 +56,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
         ChatViewHolder.IChatViewHolderClick viewHolderClick = new ChatViewHolder.IChatViewHolderClick() {
             @Override
             public void onItemClick(View v, ChatViewHolder viewHolder) {
-                // Se cogen los datos sobre el chat con:
-                //items.get(viewHolder.getAdapterPosition()).getReceiver_name();
                 viewGroup.setEnabled(false);
                 Chat chat = items.get(viewHolder.getAdapterPosition());
                 Intent intent = new Intent(context, ChatActivity.class);
@@ -163,9 +164,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatViewHold
             return true;
         }
 
-        public static interface IChatViewHolderClick {
-            public void onItemClick(View v, ChatViewHolder viewHolder);
-            public void onLongItemClick(View v, ChatViewHolder viewHolder);
+        public interface IChatViewHolderClick {
+            void onItemClick(View v, ChatViewHolder viewHolder);
+            void onLongItemClick(View v, ChatViewHolder viewHolder);
         }
     }
 }

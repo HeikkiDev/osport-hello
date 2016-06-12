@@ -8,8 +8,11 @@ import java.util.TimerTask;
 import static com.google.android.gms.internal.zzir.runOnUiThread;
 
 /**
- * Created by enrique on 1/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: AsyncTask que inicia un cronómetro y actualiza un TextView a medida que avanza el cronómetro.
  */
+
 public class MyTimerTask extends TimerTask {
 
     long result;

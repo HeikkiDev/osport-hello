@@ -58,8 +58,12 @@ import java.util.ArrayList;
 import java.util.Timer;
 
 /**
- * Created by enrique on 16/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que se muestra al inicio de la aplicación por defecto. Aquí se registran y guardan los entrenamientos
+ * que realice el usuario.
  */
+
 public class HomeFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMapClickListener, LocationListener, UploadSportDataTask.onFinishUpload  {
 
     private LinearLayout rootLayoutHome;
@@ -96,7 +100,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private Location previousLocation;
     private LocationManager locationManager;
     private PolylineOptions polyline;
-    private LatLngBounds radiusBounds;
+    private LatLngBounds radiusBounds = null;
 
     private long timeStart = 0;
     private long timePause = 0;
@@ -115,7 +119,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     private final int LOCATION_CODE = 1;
     private final double KMS_TO_MILES = 0.621371;
     private final int ZOOM = 16;
-    private final int RADIUS_METERS = 250;
+    private final int RADIUS_METERS = 500;
     private static final String PREFERENCES_FILE = "osporthello_settings";
 
     public HomeFragment(){
@@ -221,17 +225,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        if(sharedPref.getInt("privacity", 0) == 1) {
-            float lat = sharedPref.getFloat("privacitylat", 0);
-            float lon = sharedPref.getFloat("privacitylon", 0);
-            if(lat != 0 && lon != 0){
-                radiusBounds = getRadiusBounds(new LatLng(lat, lon), RADIUS_METERS);
-            }
-        }
-        else
-            radiusBounds = null;
 
         return view;
     }
@@ -348,7 +341,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     }
 
     /**
-     *
+     * Initilize map
      */
     private void initializeGoogleMap() {
         try {
@@ -391,7 +384,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     }
 
     /**
-     *
+     * Update map camera, marker, and polyline
      * @param latLng
      */
     private void updateMapView(LatLng latLng) {
@@ -410,7 +403,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     }
 
     /**
-     *
+     * Run async timer
      */
     private void runTimerDuration() {
         if(timePause > 0)
@@ -423,7 +416,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
     }
 
     /**
-     *
+     * Start workout
      */
     private void startWorkout(){
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -437,6 +430,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnMa
         else
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         MainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        if(sharedPref.getInt("privacity", 0) == 1) {
+            float lat = sharedPref.getFloat("privacitylat", 0);
+            float lon = sharedPref.getFloat("privacitylon", 0);
+            if(lat != 0 && lon != 0){
+                radiusBounds = getRadiusBounds(new LatLng(lat, lon), RADIUS_METERS);
+            }
+        }
+        else
+            radiusBounds = null;
 
         if(txtChooseSpeed.getText().toString().equals(getResources().getString(R.string.km_h_units))) {
             txtTitleSpeed.setText(R.string.speed_km_h);

@@ -7,8 +7,11 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
- * Created by enrique on 7/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Modelo que representa un entrenamiento.
  */
+
 public class SportActivityInfo implements Serializable, Parcelable{
 
     private int _id;

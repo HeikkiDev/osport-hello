@@ -20,8 +20,12 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by enrique on 15/05/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: AsyncTask que descarga la imagen y nombre de un usuario y una vez descargado manda los datos a
+ * la Activity o Fragment del que haya sido ejecutado mediante un interfaz.
  */
+
 public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
 
     User userInfo;

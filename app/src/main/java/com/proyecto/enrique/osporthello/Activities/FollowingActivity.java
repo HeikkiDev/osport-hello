@@ -32,6 +32,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde se muestran  la lista de usuarios a los que estás siguiendo, donde el usuario puede
+ * iniciar conversaciones en el Chat y Dejar de seguir.
+ */
+
 public class FollowingActivity extends AppCompatActivity implements FriendsAdapter.FriendsChanges, UserInfoInterface {
 
     private ProgressBar progressBar;
@@ -108,7 +115,7 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
     }
 
     /**
-     * Obtains list of my friends
+     * Obtains my friends list
      * @return
      */
     private void getMyFriends(){
@@ -172,6 +179,8 @@ public class FollowingActivity extends AppCompatActivity implements FriendsAdapt
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
+        if(friendsList == null || friendsList.size() <= index)
+            return;
         friendsList.get(index).setFirstname(userInfo.getFirstname());
         friendsList.get(index).setLastname(userInfo.getLastname());
         friendsList.get(index).setImage(userInfo.getImage());

@@ -38,6 +38,12 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que muestra la lista de entrenamientos de los usuarios a los que seguimos.
+ */
+
 public class ActivitiesFriendsFragment extends Fragment implements MyMapActivitiesAdapter.OnLoadMoreListener, UserInfoInterface{
 
     private Context context;
@@ -264,6 +270,8 @@ public class ActivitiesFriendsFragment extends Fragment implements MyMapActiviti
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
+        if(activitiesList == null || activitiesList.size() <= index)
+            return;
         activitiesList.get(index).setUserName(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
         activitiesList.get(index).setUserImage(ImageManager.stringToBitMap(userInfo.getImage()));
         if(recycler != null && recycler.getAdapter() != null)

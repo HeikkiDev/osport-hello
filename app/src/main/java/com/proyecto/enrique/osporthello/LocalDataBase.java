@@ -13,8 +13,12 @@ import com.proyecto.enrique.osporthello.Models.Message;
 import java.util.ArrayList;
 
 /**
- * Created by enrique on 27/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Clase que define y crea la base de datos interna de la aplicación,
+ * y proporciona métodos para todas las operaciones CRUD necesarias.
  */
+
 public class LocalDataBase {
 
     private Context miContexto = null;

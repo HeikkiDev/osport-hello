@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -33,6 +34,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity donde el usuario busca a otros usuarios por el nombre. En la lista que se le muestre
+ * puede Seguir/Dejar de seguir e iniciar conversación en el Chat.
+ */
+
 public class SearchUsersActivity extends AppCompatActivity implements UsersAdapter.FriendsChanges, UserInfoInterface {
 
     private Context context;
@@ -42,6 +50,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
     private RecyclerView.LayoutManager lManager;
     private ArrayList<User> usersList = null;
     private ArrayList<User> friendsList = null;
+    private ArrayList<NameAndImageTask> taskList = null;
 
     private static UsersAdapter.FriendsChanges myInterface;
     private static UserInfoInterface infoInterface;
@@ -69,6 +78,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
         // LinearLayout administrator
         lManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(lManager);
+        taskList = new ArrayList<>();
 
         if(savedInstanceState != null){
             etxSearchUsers.setText(savedInstanceState.getString("etxSearch"));
@@ -108,10 +118,17 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
     }
 
     /**
-     * Obtains list of my friends
+     * Obtains my friends list
      * @return
      */
     private void searchUsersByName() {
+        if(taskList != null){
+            for (NameAndImageTask task : taskList) {
+                if(task != null)
+                    task.cancel(true);
+            }
+        }
+
         String name = etxSearchUsers.getText().toString();
         name = name.trim();
         if(name.isEmpty())
@@ -156,7 +173,9 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
 
                         if(usersList != null){
                             for (int i = 0; i < usersList.size(); i++) {
-                                new NameAndImageTask(usersList.get(i).getEmail(), null, null, i, infoInterface).execute();
+                                NameAndImageTask mTask = new NameAndImageTask(usersList.get(i).getEmail(), null, null, i, infoInterface);
+                                taskList.add(mTask);
+                                mTask.execute();
                             }
                         }
                     }
@@ -211,10 +230,19 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
-        usersList.get(index).setFirstname(userInfo.getFirstname());
-        usersList.get(index).setLastname(userInfo.getLastname());
-        usersList.get(index).setImage(userInfo.getImage());
-        if(recycler != null && recycler.getAdapter() != null)
-            recycler.getAdapter().notifyItemChanged(index);
+        if(usersList == null || usersList.size() <= index)
+            return;
+        try {
+            if(usersList.size() > index)
+            usersList.get(index).setFirstname(userInfo.getFirstname());
+            if(usersList.size() > index)
+            usersList.get(index).setLastname(userInfo.getLastname());
+            if(usersList.size() > index)
+            usersList.get(index).setImage(userInfo.getImage());
+            if (recycler != null && recycler.getAdapter() != null && recycler.getAdapter().getItemCount() > index)
+                recycler.getAdapter().notifyItemChanged(index);
+        } catch (Exception e){
+            Log.e("TASK_IMAGE_ERROR","task index error");
+        }
     }
 }

@@ -6,8 +6,12 @@ import com.loopj.android.http.RequestParams;
 import com.proyecto.enrique.osporthello.Activities.MainActivity;
 
 /**
- * Created by enrique on 9/04/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Clase apoyo que facilita la búsqueda y organización de todas las peticiones
+ * que se le hacen a la Api.
  */
+
 public class ApiClient {
 
     private static final String HOST = "https://enriqueramos.info/osporthello/";
@@ -92,11 +96,6 @@ public class ApiClient {
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
 
-    public static void getFollowsCounters(String url, JsonHttpResponseHandler responseHandler){
-        client.setTimeout(6000);
-        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
-    }
-
     public static void postNewFriend(String url, JsonHttpResponseHandler responseHandler){
         client.setTimeout(6000);
         client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
@@ -128,11 +127,6 @@ public class ApiClient {
     /**
      * CONFIGURATION
      */
-    public static void getMyConfiguration(String url, JsonHttpResponseHandler responseHandler){
-        client.setTimeout(10000);
-        client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
-    }
-
     public static void postMyConfiguration(String url, RequestParams params, JsonHttpResponseHandler responseHandler){
         client.setTimeout(10000);
         client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), params, responseHandler);

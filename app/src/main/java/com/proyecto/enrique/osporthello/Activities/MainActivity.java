@@ -64,6 +64,13 @@ import java.io.OutputStreamWriter;
 import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Activity principal de la aplicación desde la que se lanza y controla el Login, donde se cargan los Fragments de las diferentes opciones
+ * del menú y se navega a las demás Activity.
+ */
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private boolean isFirstTime;
@@ -206,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        // LANZAR ACTIVITY PARA VER/EDITAR PERFIL DE USUARIO E IMAGEN
         Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
         startActivityForResult(intent, EDIT_CODE);
     }

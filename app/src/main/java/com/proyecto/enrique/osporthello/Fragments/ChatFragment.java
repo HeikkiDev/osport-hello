@@ -32,6 +32,12 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Fragment que muestra la lista de Chats que tenemos abiertos con otros usuarios.
+ */
+
 public class ChatFragment extends Fragment {
 
     private Context context;

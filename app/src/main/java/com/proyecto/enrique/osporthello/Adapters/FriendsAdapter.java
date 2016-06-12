@@ -38,8 +38,11 @@ import cz.msebera.android.httpclient.Header;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by enrique on 20/03/16.
+ * Autor: Enrique Ramos
+ * Fecha última actualización: 12/06/2016
+ * Descripción: Adapter para el RecyclerView que muestra la lista de usuarios a los que estoy Siguiendo.
  */
+
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
     private Context context;
     private ArrayList<User> items;
@@ -86,7 +89,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         String email = items.get(i).getEmail();
         String lastname = (items.get(i).getLastname() != null)?items.get(i).getLastname():"";
         final String city = (items.get(i).getCity() != null)?items.get(i).getCity():"";
-        //viewHolder.image.setImageBitmap(stringToBitMap(items.get(i).getImage()));
         viewHolder.name.setText(items.get(i).getFirstname() + " " + lastname);
         viewHolder.city.setText(city);
 
@@ -185,22 +187,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                 }
             }
         });
-    }
-
-    /**
-     * String 64 base enconded to Bitmap
-     * @param encodedString
-     * @return bitmap (from given string)
-     */
-    public Bitmap stringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }catch(OutOfMemoryError|Exception e){
-            e.getMessage();
-            return null;
-        }
     }
 
     static class FriendViewHolder extends RecyclerView.ViewHolder {
