@@ -127,6 +127,7 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
                 if(task != null)
                     task.cancel(true);
             }
+            taskList.clear();
         }
 
         String name = etxSearchUsers.getText().toString();
@@ -230,14 +231,9 @@ public class SearchUsersActivity extends AppCompatActivity implements UsersAdapt
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
-        if(usersList == null || usersList.size() <= index)
-            return;
-        try {
-            if(usersList.size() > index)
+      try {
             usersList.get(index).setFirstname(userInfo.getFirstname());
-            if(usersList.size() > index)
             usersList.get(index).setLastname(userInfo.getLastname());
-            if(usersList.size() > index)
             usersList.get(index).setImage(userInfo.getImage());
             if (recycler != null && recycler.getAdapter() != null && recycler.getAdapter().getItemCount() > index)
                 recycler.getAdapter().notifyItemChanged(index);

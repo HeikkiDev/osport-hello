@@ -94,7 +94,7 @@ public class NameAndImageTask extends AsyncTask<Void, Void, Void> {
             txtUsername.setText(userInfo.getFirstname()+" "+((userInfo.getLastname()!=null)?userInfo.getLastname():""));
         if(imageView != null)
             imageView.setImageBitmap(ImageManager.stringToBitMap(userInfo.getImage()));
-        if(success && infoInterface != null)
+        if(success && infoInterface != null && !isCancelled())
             infoInterface.onInfoUserChanges(userInfo, index);
     }
 }

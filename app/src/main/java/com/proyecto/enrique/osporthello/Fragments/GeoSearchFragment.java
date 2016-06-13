@@ -189,6 +189,7 @@ public class GeoSearchFragment extends Fragment implements UserInfoInterface, Ge
                 if(task != null)
                     task.cancel(true);
             }
+            taskList.clear();
         }
 
         isDownloading = true;
@@ -302,14 +303,9 @@ public class GeoSearchFragment extends Fragment implements UserInfoInterface, Ge
 
     @Override
     public void onInfoUserChanges(User userInfo, int index) {
-        if(usersList == null || usersList.size() <= index)
-            return;
         try {
-            if(usersList.size() > index)
                 usersList.get(index).setFirstname(userInfo.getFirstname());
-            if(usersList.size() > index)
                 usersList.get(index).setLastname(userInfo.getLastname());
-            if(usersList.size() > index)
                 usersList.get(index).setImage(userInfo.getImage());
             if (recycler != null && recycler.getAdapter() != null && recycler.getAdapter().getItemCount() > index) {
                 recycler.getAdapter().notifyItemChanged(index);
