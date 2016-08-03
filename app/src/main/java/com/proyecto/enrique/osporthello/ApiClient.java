@@ -144,4 +144,12 @@ public class ApiClient {
         client.setTimeout(10000);
         client.get(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), responseHandler);
     }
+
+    /**
+     * ERROR MAIL
+     */
+    public static void postErrorMail(String url, RequestParams params, JsonHttpResponseHandler responseHandler){
+        client.setTimeout(6000);
+        client.post(HOST + url + "/" + MainActivity.USER_ME.getApiKey(), params, responseHandler);
+    }
 }

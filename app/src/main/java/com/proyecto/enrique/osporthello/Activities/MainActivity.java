@@ -36,6 +36,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.proyecto.enrique.osporthello.ApiClient;
 import com.proyecto.enrique.osporthello.Fragments.ActivitiesFragment;
 import com.proyecto.enrique.osporthello.Fragments.ChatFragment;
@@ -647,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Send Logcat in Mail
      */
-    private void SendLogcatMail(){
+    public void SendLogcatMail(){
         //Read error log
         try {
             InputStream inputStream = openFileInput("errorlog.txt");
@@ -663,15 +664,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 inputStream.close();
 
-                // Send email
-                String body = getString(R.string.body_email);
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setType("vnd.android.cursor.dir/email");
-                String to[] = {"osporthello@gmail.com"};
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, body + stringBuilder.toString());
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_error_report));
-                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_error_report)));
+                // Error mail JSON object
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("email", MainActivity.USER_ME.getEmail());
+                    json.put("body", "-- Informe de errores automático --\n\n Enviado por: "
+                                    + MainActivity.USER_ME.getEmail()+"\n---------------------------------------------------------\n"
+                                    + stringBuilder.toString());
+                } catch (Exception e){}
+
+                RequestParams param = new RequestParams();
+                param.put("error", json.toString());
+
+                // Send Error Mail
+                ApiClient.postErrorMail("api/error_email", param, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                        //
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            if (response.getString("code").equals("true")) {
+                                Toast.makeText(getApplicationContext(), "Error report sent",Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         }
         catch (FileNotFoundException e) {
